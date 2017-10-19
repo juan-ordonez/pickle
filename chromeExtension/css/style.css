@@ -7,13 +7,18 @@ body .container {
 	position: relative;
 	top: 3.5rem;
 	padding: 1rem;
-	height:505px;
+	height:490px;
 	overflow: scroll;
 }
 
 h1 {
 	font-size: 1em;
 	font-weight: 300;
+}
+
+textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {   
+    border-color: #E91E63;
+    outline: 0 none;
 }
 
 #bottomNav {
@@ -38,13 +43,20 @@ h1 {
 	border-color: #C2185B;
 }
 
-.cardList {
+.card, .cardList {
 	border-top-style: solid;
 	border-left-style: solid;
 	border-right-style: solid;
 	border-color: #EEEEEE;
 	border-width: 1px;
 	border-radius: 2px;
+}
+
+.card {
+	padding: 1rem;
+}
+
+.cardList {
 	padding:0;
 }
 
@@ -105,6 +117,19 @@ h1 {
 
 .nav-link:hover {
 	color: #424242;
+}
+
+.notification {
+	max-width: 275px;
+	margin-bottom: 0;
+}
+
+.profilePic {
+	width: 100px;
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
 }
 
 .thumbnail {

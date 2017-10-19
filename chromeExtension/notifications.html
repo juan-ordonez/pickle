@@ -1,0 +1,111 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+
+  <head>
+
+    <title>Pickle</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <!-- Custome Styles CSS -->
+    <link href="css/style.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- Top navigation bar -->
+    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-center">
+      <h1 class="navbar-brand mb-0">Pickle</h1>
+    </nav>
+
+    <!-- Bottom navigation bar -->
+    <nav id="bottomNav" class="navbar fixed-bottom navbar-light justify-content-between">
+          <!-- dummy anchor to prevent autofocus-->
+          <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
+          <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
+          <a class="nav-link active" href="#"><i class="fa fa-bell fa-lg"></i></a>
+          <a class="nav-link" href="account.html"><i class="fa fa-user fa-lg"></i></a>
+    </nav> 
+
+    <div class="container">
+      
+        <h1>NOTIFICATIONS</h1>
+
+        <!-- Example notifications -->
+        <div class="cardList">
+          <div class="cardListGroup">
+
+            <a href="#"><div class="d-flex align-items-center">
+              <div class="thumbnail mr-3">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/16583473_379492249096678_5400214466052751360_a.jpg">
+              </div>
+              <p class="notification"><strong>Juan</strong> commented on Netflix</p>
+            </div></a>
+
+            <a href="#"><div class="d-flex align-items-center">
+              <div class="thumbnail mr-3">
+                <img src="https://scontent-lax3-1.xx.fbcdn.net/v/t31.0-8/1116043_10151512871487237_564361818_o.jpg?oh=478cae4a925b31909b4022117bd701b6&oe=5A3AB97A">
+              </div>
+              <p class="notification"><strong>Vanessa</strong> tagged you on Amazon</p>
+            </div></a>
+
+            <a href="#"><div class="d-flex align-items-center">
+              <div class="thumbnail mr-3">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/11910064_1513922588898767_476983264_a.jpg">
+              </div>
+              <p class="notification"><strong>Gagan</strong> commented on Rotten Tomatoes</p>
+            </div></a>
+
+            <a href="#"><div class="d-flex align-items-center">
+              <div class="thumbnail mr-3">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s320x320/21819708_347904258955471_4687591791493382144_n.jpg">
+              </div>
+              <p class="notification"><strong>Shannon</strong> liked your comment on The Huffington Post</p>
+            </div></a>
+
+            <a href="#"><div class="d-flex align-items-center">
+              <div class="thumbnail mr-3">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/11849262_801659613283800_1482640784_a.jpg">
+              </div>
+              <p class="notification"><strong>Roman</strong> tagged you on Coinbase</p>
+            </div></a>
+
+            <a href="#"><div class="d-flex align-items-center">
+              <div class="thumbnail mr-3">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s320x320/14597220_1305405389501853_1107640381664657408_a.jpg">
+              </div>
+              <p class="notification"><strong>Amanda</strong> liked your comment on Lonely Planet</p>
+            </div></a>
+            
+            <a href="#"><div class="d-flex align-items-center">
+              <div class="thumbnail mr-3">
+                <img src="https://scontent-lax3-1.xx.fbcdn.net/v/t1.0-1/p320x320/16865189_10104935164263085_1958013047684281725_n.jpg?oh=401f41d30e990904fb903265afbbe58d&oe=5A882FA4">
+              </div>
+              <p class="notification"><strong>Clay</strong> commented on Spotify</p>
+            </div></a>
+          </div>
+        </div>
+
+    </div>
+
+  </body>
+
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+  <!-- js for popup.html -->
+  <!-- <script src="js/popup.js"></script> -->
+
+</html>

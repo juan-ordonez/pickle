@@ -19,6 +19,7 @@ h1 {
 textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {   
     border-color: #E91E63;
     outline: 0 none;
+    box-shadow:none;
 }
 
 #bottomNav {
@@ -42,6 +43,21 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	background-color: #C2185B;
 	border-color: #C2185B;
 }
+
+.btn-primary:active {
+	background-color: #C2185B !important;
+	border-color: #C2185B!important;
+	box-shadow: none!important;
+}
+
+.btn-outline-secondary {
+	border-color: #BDBDBD;
+}
+
+.open > .dropdown-toggle.btn-outline-secondary:focus {
+	box-shadow: none!important;
+}
+
 
 .card, .cardList {
 	border-top-style: solid;
@@ -147,7 +163,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     width: auto;
 }
 
-.z-depth-1, #bottomNav, #topNav, .cardList {
+.z-depth-1, #bottomNav, #topNav, .card, .cardList {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
 
 .z-depth-1-half {

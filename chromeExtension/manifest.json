@@ -10,8 +10,11 @@
     "default_popup": "popup.html",
     "default_title": "Click here!"
   },
+  "content_security_policy": "script-src 'self' https://code.jquery.com https://cdnjs.cloudflare.com https://connect.facebook.net https://maxcdn.bootstrapcdn.com; object-src 'self'",
   "permissions": [
     "activeTab",
     "storage"
   ]
+
+
 }

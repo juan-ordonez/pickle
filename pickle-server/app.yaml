@@ -1,0 +1,19 @@
+entrypoint: gunicorn -c gunicorn.conf.py -b :$PORT app:app
+env: flex
+runtime: python
+#[START cloudsql_settings]
+beta_settings:
+    # If using Cloud SQL, uncomment and set this value to the Cloud SQL
+    # connection name, e.g.
+    #   "project:region:cloudsql-instance"
+    # You must also update the values in config.py.
+    #
+    cloud_sql_instances: "pickle-server-183401:us-west1:users-db"
+env_variables:
+  TWILIO_SID: "AC4e3839298177a775fcbba6a542de1003"
+  TWILIO_TOKEN: "c82ade5b3a42b8881d4cac5623658ff3"
+#[END cloudsql_settings]
+
+# handlers:
+# - url: /static
+#   static_dir: app/static

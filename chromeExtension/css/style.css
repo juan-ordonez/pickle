@@ -1,6 +1,7 @@
 body {
 	height: 600px;
 	width: 400px;
+	background-color: #FAFAFA;
 }
 
 body .container {
@@ -17,9 +18,9 @@ h1 {
 }
 
 textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {   
-    border-color: #E91E63;
-    outline: 0 none;
-    box-shadow:none;
+    border-color: #E91E63 !important;
+    outline: 0 none !important;
+    box-shadow:none !important;
 }
 
 #bottomNav {

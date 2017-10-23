@@ -12,7 +12,7 @@ from werkzeug import check_password_hash, generate_password_hash
 
 # Import the database object from the main app module
 from app import db
-from app import app
+from app import app, crossdomain
 
 # Import module forms
 from app.mod_auth.forms import LoginForm, RegistrationForm, RemoveForm
@@ -29,6 +29,8 @@ from BeautifulSoup import BeautifulSoup
 
 
 from collections import Counter
+from datetime import datetime
+
 
 
 import ujson as json
@@ -39,6 +41,7 @@ from google.cloud.language import enums
 from google.cloud.language import types
 from oauth2client.client import GoogleCredentials
 from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
+import ast
 credentials = GoogleCredentials.get_application_default()
 
 instagram_access_token = '22061997.f474111.9666e524ddb140608d124b554fb8bda0'
@@ -69,16 +72,34 @@ def home():
 
 #Registration controller
 @mod_auth.route('/register/', methods=['POST'])
+@crossdomain(origin='*')
 def register():
     user = User.query.filter_by(id=request.form['id']).first()
 
     if not user:
-        create = User(request.form['id'])
+        create = User(request.form['id'], request.form['name'], request.form['email'])
     
         db.session.add(create)
         db.session.commit()
 
     return str(request.form.to_dict())
+
+@mod_auth.route('/comment/', methods=['POST'])
+@crossdomain(origin='*')
+def comment():
+    comment = Comment(request.form['string'], request.form['url'], str(datetime.now()))
+    user = User.query.filter_by(id=request.form['userId']).first()
+    user.commentsWritten.append(comment)
+    db.session.add(user)
+    db.session.add(comment)
+    tags = ast.literal_eval(str(request.form['tags']))
+    for tag in tags:
+        taggedUser = User.query.filter_by(id=tag).first()
+        taggedUser.commentsTaggedIn.append(comment)
+    db.session.commit()
+    return str("Comment added")
+
+
     
 
 

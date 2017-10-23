@@ -5,10 +5,19 @@ body {
 }
 
 body .container {
-	position: relative;
-	top: 3.5rem;
+	position: absolute;
+	top: 93px;
 	padding: 1rem;
-	height:490px;
+	height: 508px;
+	overflow: scroll;
+}
+
+body .containerComments {
+	position: absolute;
+	bottom: 99px;
+	padding: 1rem;
+	padding-top: 0rem;
+	max-height: 408px;
 	overflow: scroll;
 }
 
@@ -23,16 +32,21 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     box-shadow:none !important;
 }
 
+
 #bottomNav {
+	height: auto;
+}
+
+#bottomNav, #topNav {
 	background-color: #FFFFFF;
 }
 
-#bottomNav .active {
+#bottomNav .nav-item a {
+	width: 150px; 
+}
+
+#topNav .active {
 	color: #E91E63;
-}
-
-#topNav {
-	background-color: #FFFFFF;
 }
 
 .btn-primary {
@@ -134,6 +148,10 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .nav-link:hover {
 	color: #424242;
+}
+
+.nav-item .active {
+    background-color: #E91E63 !important;
 }
 
 .notification {

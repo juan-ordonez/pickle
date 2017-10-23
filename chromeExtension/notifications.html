@@ -25,18 +25,16 @@
   <body>
 
     <!-- Top navigation bar -->
-    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-center">
+    <nav id="topNav" class="navbar fixed-top navbar-light flex-column align-items-center">
       <h1 class="navbar-brand mb-0">Pickle</h1>
+      <div class="d-flex justify-content-between" style="width: 375px;">
+        <!-- dummy anchor to prevent autofocus-->
+        <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
+        <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
+        <a class="nav-link active" href="#"><i class="fa fa-bell fa-lg"></i></a>
+        <a class="nav-link" href="account.html"><i class="fa fa-user fa-lg"></i></a>
+      </div> 
     </nav>
-
-    <!-- Bottom navigation bar -->
-    <nav id="bottomNav" class="navbar fixed-bottom navbar-light justify-content-between">
-          <!-- dummy anchor to prevent autofocus-->
-          <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
-          <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
-          <a class="nav-link active" href="#"><i class="fa fa-bell fa-lg"></i></a>
-          <a class="nav-link" href="account.html"><i class="fa fa-user fa-lg"></i></a>
-    </nav> 
 
     <div class="container">
       

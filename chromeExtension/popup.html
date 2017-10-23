@@ -25,121 +25,151 @@
   <body>
 
     <!-- Top navigation bar -->
-    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-center">
+    <nav id="topNav" class="navbar fixed-top navbar-light flex-column align-items-center">
       <h1 class="navbar-brand mb-0">Pickle</h1>
+      <div class="d-flex justify-content-between" style="width: 375px;">
+        <!-- dummy anchor to prevent autofocus-->
+        <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
+        <a class="nav-link active" href="#"><i class="fa fa-comment fa-lg"></i></a>
+        <a class="nav-link" href="notifications.html"><i class="fa fa-bell fa-lg"></i></a>
+        <a class="nav-link" href="account.html"><i class="fa fa-user fa-lg"></i></a>
+      </div> 
     </nav>
 
     <!-- Bottom navigation bar -->
-    <nav id="bottomNav" class="navbar fixed-bottom navbar-light justify-content-between">
-          <!-- dummy anchor to prevent autofocus-->
-          <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
-          <a class="nav-link active" href="#"><i class="fa fa-comment fa-lg"></i></a>
-          <a class="nav-link" href="notifications.html"><i class="fa fa-bell fa-lg"></i></a>
-          <a class="nav-link" href="account.html"><i class="fa fa-user fa-lg"></i></a>
-    </nav> 
+    <nav id="bottomNav" class="navbar fixed-bottom navbar-light justify-content-center">
 
-    <div class="container">
-      
-        <h1>ARANDOMURL.COM/SOMETHING</h1>
-        <p><strong>Comments on this page</strong></p>
-
-        <!-- Form for adding new comments -->
-        <form class="form">
-          <div class="input-group">
-            <div class="input-group-btn">
-              <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fa fa-eye"></i>
-              </button>
-              <div class="dropdown-menu">
-                <div class="form-check dropdown-item">
-                  <label class="form-check-label">
-                    <input class="form-check-input" type="checkbox" value="">
-                    Friends
-                  </label>
-                </div>
-                <div role="separator" class="dropdown-divider"></div>
-                <div class="form-check dropdown-item">
-                  <label class="form-check-label">
-                    <input class="form-check-input" type="checkbox" value="">
-                    Alex
-                  </label>
-                </div>
-                <div class="form-check dropdown-item">
-                  <label class="form-check-label">
-                    <input class="form-check-input" type="checkbox" value="">
-                    Amanda
-                  </label>
+      <!-- Form for adding new comments -->
+          <form class="form mb-2" style="width:400px;">
+            <div class="input-group">
+              <div class="input-group-btn dropup">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fa fa-eye"></i>
+                </button>
+                <div class="dropdown-menu">
+                  <div class="form-check dropdown-item">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" value="">
+                      Friends
+                    </label>
+                  </div>
+                  <div role="separator" class="dropdown-divider"></div>
+                  <div class="form-check dropdown-item">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" value="">
+                      Alex
+                    </label>
+                  </div>
+                  <div class="form-check dropdown-item">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" value="">
+                      Amanda
+                    </label>
+                  </div>
                 </div>
               </div>
+              <label class="sr-only" for="newComment">Add Comment</label>
+              <textarea class="form-control" id="newComment" rows="1" placeholder="Add Comment"></textarea>
+              <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary" id="submitComment" type="button"><i class="fa fa-paper-plane"></i></button>
+              </span>
             </div>
-            <label class="sr-only" for="newComment">Add Comment</label>
-            <textarea class="form-control" id="newComment" rows="1" placeholder="Add Comment"></textarea>
-            <span class="input-group-btn">
-              <button type="submit" class="btn btn-primary" id="submitComment" type="button"><i class="fa fa-paper-plane"></i></button>
-            </span>
-          </div>
-        </form>
+          </form>
 
-        <!-- Example comments -->
-        <div class="commentGroup">
-          <div class="d-flex flex-nowrap align-items-center">
-            <div class="thumbnail align-self-start">
-              <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/16583473_379492249096678_5400214466052751360_a.jpg">
+      <div class="d-flex justify-content-center">
+        <ul class="nav nav-pills" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#comments" role="tab">This page</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#otherPages" role="tab">Other pages</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="tab-content">
+
+      <div class="tab-pane active" id="comments" role="tabpanel">
+        <div class="containerComments">
+          <!-- Example comments -->
+          <div class="commentGroup">
+            <div class="d-flex flex-nowrap align-items-center">
+              <div class="thumbnail align-self-start">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/16583473_379492249096678_5400214466052751360_a.jpg">
+              </div>
+              <div class="chatBubble">
+                <strong>Juan</strong> Hello, world
+              </div>
+              <div class="likeButton">
+              <a href="#"><i class="fa fa-heart"></i> 22</a>
+              </div>
             </div>
-            <div class="chatBubble">
-              <strong>Juan</strong> Hello, world
+          </div>
+
+          <div class="commentGroup">
+            <div class="d-flex flex-nowrap justify-content-start align-items-center">
+              <div class="thumbnail align-self-start">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/21568762_1423154347722486_3999798898397806592_n.jpg">
+              </div>
+              <div class="chatBubble">
+                <strong>Alex</strong> I have an EpiPen. My friend gave it to me when he was dying, it seemed very important to him that I have it.
+              </div>
+              <div class="likeButton">
+              <a href="#"><i class="fa fa-heart"></i> 22</a>
+              </div>
             </div>
-            <div class="likeButton">
-            <a href="#"><i class="fa fa-heart"></i> 22</a>
+          </div>
+
+          <div class="commentGroup">
+            <div class="d-flex flex-nowrap align-items-center">
+              <div class="thumbnail align-self-start">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/11910064_1513922588898767_476983264_a.jpg">
+              </div>
+              <div class="chatBubble">
+                <strong>Gagan</strong> Namaste 
+              </div>
+              <div class="likeButton">
+              <a href="#"><i class="fa fa-heart"></i> 22</a>
+              </div>
+            </div>
+          </div>
+          <div class="commentGroup">
+            <div class="d-flex flex-nowrap align-items-center">
+              <div class="thumbnail align-self-start">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/16583473_379492249096678_5400214466052751360_a.jpg">
+              </div>
+              <div class="chatBubble">
+                <strong>Juan</strong> Hello, world
+              </div>
+              <div class="likeButton">
+              <a href="#"><i class="fa fa-heart"></i> 22</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="otherPages" role="tabpanel">
+        <div class="container">
+          <p><strong>Other pages on this website</strong></p>
+
+          <div class="cardList">
+            <div class="cardListGroup">
+              <a href="#"><div class="d-flex justify-content-between">
+                <strong>/someurl</strong>
+                6 comments
+              </div></a>
+              <a href="#"><div class="d-flex justify-content-between">
+                <strong>/someurl</strong>
+                4 comments
+              </div></a>
+
             </div>
           </div>
         </div>
-
-        <div class="commentGroup">
-          <div class="d-flex flex-nowrap justify-content-start align-items-center">
-            <div class="thumbnail align-self-start">
-              <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/21568762_1423154347722486_3999798898397806592_n.jpg">
-            </div>
-            <div class="chatBubble">
-              <strong>Alex</strong> I have an EpiPen. My friend gave it to me when he was dying, it seemed very important to him that I have it.
-            </div>
-            <div class="likeButton">
-            <a href="#"><i class="fa fa-heart"></i> 22</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="commentGroup">
-          <div class="d-flex flex-nowrap align-items-center">
-            <div class="thumbnail align-self-start">
-              <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/11910064_1513922588898767_476983264_a.jpg">
-            </div>
-            <div class="chatBubble">
-              <strong>Gagan</strong> Namaste 
-            </div>
-            <div class="likeButton">
-            <a href="#"><i class="fa fa-heart"></i> 22</a>
-            </div>
-          </div>
-        </div>
-
-        <br>
-
-        <p><strong>Other pages on this website</strong></p>
-
-        <div class="cardList">
-          <div class="cardListGroup">
-            <a href="#"><div class="d-flex justify-content-between">
-              <strong>/someurl</strong>
-              6 comments
-            </div></a>
-            <a href="#"><div class="d-flex justify-content-between">
-              <strong>/someurl</strong>
-              4 comments
-            </div></a>
-
-          </div>
-        </div>
+      </div>
 
     </div>
 
@@ -150,7 +180,7 @@
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/scripts2.js"></script>
     <!-- js for popup.html -->
-    <!-- <script src="js/popup.js"></script> -->
+    <script src="js/popup.js"></script>
 
   </body>
 

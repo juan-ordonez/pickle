@@ -39,43 +39,6 @@
     <!-- Bottom navigation bar -->
     <nav id="bottomNav" class="navbar fixed-bottom navbar-light justify-content-center">
 
-      <!-- Form for adding new comments -->
-          <form class="form mb-2" style="width:400px;">
-            <div class="input-group">
-              <div class="input-group-btn dropup">
-                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="fa fa-eye"></i>
-                </button>
-                <div class="dropdown-menu">
-                  <div class="form-check dropdown-item">
-                    <label class="form-check-label">
-                      <input class="form-check-input" type="checkbox" value="">
-                      Friends
-                    </label>
-                  </div>
-                  <div role="separator" class="dropdown-divider"></div>
-                  <div class="form-check dropdown-item">
-                    <label class="form-check-label">
-                      <input class="form-check-input" type="checkbox" value="">
-                      Alex
-                    </label>
-                  </div>
-                  <div class="form-check dropdown-item">
-                    <label class="form-check-label">
-                      <input class="form-check-input" type="checkbox" value="">
-                      Amanda
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <label class="sr-only" for="newComment">Add Comment</label>
-              <textarea class="form-control" id="newComment" rows="1" placeholder="Add Comment"></textarea>
-              <span class="input-group-btn">
-                <button type="submit" class="btn btn-primary" id="submitComment" type="button"><i class="fa fa-paper-plane"></i></button>
-              </span>
-            </div>
-          </form>
-
       <div class="d-flex justify-content-center">
         <ul class="nav nav-pills" role="tablist">
           <li class="nav-item">
@@ -147,6 +110,71 @@
               </div>
             </div>
           </div>
+
+          <div class="commentGroup">
+            <div class="d-flex flex-nowrap justify-content-start align-items-center">
+              <div class="thumbnail align-self-start">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/21568762_1423154347722486_3999798898397806592_n.jpg">
+              </div>
+              <div class="chatBubble">
+                <strong>Alex</strong> I have an EpiPen. My friend gave it to me when he was dying, it seemed very important to him that I have it.
+              </div>
+              <div class="likeButton">
+              <a href="#"><i class="fa fa-heart"></i> 22</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="commentGroup">
+            <div class="d-flex flex-nowrap align-items-center">
+              <div class="thumbnail align-self-start">
+                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/11910064_1513922588898767_476983264_a.jpg">
+              </div>
+              <div class="chatBubble">
+                <strong>Gagan</strong> Namaste 
+              </div>
+              <div class="likeButton">
+              <a href="#"><i class="fa fa-heart"></i> 22</a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Form for adding new comments -->
+          <form class="form mt-3 mb-3">
+            <div class="input-group">
+              <div class="input-group-btn dropup">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fa fa-eye"></i>
+                </button>
+                <div class="dropdown-menu">
+                  <div class="form-check dropdown-item">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" value="">
+                      Friends
+                    </label>
+                  </div>
+                  <div role="separator" class="dropdown-divider"></div>
+                  <div class="form-check dropdown-item">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" value="">
+                      Alex
+                    </label>
+                  </div>
+                  <div class="form-check dropdown-item">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" value="">
+                      Amanda
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <label class="sr-only" for="newComment">Add Comment</label>
+              <textarea class="form-control" id="newComment" rows="1" placeholder="Add Comment"></textarea>
+              <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary" id="submitComment" type="button"><i class="fa fa-paper-plane"></i></button>
+              </span>
+            </div>
+          </form>
 
         </div>
       </div>

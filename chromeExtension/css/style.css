@@ -14,11 +14,12 @@ body .container {
 
 body .containerComments {
 	position: absolute;
-	bottom: 99px;
+	bottom: 53px !important;
 	padding: 1rem;
 	padding-top: 0rem;
-	max-height: 408px;
-	overflow: scroll;
+	padding-bottom:0;
+	max-height: 458px !important;
+	overflow-y: auto; 
 }
 
 h1 {

@@ -85,6 +85,35 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	box-shadow: none!important;
 }
 
+.btn-facebook {
+  color: #FFFFFF !important;
+  background-color: #3B5998;
+  border-color: #3B5998;
+}
+
+.btn-facebook:hover {
+  color: #FFFFFF !important;
+  background-color: #3B5998;
+  border-color: #3B5998;
+}
+
+.btn-facebook:focus, .btn-primary.focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
+.btn-facebook.disabled, .btn-primary:disabled {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-facebook:not([disabled]):not(.disabled):active, .btn-primary:not([disabled]):not(.disabled).active,
+.show > .btn-primary.dropdown-toggle {
+  color: #FFFFFF !important;
+  background-color: #3B5998;
+  border-color: #3B5998;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
 .btn-outline-secondary {
 	border-color: #BDBDBD;
 }
@@ -158,6 +187,10 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	width: auto;
 	text-align: center;
 	padding: 0.5rem;
+}
+
+.likeButton .active {
+	color: #E91E63;
 }
 
 .nav-link {

@@ -18,8 +18,8 @@ body .containerComments {
 	padding: 1rem;
 	padding-top: 0rem;
 	padding-bottom:0;
-	max-height: 458px !important;
-	overflow-y: auto; 
+	max-height: 453px !important;
+	overflow-y: auto;
 }
 
 h1 {
@@ -36,6 +36,9 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 #bottomNav {
 	height: auto;
+	padding-right: 0rem;
+	padding-left: 0rem;
+	padding-bottom: 0rem;
 }
 
 #bottomNav, #topNav {
@@ -43,7 +46,23 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 #bottomNav .nav-item a {
-	width: 150px; 
+	width: 176px; 
+	margin-right: 0.5rem;
+	margin-left:0.5rem;
+	color: #BDBDBD;
+}
+
+#bottomNav .nav-item a:hover {
+	color: #424242;
+}
+
+#bottomNav .nav-item .active {
+    background-color: #FFFFFF !important;
+    border-radius:0;
+    border-width: 5px;
+    border-bottom-style: solid;
+    border-color: #E91E63;
+    color: #424242;
 }
 
 #topNav .active {
@@ -149,10 +168,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .nav-link:hover {
 	color: #424242;
-}
-
-.nav-item .active {
-    background-color: #E91E63 !important;
 }
 
 .notification {

@@ -65,6 +65,10 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     color: #424242;
 }
 
+#formNewComments .btn-outline-secondary {
+	box-shadow:none;
+}
+
 #topNav .active {
 	color: #E91E63;
 }
@@ -115,7 +119,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 .btn-outline-secondary {
-	border-color: #BDBDBD;
+	border-color: #CECECE;
 }
 
 .open > .dropdown-toggle.btn-outline-secondary:focus {
@@ -180,6 +184,20 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .commentGroup a:hover {
 	color: #C2185B;
+}
+
+.dropdown-item:hover {
+	background-color: #FFFFFF;
+	color: #E91E63;
+}
+
+.dropdown-item:active {
+	color: #424242;
+	background-color: #FFFFFF;
+}
+
+.dropdown-item .disabled{
+	color: #BDBDBD!important;
 }
 
 .likeButton {
@@ -248,3 +266,9 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .z-depth-5 {
   box-shadow: 0 27px 24px 0 rgba(0, 0, 0, 0.2), 0 40px 77px 0 rgba(0, 0, 0, 0.22); }
+
+  .fab{
+  border-radius: 50%;
+  margin:0;
+  padding: 20px;
+}

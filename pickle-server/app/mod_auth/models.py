@@ -8,12 +8,12 @@ from random import randint
 
 
 tags_table = db.Table('tags_table', db.Model.metadata,
-    db.Column('user_id', db.String(64), db.ForeignKey('auth_user.id')),
-    db.Column('comment_id', db.String(64), db.ForeignKey('auth_comment.id'))
+    db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
+    db.Column('comment_id', db.String(128), db.ForeignKey('auth_comment.id'))
 )
 
 session_table = db.Table('session_table', db.Model.metadata,
-    db.Column('user_id', db.String(64), db.ForeignKey('auth_user.id')),
+    db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
     db.Column('session_cookie', db.String(1024), db.ForeignKey('auth_session.cookie'))
 )
 
@@ -22,7 +22,7 @@ session_table = db.Table('session_table', db.Model.metadata,
 class User(UserMixin, db.Model):
 	__tablename__ = 'auth_user'
 
-	id = db.Column(db.String(64), primary_key=True)
+	id = db.Column(db.String(128), primary_key=True)
 	name = db.Column(db.String(128))
 	email = db.Column(db.String(128))
 	updated = db.Column(db.Boolean)
@@ -43,11 +43,11 @@ class User(UserMixin, db.Model):
 class Comment(db.Model):
 	__tablename__ = 'auth_comment'
 
-	id = db.Column(db.String(64), primary_key=True)
+	id = db.Column(db.String(128), primary_key=True)
 	string = db.Column(db.String(128))
-	url = db.Column(db.String(128))
+	url = db.Column(db.String(512))
 	time = db.Column(db.String(128))
-	user_id = db.Column(db.String(64), db.ForeignKey('auth_user.id'))
+	user_id = db.Column(db.String(128), db.ForeignKey('auth_user.id'))
 	numLikes = db.Column(db.Integer)
 
 

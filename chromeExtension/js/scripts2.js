@@ -159,7 +159,6 @@ function getUserData() {
         iframe.src = "https://pickle-server-183401.appspot.com/connect/";
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
-        getUserData();
 
 
       }
@@ -199,6 +198,7 @@ $("#iframe").on("load", function() {
 
   var iframe = document.getElementById("iframe");
   iframe.parentNode.removeChild(iframe);
+  getUserData();
 
 });
 

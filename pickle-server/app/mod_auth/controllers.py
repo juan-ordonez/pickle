@@ -101,6 +101,7 @@ def register():
     if data['status']:
         
         user = User.query.filter_by(id=data['id']).first()
+        user.updated = True
 
         if not user:
             create = User(data['id'], data['name'], data['email'])

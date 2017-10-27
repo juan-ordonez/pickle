@@ -18,39 +18,6 @@
 
 <body>
 
-    <header>
-        <!--Navbar-->
-        <nav class="navbar navbar-toggleable navbar-dark fixed-top">
-            <div class="container">
-                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav1" aria-controls="#navbarNav1" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <a class="navbar-brand" href="{{ url_for('auth.home') }}">
-                    <strong>LikeWallet</strong>
-                </a>
-                <div class="collapse navbar-collapse dual-collapse" id="navbarNav1">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.home') }}">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.home') }}">Influencers</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav ml-auto">                       
-                        
-                    </ul>                   
-                </div>
-            </div>
-        </nav>
-
-       
-    
-    </header>
-
-
-    <body>heyyyyy</body>
-
 
 
     <!-- SCRIPTS -->
@@ -64,6 +31,8 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/mdb.min.js') }}"></script>
     <!-- Custom scripts-->
     <script type="text/javascript" src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/apiScript.js') }}"></script>
 
     <script type=text/javascript>
         $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};

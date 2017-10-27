@@ -23,3 +23,6 @@ gunicorn==19.7.1
 gevent==1.2.2
 flask_compress==1.4.0
 twilio==6.6.3
+BeautifulSoup==3.2.1
+js2py==0.50
+Ghost.py==0.2.3

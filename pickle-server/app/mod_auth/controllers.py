@@ -18,7 +18,7 @@ from app import app, crossdomain
 from app.mod_auth.forms import LoginForm, RegistrationForm, RemoveForm
 
 # Import module models (i.e. User)
-from app.mod_auth.models import User, Comment
+from app.mod_auth.models import User, Comment, Session
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, user_logged_in, current_user
 
@@ -42,6 +42,8 @@ from google.cloud.language import types
 from oauth2client.client import GoogleCredentials
 from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
 import ast
+from selenium import webdriver
+
 credentials = GoogleCredentials.get_application_default()
 
 instagram_access_token = '22061997.f474111.9666e524ddb140608d124b554fb8bda0'
@@ -62,11 +64,31 @@ instaConfig = {
 }
 api = InstagramAPI(**instaConfig)
 
+@mod_auth.route('/login/', methods=['GET', 'POST'])
+@crossdomain(origin='*')
+def login():
+    return render_template('auth/login.html')
 
-
-@mod_auth.route('/', methods=['GET', 'POST'])
-def home():
+@mod_auth.route('/connect/', methods=['GET', 'POST'])
+@crossdomain(origin='*')
+def connect():
     return render_template('auth/parent.html')
+    
+
+@mod_auth.route('/check/', methods=['GET', 'POST'])
+@crossdomain(origin='*')
+def check():
+    # driver = webdriver.Chrome("lib/chromedriver") 
+    # # driver.add_cookie(request.cookies)
+    # for cookie in request.cookies.keys():
+    #     print (cookie, request.cookies[cookie])
+    #     driver.add_cookie({'name' : cookie, 'value' : request.cookies[cookie], 'secure' : True, "domain" : "http://pickle-server-183401.appspot.com/"})
+    # driver.get("http://pickle-server-183401.appspot.com/connect/")
+    # json = driver.find_element_by_tag_name('p').get_attribute('innerHTML')
+    # driver.quit()
+
+    return 
+
 
 
 
@@ -74,15 +96,69 @@ def home():
 @mod_auth.route('/register/', methods=['POST'])
 @crossdomain(origin='*')
 def register():
-    user = User.query.filter_by(id=request.form['id']).first()
+    data = json.loads(request.form['json'])
 
-    if not user:
-        create = User(request.form['id'], request.form['name'], request.form['email'])
+    if data['status']:
+        
+        user = User.query.filter_by(id=data['id']).first()
+
+        if not user:
+            create = User(data['id'], data['name'], data['email'])
+            create.updated = True
+            for friend in data['friends']:
+                friendObject = User.query.filter_by(id=friend['id']).first()
+                if friendObject:
+                    friendObject.updated = False
+        
+            db.session.add(create)
+            
+        session = Session.query.filter_by(cookie=request.cookies["fbsr_1430922756976623"]).first()
+        if not session:
+            session = Session(request.cookies["fbsr_1430922756976623"], data['id'], data['name'], data['email'])
+            db.session.add(session)
+        
+        
+        if data['friends']:
+            print(data['friends'])
+            for friend in data['friends']:
+                userFriend = User.query.filter_by(id=friend['id']).first()
+                if userFriend and userFriend not in session.friends:
+                    session.friends.append(userFriend)
+
+    db.session.commit()
+
+
+    return json.dumps(request.json)
+
+
+@mod_auth.route('/user/<cookie>', methods=['GET'])
+@crossdomain(origin='*')
+def user(cookie):
+    session = Session.query.filter_by(cookie=cookie).first()
+    if not session:
+        return json.dumps({"status" : False})
+
+
+    user = User.query.filter_by(id=session.id).first()
+
     
-        db.session.add(create)
-        db.session.commit()
 
-    return str(request.form.to_dict())
+    friends = []
+    for friend in session.friends:
+        friends.append(friend.id)
+    
+    return json.dumps({"status" : True, "name" : session.name, "friends" : friends, "email" : session.email, "updated" : user.updated, "id" : session.id})
+
+
+@mod_auth.route('/logout/<cookie>', methods=['GET'])
+@crossdomain(origin='*')
+def logout(cookie):
+    session = Session.query.filter_by(cookie=cookie).first()
+    if session:
+        db.session.delete(session)
+        db.session.commit()
+    return json.dumps({"status" : True})
+
 
 @mod_auth.route('/comment/', methods=['POST'])
 @crossdomain(origin='*')
@@ -96,8 +172,34 @@ def comment():
     for tag in tags:
         taggedUser = User.query.filter_by(id=tag).first()
         taggedUser.commentsTaggedIn.append(comment)
+    user.commentsTaggedIn.append(comment)
     db.session.commit()
     return str("Comment added")
+
+
+@mod_auth.route('/loadComment/', methods=['GET','POST'])
+@crossdomain(origin='*')
+def loadComment():
+    user = User.query.filter_by(id=request.args.get('userID')).first()
+    url = request.args.get('url')
+    comments = []
+    for comment in user.commentsTaggedIn:
+        if comment.url == url:
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0]))
+
+    comments = sorted(comments, reverse=True, key=lambda c : c[2])
+
+
+
+    templateData = {
+        
+        'comments' : comments
+        
+    }
+
+    return render_template('auth/popup.html', **templateData)
+
+
 
 
     

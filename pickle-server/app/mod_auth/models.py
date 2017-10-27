@@ -7,9 +7,14 @@ from random import randint
 
 
 
-tags_table = db.Table('association', db.Model.metadata,
+tags_table = db.Table('tags_table', db.Model.metadata,
     db.Column('user_id', db.String(64), db.ForeignKey('auth_user.id')),
     db.Column('comment_id', db.String(64), db.ForeignKey('auth_comment.id'))
+)
+
+session_table = db.Table('session_table', db.Model.metadata,
+    db.Column('user_id', db.String(64), db.ForeignKey('auth_user.id')),
+    db.Column('session_cookie', db.String(1024), db.ForeignKey('auth_session.cookie'))
 )
 
 
@@ -20,8 +25,10 @@ class User(UserMixin, db.Model):
 	id = db.Column(db.String(64), primary_key=True)
 	name = db.Column(db.String(128))
 	email = db.Column(db.String(128))
+	updated = db.Column(db.Boolean)
 	commentsWritten = db.relationship("Comment", backref="user", lazy='dynamic')
 	commentsTaggedIn = db.relationship("Comment", secondary=tags_table, backref=db.backref('usersTagged', lazy='dynamic'))
+	friendSession = db.relationship("Session", secondary=session_table, backref=db.backref('friends', lazy='dynamic'))
 
 
 	
@@ -29,6 +36,7 @@ class User(UserMixin, db.Model):
 		self.id = id
 		self.name = name
 		self.email = email
+		self.updated = False
 
 
 
@@ -53,6 +61,26 @@ class Comment(db.Model):
 		hashed.update(unique.encode('utf-8'))
 		self.id = str(hashed)
 		self.numLikes = 0
+
+
+class Session(db.Model):
+	__tablename__ = 'auth_session'
+
+	cookie = db.Column(db.String(1024), primary_key=True)
+	id = db.Column(db.String(128))
+	name = db.Column(db.String(128))
+	email = db.Column(db.String(128))
+
+
+	
+	def __init__(self, cookie, id, name, email):
+		self.cookie = cookie
+		self.id = id
+		self.name = name
+		self.email = email
+
+
+	
 	
 
 

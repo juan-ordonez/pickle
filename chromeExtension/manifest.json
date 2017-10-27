@@ -13,7 +13,10 @@
   "content_security_policy": "script-src 'self' https://code.jquery.com https://cdnjs.cloudflare.com https://connect.facebook.net https://maxcdn.bootstrapcdn.com; object-src 'self'",
   "permissions": [
     "activeTab",
-    "storage"
+    "tabs",
+    "storage",
+    "cookies",
+    "*://pickle-server-183401.appspot.com/*"
   ]
 
 

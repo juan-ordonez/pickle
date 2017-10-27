@@ -1,0 +1,69 @@
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/tether.min.js') }}"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/mdb.min.js') }}"></script>
+
+
+<script>
+var userID;
+var userName;
+var userEmail;
+var friendsArray;
+
+window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1430922756976623',
+      xfbml      : true,
+      version    : 'v2.10',
+      cookie     : true
+    });
+
+    FB.login(function(response) { 
+      var currentUrl = window.location.href;
+    if (response.status == 'connected') {
+      console.log('Logged in and authenticated');
+      console.log(response)
+      FB.api('/me', {access_token: response.accessToken, fields: ['email', 'friends', 'name']}, function(api) {
+        userID = api.id;
+        userName = api.name;
+        userEmail = api.email;
+        friendsArray = api.friends.data;
+        console.log(api)
+
+        $.post('https://pickle-server-183401.appspot.com' + '/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray})});
+        // $("body").append('<p>' + JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray}) + '</p>');
+        
+      }); 
+    } else {
+      $.post('https://pickle-server-183401.appspot.com' + '/register/', {"json" : JSON.stringify({"status" : false, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray})});
+
+
+
+    }
+
+  
+
+ }, {scope: 'public_profile,email,user_friends'});
+
+};
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+
+  
+</script>
+
+
+
+
+
+

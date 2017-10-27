@@ -10,6 +10,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 
+
 # Application threads. A common general assumption is
 # using 2 per available processor cores - to handle
 # incoming requests using one and performing background
@@ -39,7 +40,7 @@ CLOUDSQL_DATABASE = 'users_db'
 CLOUDSQL_CONNECTION_NAME = 'pickle-server-183401:us-west1:users-db'
 
 SQLALCHEMY_DATABASE_URI = (
-    'mysql+pymysql://{user}:{password}@localhost/{database}'
+    'mysql+pymysql://{user}:{password}@/{database}'
     '?unix_socket=/cloudsql/{connection_name}').format(
         user=CLOUDSQL_USER, password=CLOUDSQL_PASSWORD,
         database=CLOUDSQL_DATABASE, connection_name=CLOUDSQL_CONNECTION_NAME)

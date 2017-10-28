@@ -25,7 +25,7 @@ $(document).on("click", "#submitComment", function(){
 	//Check if comment is not empty
 	if (comment !== "") {
 		//Append new comment
-		$("#formNewComments").before('<div class="commentGroup"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 22</a></div></div></div>');
+		$("#commentsBody").append('<div class="commentGroup"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 22</a></div></div></div>');
 		//Scroll to bottom of window
 		$(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 		//Clear textarea

@@ -181,8 +181,8 @@ def comment():
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
 @crossdomain(origin='*')
 def loadComment():
-    user = User.query.filter_by(id=request.args.get('userID')).first()
-    url = request.args.get('url')
+    user = User.query.filter_by(id=request.form['userID']).first()
+    url = request.form['url']
     comments = []
     for comment in user.commentsTaggedIn:
         if comment.url == url:

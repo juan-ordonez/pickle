@@ -17,15 +17,13 @@
 </head>
 
 <body>
-
-
-{% for i in comment %}
+    <div id="comments">
+{% for i in comments %}
     <div class="commentGroup"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s320x320/16583473_379492249096678_5400214466052751360_a.jpg">
         </div><div class="chatBubble"><strong>{{i[3]}}</strong> {{i[0]}} </div>
         <div class="likeButton"><a href="#"><i class="fa fa-heart"></i> {{i[1]}}</a></div></div></div>
     {% endfor %}
-
-
+</div>
 </body>
 
 

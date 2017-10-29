@@ -248,6 +248,20 @@ def token():
 
 
 
+@mod_auth.route('/friendsarray/<user>', methods=['GET'])
+@crossdomain(origin='*')
+def friends(user):
+    friends = set([])
+    user = User.query.filter_by(id=user).first()
+    for session in user.friendSession:
+        if session.authToken:
+            friends.add(session.authToken)
+    
+    return json.dumps(list(friends))
+
+
+
+
 
 
     

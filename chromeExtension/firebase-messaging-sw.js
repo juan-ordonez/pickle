@@ -16,7 +16,7 @@ var config = {
   const messaging = firebase.messaging();
   messaging.setBackgroundMessageHandler(function(payload) {
   	console.log("message");
-  	const title = 'Yipp';
+  	// const title = 'Yipp';
   	const options = {
   		body : payload.data.status
   	}

@@ -88,6 +88,24 @@ function comment(e) {
     console.log(userID);
     console.log(value);
     $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : JSON.stringify(friendsArray)});
+    $.get("http://pickle-server-183401.appspot.com/friendsarray/" + userID, function(data) {
+      if (JSON.parse(data).length > 0) {
+      console.log(data.length);
+      json = JSON.stringify({ "data": {"status" : userName.split(" ")[0] + " just tagged you in a new comment!", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url.toString(), "notification" : "tagged you in a comment"}, 
+        "registration_ids": data })
+    $.ajax({
+      url:"https://fcm.googleapis.com/fcm/send",
+      type:"POST",
+      data:json,
+      beforeSend: function(request) {
+          request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+      },
+      contentType:"application/json; charset=utf-8",
+      dataType:"json",
+      success: function(){}
+      });
+  }
+    });
     
   });
   
@@ -149,9 +167,9 @@ function getUserData() {
           chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
               var activeTab = arrayOfTabs[0];
-            url = activeTab.url;
-          $("#commentsBody").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()});
-              });
+              url = activeTab.url;
+              $("#commentsBody").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()});
+            });
       }
 
 
@@ -228,6 +246,7 @@ messaging.onMessage(function(payload) {
   var user = payload.data.first;
   var comment = payload.data.comment;
   var commentUrl = payload.data.url;
+  var notification = payload.data.notification;
 
   if (window.location.href == "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/popup.html") {
     //Append new comment
@@ -235,6 +254,8 @@ messaging.onMessage(function(payload) {
     //Scroll to bottom of window
     $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 
+  } else if (window.location.href == "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/notifications.html") {
+    $(".cardListGroup").prepend('<a href='+ url.toString()+'><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong>'+notification+'</p></div></a>');
   }
 })
 

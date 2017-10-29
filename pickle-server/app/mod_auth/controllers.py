@@ -18,7 +18,7 @@ from app import app, crossdomain
 from app.mod_auth.forms import LoginForm, RegistrationForm, RemoveForm
 
 # Import module models (i.e. User)
-from app.mod_auth.models import User, Comment, Session
+from app.mod_auth.models import User, Comment, Session, tags_table
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, user_logged_in, current_user
 
@@ -31,7 +31,8 @@ from BeautifulSoup import BeautifulSoup
 from collections import Counter
 from datetime import datetime
 
-
+from sqlalchemy import and_
+from sqlalchemy.sql import update
 
 import ujson as json
 import argparse
@@ -101,15 +102,18 @@ def register():
     if data['status']:
         
         user = User.query.filter_by(id=data['id']).first()
-        user.updated = True
 
-        if not user:
-            create = User(data['id'], data['name'], data['email'])
+        if user:
+            user.updated = True
+
+        else:
+            create = User(data['id'], data['name'], data['email'], data['picture'])
             create.updated = True
             for friend in data['friends']:
                 friendObject = User.query.filter_by(id=friend['id']).first()
                 if friendObject:
                     friendObject.updated = False
+
         
             db.session.add(create)
             
@@ -148,7 +152,7 @@ def user(cookie):
     for friend in session.friends:
         friends.append(friend.id)
     
-    return json.dumps({"status" : True, "name" : session.name, "friends" : friends, "email" : session.email, "updated" : user.updated, "id" : session.id})
+    return json.dumps({"status" : True, "name" : session.name, "friends" : friends, "email" : session.email, "updated" : user.updated, "id" : session.id, "picture" : user.picture})
 
 
 @mod_auth.route('/logout/<cookie>', methods=['GET'])
@@ -186,9 +190,9 @@ def loadComment():
     comments = []
     for comment in user.commentsTaggedIn:
         if comment.url == url:
-            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0]))
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id)))
 
-    comments = sorted(comments, reverse=True, key=lambda c : c[2])
+    comments = sorted(comments, reverse=False, key=lambda c : c[2])
 
 
 
@@ -199,6 +203,37 @@ def loadComment():
     }
 
     return render_template('auth/popup.html', **templateData)
+
+
+@mod_auth.route('/like/', methods=['POST'])
+@crossdomain(origin='*')
+def like():
+    comment = Comment.query.filter_by(id=request.form['commentID']).first()
+    comment.numLikes += 1
+    update(tags_table).where(
+                and_(
+                    tags_table.c.user_id == request.form['userID'],
+                    tags_table.c.comment_id == request.form['commentID']
+                )
+            ).values(liked=True)
+    
+    db.session.commit()
+    return str("liked")
+
+
+@mod_auth.route('/unlike/', methods=['POST'])
+@crossdomain(origin='*')
+def unlike():
+    comment = Comment.query.filter_by(id=request.form['commentID']).first()
+    comment.numLikes -= 1
+    update(tags_table).where(
+                and_(
+                    tags_table.c.user_id == request.form['userID'],
+                    tags_table.c.comment_id == request.form['commentID']
+                )
+            ).values(liked=False)
+    db.session.commit()
+    return str("unliked")
 
 
 

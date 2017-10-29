@@ -12,6 +12,7 @@ var userID;
 var userName;
 var userEmail;
 var friendsArray;
+var picture;
 
 window.fbAsyncInit = function() {
     FB.init({
@@ -26,19 +27,20 @@ window.fbAsyncInit = function() {
     if (response.status == 'connected') {
       console.log('Logged in and authenticated');
       console.log(response)
-      FB.api('/me', {access_token: response.accessToken, fields: ['email', 'friends', 'name']}, function(api) {
+      FB.api('/me', {access_token: response.accessToken, fields: ['email', 'friends', 'name', 'picture']}, function(api) {
         userID = api.id;
         userName = api.name;
         userEmail = api.email;
         friendsArray = api.friends.data;
+        picture = api.picture.data.url;
         console.log(api)
 
-        $.post('https://pickle-server-183401.appspot.com' + '/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray})});
+        $.post('https://pickle-server-183401.appspot.com' + '/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray, "picture" : picture})});
         // $("body").append('<p>' + JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray}) + '</p>');
         
       }); 
     } else {
-      $.post('https://pickle-server-183401.appspot.com' + '/register/', {"json" : JSON.stringify({"status" : false, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray})});
+      $.post('https://pickle-server-183401.appspot.com' + '/register/', {"json" : JSON.stringify({"status" : false, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray, "picture" : picture})});
 
 
 

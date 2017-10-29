@@ -9,7 +9,8 @@ from random import randint
 
 tags_table = db.Table('tags_table', db.Model.metadata,
     db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
-    db.Column('comment_id', db.String(128), db.ForeignKey('auth_comment.id'))
+    db.Column('comment_id', db.String(128), db.ForeignKey('auth_comment.id')), 
+    db.Column('liked', db.Boolean)
 )
 
 session_table = db.Table('session_table', db.Model.metadata,
@@ -25,6 +26,7 @@ class User(UserMixin, db.Model):
 	id = db.Column(db.String(128), primary_key=True)
 	name = db.Column(db.String(128))
 	email = db.Column(db.String(128))
+	picture = db.Column(db.String(512))
 	updated = db.Column(db.Boolean)
 	commentsWritten = db.relationship("Comment", backref="user", lazy='dynamic')
 	commentsTaggedIn = db.relationship("Comment", secondary=tags_table, backref=db.backref('usersTagged', lazy='dynamic'))
@@ -32,11 +34,12 @@ class User(UserMixin, db.Model):
 
 
 	
-	def __init__(self, id, name, email):
+	def __init__(self, id, name, email, picture):
 		self.id = id
 		self.name = name
 		self.email = email
 		self.updated = False
+		self.picture = picture
 
 
 

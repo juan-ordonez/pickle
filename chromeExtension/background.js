@@ -42,6 +42,7 @@ messaging.requestPermission()
 
 request();
 
+
 // messaging.getToken()
 //   .then(function(currentToken) {
 //     if (currentToken) {

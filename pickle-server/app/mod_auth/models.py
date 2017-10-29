@@ -73,6 +73,7 @@ class Session(db.Model):
 	id = db.Column(db.String(128))
 	name = db.Column(db.String(128))
 	email = db.Column(db.String(128))
+	authToken = db.Column(db.String(1024))
 
 
 	

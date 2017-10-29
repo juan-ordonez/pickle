@@ -236,6 +236,18 @@ def unlike():
     return str("unliked")
 
 
+@mod_auth.route('/token/', methods=['POST'])
+@crossdomain(origin='*')
+def token():
+    session = Session.query.filter_by(cookie=request.form['session']).first()
+    if session:
+        token = request.form['token']
+        session.authToken = token
+        db.session.commit()
+    return str("token added")
+
+
+
 
 
     

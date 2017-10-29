@@ -28,6 +28,8 @@ messaging.requestPermission()
     messaging.getToken()
   .then(function(currentToken) {
     if (currentToken) {
+      
+      $.post("https://pickle-server-183401.appspot.com/token/", {"token" : currentToken, "session" : session});
       console.log(currentToken);
     } else {
       // Show permission request.
@@ -78,7 +80,7 @@ function comment(e) {
   chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
      var activeTab = arrayOfTabs[0];
-     var url = activeTab.url;
+     url = activeTab.url;
      
     
     console.log(url);
@@ -217,6 +219,24 @@ $(document).on("click", ".likeButton", function(){
     $.post("http://pickle-server-183401.appspot.com/like/", {"commentID" : id, "userID" : userID});
   }
 });
+
+messaging.onMessage(function(payload) {
+  console.log(payload.data);
+  console.log(url);
+
+  var profilePic = payload.data.pic;
+  var user = payload.data.first;
+  var comment = payload.data.comment;
+  var commentUrl = payload.data.url;
+
+  if (window.location.href == "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/popup.html") {
+    //Append new comment
+    $("#commentsBody").append('<div class="commentGroup"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div></div>');
+    //Scroll to bottom of window
+    $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+
+  }
+})
 
 
 // messaging.getToken()

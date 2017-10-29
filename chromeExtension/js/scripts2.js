@@ -89,9 +89,10 @@ function comment(e) {
     console.log(value);
     $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : JSON.stringify(friendsArray)});
     $.get("http://pickle-server-183401.appspot.com/friendsarray/" + userID, function(data) {
-      if (JSON.parse(data).length > 0) {
-      console.log(data.length);
-      json = JSON.stringify({ "data": {"status" : userName.split(" ")[0] + " just tagged you in a new comment!", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url.toString(), "notification" : "tagged you in a comment"}, 
+      data = JSON.parse(data);
+      // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
+      if (data.length > 0) {
+      json = JSON.stringify({ "data": {"status" : "tagged you in a comment", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url.toString()}, 
         "registration_ids": data })
     $.ajax({
       url:"https://fcm.googleapis.com/fcm/send",
@@ -105,6 +106,7 @@ function comment(e) {
       success: function(){}
       });
   }
+  
     });
     
   });
@@ -246,7 +248,7 @@ messaging.onMessage(function(payload) {
   var user = payload.data.first;
   var comment = payload.data.comment;
   var commentUrl = payload.data.url;
-  var notification = payload.data.notification;
+  var notification = payload.data.status;
 
   if (window.location.href == "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/popup.html") {
     //Append new comment

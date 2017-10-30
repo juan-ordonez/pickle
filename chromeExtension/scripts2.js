@@ -6,49 +6,47 @@ var session;
 var url;
 var picture;
 
-// Initialize Firebase
+
+
+  // Initialize Firebase
   var config = {
-    apiKey: "AIzaSyDtXvstodfhqPPYZJGqi8qFOZPmLWnmxCg",
-    authDomain: "https://yipp-4924d.firebaseapp.com",
-    databaseURL: "https://yipp-4924d.firebaseio.com",
-    projectId: "yipp-4924d",
-    storageBucket: "yipp-4924d.appspot.com",
-    messagingSenderId: "511642730215"
+    apiKey: "AIzaSyCQLBWUcP9t0COcLfWn2V7l0zrqLhjO6WA",
+    authDomain: "yipp-8e926.firebaseapp.com",
+    databaseURL: "https://yipp-8e926.firebaseio.com",
+    projectId: "yipp-8e926",
+    storageBucket: "",
+    messagingSenderId: "205495597597"
   };
   firebase.initializeApp(config);
 
 
 
+
   const messaging = firebase.messaging();
 
-  function request() {
+
 messaging.requestPermission()
   .then(function() {
-    console.log('got a token, sweet');
-    messaging.getToken()
+    console.log('got a token');
+    console.log(messaging.getToken()
   .then(function(currentToken) {
     if (currentToken) {
+
       
       $.post("https://pickle-server-183401.appspot.com/token/", {"token" : currentToken, "session" : session});
       console.log(currentToken);
     } else {
       // Show permission request.
       console.log('No Instance ID token available. Request permission to generate one.');
-      request();
     }
-  })
-  .catch(function(err) {
-    console.log('An error occurred while retrieving token. ', err);
-  });
-})
-.then(function(token) {
-    console.log(token);
+  }).catch(function(error) {
+    console.log(error);
   })
 
-  .catch(function(err) {
-    console.log("error");
-  })
-}
+  );
+})
+
+
 
 
 
@@ -191,7 +189,6 @@ function getUserData() {
 
 if (window.location.href != "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/register.html") {
   getUserData();
-  request();
 }
 
 
@@ -257,7 +254,7 @@ messaging.onMessage(function(payload) {
     $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 
   } else if (window.location.href == "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/notifications.html") {
-    $(".cardListGroup").prepend('<a href='+ url.toString()+'><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong>'+notification+'</p></div></a>');
+    $(".cardListGroup").prepend('<a href=http://reddit.com><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src=https://scontent.xx.fbcdn.net/v/t1.0-1/c4.0.50.50/p50x50/16113996_10154442269603655_2333710094948453706_n.jpg?oh=3c802da5d71f76cf2f30238ec24ea967&oe=5A64A3C0></div><p class="notification"><strong>Juan</strong>liked your comment</p></div></a>');
   }
 })
 

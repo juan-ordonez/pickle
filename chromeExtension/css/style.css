@@ -84,6 +84,13 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	box-shadow:none;
 }
 
+#notificationBadge {
+	position: absolute;
+	bottom: 18px;
+	left: 216px;
+	z-index: -1;
+}
+
 #topNav .active {
 	color: #E91E63;
 }

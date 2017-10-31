@@ -276,6 +276,25 @@ def domain():
     }
     return render_template('auth/domain.html', **templateData)
 
+
+
+@mod_auth.route('/commentUser/<id>', methods=['GET'])
+@crossdomain(origin='*')
+def commentUser(id):
+    info = {}
+    comment = Comment.query.filter_by(id=id).first()
+    user = comment.user
+    info['picture'] = user.picture
+    info['first'] = user.name.split(' ')[0]
+    info['url'] = comment.url
+    sessions = Session.query.filter_by(name=user.name).all()
+    ids = set()
+    for session in sessions:
+        ids.add(session.authToken)
+
+    info['ids'] = list(ids)
+    return json.dumps(info)
+
     
     
 

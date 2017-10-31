@@ -11,15 +11,12 @@ chrome.gcm.onMessage.addListener(function(payload) {
   var views = chrome.extension.getViews({type : "popup"});
   console.log(views.length);
   if (views.length == 0) {
-  	chrome.notifications.create(
-    'jdsss-',{   
+  	chrome.notifications.create({   
     type: 'basic', 
     iconUrl: 'icon.png', 
     title: "This is a notification", 
     message: "hello there!" 
-    },
-
-function(){});
+    });
   }
   
 })

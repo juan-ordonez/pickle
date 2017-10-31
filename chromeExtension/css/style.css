@@ -12,6 +12,10 @@ body .container {
 	overflow: scroll;
 }
 
+.tab-pane, .tab-content {
+	height:100%;
+}
+
 body .containerComments {
 	position: relative;
 	top: 96px;
@@ -21,7 +25,8 @@ body .containerComments {
 	padding-bottom:0;
 	width: 100%;
 	height: 453px !important;
-	overflow-y: auto;
+	overflow: scroll;
+	border-style: solid;
 }
 
 h1 {
@@ -68,9 +73,26 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 
+/*
+.inner {
+	position:absolute;
+	bottom: 0;
+	border-style: solid;
+	border-color: red;
+}*/
+
 #formNewComments {
 	width: 368px;
+	border-style:solid;
+}
+
+.commentsNoScroll {
 	position: absolute;
+	bottom: 0px;
+}
+
+.commentsScroll {
+	position: relative;
 	bottom: 0px;
 }
 

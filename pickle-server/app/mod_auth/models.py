@@ -32,6 +32,8 @@ class User(UserMixin, db.Model):
 	email = db.Column(db.String(128))
 	picture = db.Column(db.String(512))
 	updated = db.Column(db.Boolean)
+	notifications = db.relationship("Notification", backref="user", lazy='dynamic')
+	numNotifications = db.Column(db.Integer)
 	commentsWritten = db.relationship("Comment", backref="user", lazy='dynamic')
 	commentsTaggedIn = db.relationship("Comment", secondary=tags_table, backref=db.backref('usersTagged', lazy='dynamic'))
 	friendSession = db.relationship("Session", secondary=session_table, backref=db.backref('friends', lazy='dynamic'))
@@ -45,6 +47,7 @@ class User(UserMixin, db.Model):
 		self.email = email
 		self.updated = False
 		self.picture = picture
+		self.numNotifications = 0
 
 
 
@@ -87,6 +90,32 @@ class Session(db.Model):
 		self.id = id
 		self.name = name
 		self.email = email
+
+class Notification(db.Model):
+	__tablename__ = 'auth_notification'
+
+	id = db.Column(db.String(1024), primary_key=True)
+	name = db.Column(db.String(128))
+	time = db.Column(db.String(512))
+	message = db.Column(db.String(128))
+	picture = db.Column(db.String(1024))
+	user_id = db.Column(db.String(128), db.ForeignKey('auth_user.id'))
+
+
+	
+	def __init__(self, name, time, message, picture):
+		self.name = name
+		self.time = time
+		self.message = message
+		self.picture = picture
+		hashed = hashlib.sha1()
+		unique = str(name) + str(time) + str(message) + str(picture)
+		hashed.update(unique.encode('utf-8'))
+		self.id = str(hashed)
+
+
+
+
 
 
 	

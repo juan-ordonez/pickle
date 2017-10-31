@@ -8,50 +8,6 @@ var picture;
 
 
 
-  // Initialize Firebase
-//   var config = {
-//     apiKey: "AIzaSyCQLBWUcP9t0COcLfWn2V7l0zrqLhjO6WA",
-//     authDomain: "yipp-8e926.firebaseapp.com",
-//     databaseURL: "https://yipp-8e926.firebaseio.com",
-//     projectId: "yipp-8e926",
-//     storageBucket: "yipp-8e926.appspot.com",
-//     messagingSenderId: "205495597597"
-//   };
-//   firebase.initializeApp(config);
-
-
-
-
-// const messaging = firebase.messaging();
-
-
-// messaging.requestPermission()
-//   .then(function() {
-//     console.log('got a token');
-//     console.log(messaging.getToken()
-//   .then(function(currentToken) {
-//     if (currentToken) {
-
-      
-//       $.post("https://pickle-server-183401.appspot.com/token/", {"token" : currentToken, "session" : session});
-//       console.log(currentToken);
-//     } else {
-//       // Show permission request.
-//       console.log('No Instance ID token available. Request permission to generate one.');
-//     }
-//   }).catch(function(error) {
-//     console.log(error);
-//   })
-
-//   );
-// })
-
-var senderIds = ["511642730215"];
-    chrome.gcm.register(senderIds, function (registrationID) {
-      console.log(registrationID);
-});
-
-
 
 if (document.getElementById("logoutButton")) {
   document.getElementById("logoutButton").addEventListener("click", logout);
@@ -92,10 +48,10 @@ function comment(e) {
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
       if (data.length > 0) {
-      json = JSON.stringify({ "data": {"status" : "tagged you in a comment", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url.toString()}, 
-        "registration_ids": data })
+      json = JSON.stringify({ "data": {"status" : "tagged you in a comment", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url}, 
+        "registration_ids": data });
     $.ajax({
-      url:"https://fcm.googleapis.com/fcm/send",
+      url:"https://gcm-http.googleapis.com/gcm/send",
       type:"POST",
       data:json,
       beforeSend: function(request) {
@@ -125,12 +81,7 @@ function login(e) {
   window.location.replace("popup.html");
   console.log('test');
   getUserData();
-  
-
-  
-
-  // userName = $.get("http://localhost:4000/user/" + session)
-  // console.log(userName)
+  console.log(session)
 
 
 }
@@ -147,6 +98,14 @@ function getUserData() {
     }
 
     session = data[0].value
+
+    var senderIds = ["511642730215"];
+    chrome.gcm.register(senderIds, function (registrationID) {
+      console.log(session);
+      console.log(registrationID);
+
+    $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
+    });
     
     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
       console.log(data);
@@ -237,8 +196,36 @@ $(document).on("click", ".likeButton", function(){
     likes = likes + 1;
     $(this).replaceWith('<div class="likeButton"><a href="#" class="active"><i class="fa fa-heart"></i> '+likes+'</a></div>');
     $.post("http://pickle-server-183401.appspot.com/like/", {"commentID" : id, "userID" : userID});
-  }
+  
+
+$.get("http://pickle-server-183401.appspot.com/commentUser/" + id, function(data) {
+
+
+
+
+json = JSON.stringify({ "data": {"status" : "liked your comment", "pic" : data['picture'], "first" : data['first'], "comment" : "like", "url" : data['url']}, 
+        "registration_ids": data['ids'] });
+
+$.ajax({
+      url:"https://gcm-http.googleapis.com/gcm/send",
+      type:"POST",
+      data:json,
+      beforeSend: function(request) {
+          request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+      },
+      contentType:"application/json; charset=utf-8",
+      dataType:"json",
+      success: function(){}
+      });
+
 });
+
+
+}
+
+
+});
+
 
 // chrome.gcm.onMessage.addListener(function(message) {
 
@@ -263,29 +250,12 @@ chrome.gcm.onMessage.addListener(function(payload) {
     $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 
   } else if (window.location.href == "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/notifications.html") {
-    $(".cardListGroup").prepend('<a href=http://reddit.com><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src=https://scontent.xx.fbcdn.net/v/t1.0-1/c4.0.50.50/p50x50/16113996_10154442269603655_2333710094948453706_n.jpg?oh=3c802da5d71f76cf2f30238ec24ea967&oe=5A64A3C0></div><p class="notification"><strong>Juan</strong>liked your comment</p></div></a>');
+    $(".cardListGroup").prepend('<div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+'</p></div>');
   }
 })
 
 
-// messaging.getToken()
-//   .then(function(currentToken) {
-//     if (currentToken) {
-//       sendTokenToServer(currentToken);
-//       updateUIForPushEnabled(currentToken);
-//     } else {
-//       // Show permission request.
-//       console.log('No Instance ID token available. Request permission to generate one.');
-//       // Show permission UI.
-//       updateUIForPushPermissionRequired();
-//       setTokenSentToServer(false);
-//     }
-//   })
-//   .catch(function(err) {
-//     console.log('An error occurred while retrieving token. ', err);
-//     showToken('Error retrieving Instance ID token. ', err);
-//     setTokenSentToServer(false);
-//   });
+
 
 
 

@@ -13,6 +13,8 @@ from werkzeug import check_password_hash, generate_password_hash
 # Import the database object from the main app module
 from app import db
 from app import app, crossdomain
+from urlparse import urlparse
+import operator
 
 # Import module forms
 from app.mod_auth.forms import LoginForm, RegistrationForm, RemoveForm
@@ -190,7 +192,7 @@ def loadComment():
     comments = []
     for comment in user.commentsTaggedIn:
         if comment.url == url:
-            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id)))
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), user in comment.likers))
 
     comments = sorted(comments, reverse=False, key=lambda c : c[2])
 
@@ -209,14 +211,9 @@ def loadComment():
 @crossdomain(origin='*')
 def like():
     comment = Comment.query.filter_by(id=request.form['commentID']).first()
+    user = User.query.filter_by(id=request.form['userID']).first()
     comment.numLikes += 1
-    update(tags_table).where(
-                and_(
-                    tags_table.c.user_id == request.form['userID'],
-                    tags_table.c.comment_id == request.form['commentID']
-                )
-            ).values(liked=True)
-    
+    comment.likers.append(user)
     db.session.commit()
     return str("liked")
 
@@ -225,13 +222,9 @@ def like():
 @crossdomain(origin='*')
 def unlike():
     comment = Comment.query.filter_by(id=request.form['commentID']).first()
+    user = User.query.filter_by(id=request.form['userID']).first()
     comment.numLikes -= 1
-    update(tags_table).where(
-                and_(
-                    tags_table.c.user_id == request.form['userID'],
-                    tags_table.c.comment_id == request.form['commentID']
-                )
-            ).values(liked=False)
+    comment.likers.remove(user)
     db.session.commit()
     return str("unliked")
 
@@ -258,6 +251,34 @@ def friends(user):
             friends.add(session.authToken)
     
     return json.dumps(list(friends))
+
+
+
+@mod_auth.route('/domainComments', methods=['GET'])
+@crossdomain(origin='*')
+def domain():
+    comments = {}
+    user = User.query.filter_by(id=request.form['user']).first()
+    url = request.form['url']
+    parsed_uri = urlparse(url)
+    domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+    for comment in user.commentsTaggedIn:
+        if domain in comment.url:
+            new = comment.url.replace(domain, '')
+            if new not in comments.keys():
+                comments[new] = 1
+            else:
+                comments[new] += 1
+    sortedComments = sorted(comments.items(), key=operator.itemgetter(1), reverse=True)
+    templateData = {
+        'comments' : sortedComments
+        
+    }
+    return render_template('auth/domain.html', **templateData)
+
+    
+    
+
 
 
 

@@ -9,6 +9,9 @@
     "default_popup": "popup.html",
     "default_title": "Click here!"
   },
+  "background": {
+    "scripts": ["background.js"]
+    },
   "content_security_policy": "script-src 'self' https://code.jquery.com https://*.firebaseio.com https://cdnjs.cloudflare.com https://connect.facebook.net https://maxcdn.bootstrapcdn.com https://www.gstatic.com/; object-src 'self'",
   "permissions": [
     "gcm",

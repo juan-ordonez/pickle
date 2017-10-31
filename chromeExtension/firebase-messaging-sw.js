@@ -8,7 +8,7 @@ importScripts("https://www.gstatic.com/firebasejs/4.6.0/firebase-messaging.js");
     authDomain: "yipp-8e926.firebaseapp.com",
     databaseURL: "https://yipp-8e926.firebaseio.com",
     projectId: "yipp-8e926",
-    storageBucket: "",
+    storageBucket: "yipp-8e926.appspot.com",
     messagingSenderId: "205495597597"
   };
   firebase.initializeApp(config);

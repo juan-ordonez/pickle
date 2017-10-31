@@ -9,45 +9,47 @@ var picture;
 
 
   // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyCQLBWUcP9t0COcLfWn2V7l0zrqLhjO6WA",
-    authDomain: "yipp-8e926.firebaseapp.com",
-    databaseURL: "https://yipp-8e926.firebaseio.com",
-    projectId: "yipp-8e926",
-    storageBucket: "",
-    messagingSenderId: "205495597597"
-  };
-  firebase.initializeApp(config);
+//   var config = {
+//     apiKey: "AIzaSyCQLBWUcP9t0COcLfWn2V7l0zrqLhjO6WA",
+//     authDomain: "yipp-8e926.firebaseapp.com",
+//     databaseURL: "https://yipp-8e926.firebaseio.com",
+//     projectId: "yipp-8e926",
+//     storageBucket: "yipp-8e926.appspot.com",
+//     messagingSenderId: "205495597597"
+//   };
+//   firebase.initializeApp(config);
 
 
 
 
-  const messaging = firebase.messaging();
+// const messaging = firebase.messaging();
 
 
-messaging.requestPermission()
-  .then(function() {
-    console.log('got a token');
-    console.log(messaging.getToken()
-  .then(function(currentToken) {
-    if (currentToken) {
+// messaging.requestPermission()
+//   .then(function() {
+//     console.log('got a token');
+//     console.log(messaging.getToken()
+//   .then(function(currentToken) {
+//     if (currentToken) {
 
       
-      $.post("https://pickle-server-183401.appspot.com/token/", {"token" : currentToken, "session" : session});
-      console.log(currentToken);
-    } else {
-      // Show permission request.
-      console.log('No Instance ID token available. Request permission to generate one.');
-    }
-  }).catch(function(error) {
-    console.log(error);
-  })
+//       $.post("https://pickle-server-183401.appspot.com/token/", {"token" : currentToken, "session" : session});
+//       console.log(currentToken);
+//     } else {
+//       // Show permission request.
+//       console.log('No Instance ID token available. Request permission to generate one.');
+//     }
+//   }).catch(function(error) {
+//     console.log(error);
+//   })
 
-  );
-})
+//   );
+// })
 
-
-
+var senderIds = ["511642730215"];
+    chrome.gcm.register(senderIds, function (registrationID) {
+      console.log(registrationID);
+});
 
 
 
@@ -123,6 +125,7 @@ function login(e) {
   window.location.replace("popup.html");
   console.log('test');
   getUserData();
+  
 
   
 
@@ -237,7 +240,13 @@ $(document).on("click", ".likeButton", function(){
   }
 });
 
-messaging.onMessage(function(payload) {
+// chrome.gcm.onMessage.addListener(function(message) {
+
+//   console.log(message)
+// });
+
+
+chrome.gcm.onMessage.addListener(function(payload) {
   console.log(payload.data);
   console.log(url);
 

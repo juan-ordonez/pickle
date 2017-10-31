@@ -10,12 +10,16 @@ from random import randint
 tags_table = db.Table('tags_table', db.Model.metadata,
     db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
     db.Column('comment_id', db.String(128), db.ForeignKey('auth_comment.id')), 
-    db.Column('liked', db.Boolean)
 )
 
 session_table = db.Table('session_table', db.Model.metadata,
     db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
     db.Column('session_cookie', db.String(1024), db.ForeignKey('auth_session.cookie'))
+)
+
+likes_table = db.Table('likes_table', db.Model.metadata,
+    db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
+    db.Column('comment_id', db.String(128), db.ForeignKey('auth_comment.id'))
 )
 
 
@@ -31,6 +35,7 @@ class User(UserMixin, db.Model):
 	commentsWritten = db.relationship("Comment", backref="user", lazy='dynamic')
 	commentsTaggedIn = db.relationship("Comment", secondary=tags_table, backref=db.backref('usersTagged', lazy='dynamic'))
 	friendSession = db.relationship("Session", secondary=session_table, backref=db.backref('friends', lazy='dynamic'))
+	likes = db.relationship("Comment", secondary=likes_table, backref=db.backref('likers', lazy='dynamic'))
 
 
 	

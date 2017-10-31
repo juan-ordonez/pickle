@@ -21,6 +21,10 @@ $(document).on('click', '#formNewComments .dropdown-menu', function (e) {
   e.stopPropagation();
 });
 
+
+$(document).on("click", "#friendListCheckboxes input", function(){
+	$("#checkFriends").removeAttr("checked");
+});
 //When friends checkbox is checked, disable other checkboxes (or enable when unchecked)
 $(document).on("click", "#checkFriends", function(){
 	if ($('#checkFriends').is(':checked')) {

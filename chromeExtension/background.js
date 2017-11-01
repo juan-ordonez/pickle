@@ -1,16 +1,78 @@
-var url;
 var userID;
+var userName;
+var userEmail;
+var friendsArray;
+var session;
+var url;
+var picture;
+var notifications;
+
+
+
+cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"}, function(data) {
+    
+  if (data.length >= 1) { 
+    
+
+    session = data[0].value
+
+   
+    
+    $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
+      json = JSON.parse(data);
+      if (json.status == false) {
+        return;
+      } else if (json.updated == false) {
+        // var iframe;
+
+        // iframe = document.createElement('iframe');
+        // iframe.id = "iframe"
+        // iframe.src = "https://pickle-server-183401.appspot.com/connect/";
+        // iframe.style.display = 'none';
+        // document.body.appendChild(iframe);
+      } else {
+          userName = json.name;
+          userEmail = json.email;
+          friendsArray = json.friends;
+          userID = json.id;
+          picture = json.picture;
+          notifications = json.notifications;
+          console.log(userID);
+         
+          }
+
+          
+      
+
+
+    });
+
+  
+    }
+
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
      var activeTab = arrayOfTabs[0];
      url = activeTab.url;
  });
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    userID = request.id;
- 
-  });
+
 chrome.gcm.onMessage.addListener(function(payload) {
   console.log(payload.data);
   console.log(userID);

@@ -87,10 +87,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	color: #E91E63;
 }
 
-#topNav h1 {
-	font-weight: 600;
-}
-
 .btn-primary {
 	background-color: #E91E63;
 	border-color: #E91E63;

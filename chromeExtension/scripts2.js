@@ -182,6 +182,7 @@ function getUserData() {
           var activeTab = arrayOfTabs[0];
           url = activeTab.url;
           $("#commentsBody").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function(){
+                  $("#formNewComments .loadingSpinner").hide();
                   if ($("#formNewComments").height() > 425) {
                     $("#formNewComments").removeClass("commentsNoScroll");
                     $("#formNewComments").addClass("commentsScroll");
@@ -189,15 +190,16 @@ function getUserData() {
                   }
               });  
           $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function(data) {
-            
+            $("#notificationsContainer .loadingSpinner").hide();
+            $("#notificationsContainer .cardList").show();
           });
-          $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url});
+          $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url}, function(){
+            $("#otherPages .loadingSpinner").hide();
+            $("#otherPages .cardList").show();
+          });
           $("#friendListCheckboxes").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
           $("#accountName").append(userName);
           $("#accountProfilePicture").attr("src", picture);
-
-          var loggedIn = true;
-          return loggedIn;
           
         });
       }

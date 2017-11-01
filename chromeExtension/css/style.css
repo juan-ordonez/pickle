@@ -83,6 +83,11 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	top: -225px;
 }
 
+.loadingSpinner {
+	color: #E91E63;
+	margin-left: 165px; 
+}
+
 #loginPicture .invisible {
 	visibility: hidden;
 }

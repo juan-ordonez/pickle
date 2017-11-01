@@ -148,8 +148,6 @@ function getUserData() {
           $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()});
           $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url});
           $("#friendListCheckboxes").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
-          $("#accountName").append(userName);
-          $("#accountProfilePicture").attr("src", picture);
           
         });
       }

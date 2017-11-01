@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
 
-  "name": "Pickle",
-  "description": "This extension allows the user to leave comments on any website",
-  "version": "1.22",
+  "name": "Yipp",
+  "description": "Leave messages for your friends on any website",
+  "version": "1.0",
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html",

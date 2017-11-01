@@ -366,5 +366,24 @@ def friendsList():
 
 
 
+@mod_auth.route('/friendstokens/', methods=['GET','POST'])
+@crossdomain(origin='*')
+def friendsTokens():
+    friends = set([])
+    ids = ast.literal_eval(str(request.form['friends']))
+    for friend in ids:
+        sessions = Session.query.filter_by(id=friend).all()
+        for session in sessions:
+            if session.authToken:
+                friends.add(session.authToken)
+    
+
+    return json.dumps(list(friends))
+
+
+
+
+
+
     
 

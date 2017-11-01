@@ -39,14 +39,24 @@ function comment(e) {
      var tags;
 
      if (document.getElementById('checkFriends').checked) {
-      tags = JSON.stringify(friendsArray);
+        chrome.storage.local.set({'tags': JSON.stringify(friendsArray)});
      } else {
-      tags = []
+      ids = []
       $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-        tags.push(element.id);
+        ids.push(element.id);
+        console.log(ids);
+        chrome.storage.local.set({'tags': JSON.stringify(ids)});
+
+        
         });
+
      }
+
+     chrome.storage.local.get('tags', function (result) {
+
+      tags = result['tags'];
      
+     console.log(userID);
     $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags}, function(data) {
       console.log(data);
       data = JSON.parse(data);
@@ -68,6 +78,8 @@ function comment(e) {
       }
   
     });
+
+});
     
   });
   
@@ -148,6 +160,8 @@ function getUserData() {
           $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()});
           $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url});
           $("#friendListCheckboxes").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
+          $("#accountName").append(userName);
+          $("#accountProfilePicture").attr("src", picture);
           
         });
       }
@@ -284,13 +298,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
   }
 })
 
-function open(url) {
-
-chrome.tabs.create({'url': url}, function(tab) {
-    // Tab opened.
-});
-
-}
 
 
       

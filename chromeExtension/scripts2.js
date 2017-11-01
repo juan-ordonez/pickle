@@ -86,18 +86,49 @@ function comment(e) {
 }
 
 
-if (document.getElementById("loginButton")) {
-  document.getElementById("loginButton").addEventListener("click", login);
-}
+//if (document.getElementById("loginButton")) {
+  //document.getElementById("loginButton").addEventListener("click", login);
+//}
 
-function login(e) {
+//function login(e) {
   
-  e.preventDefault();
-  window.open("https://pickle-server-183401.appspot.com/login/");
-  window.location.replace("popup.html");
-  getUserData();
+  //e.preventDefault();
+  //window.open("https://pickle-server-183401.appspot.com/login/");
+  //window.location.replace("popup.html");
+  //getUserData();
 
-}
+//}
+
+var iframeClick = function () {
+    var isOverIframe = false,
+    windowLostBlur = function () {
+        if (isOverIframe === true) {
+            // DO STUFF
+            $("#loginPicture").addClass("invisible");
+            $(".fa-circle-o-notch").show();
+            $(document).ready(function($) {
+              setTimeout(function() {
+                window.location.replace("popup.html");
+              }, 5000);
+            });
+            
+            isOverIframe = false;
+        }
+    };
+    jQuery(window).focus();
+    jQuery('#iframeFB').mouseenter(function(){
+        isOverIframe = true;
+        console.log(isOverIframe);
+    });
+    jQuery('#iframeFB').mouseleave(function(){
+        isOverIframe = false;
+        console.log(isOverIframe);
+    });
+    jQuery(window).blur(function () {
+        windowLostBlur();
+    });
+};
+iframeClick();
 
 
 function getUserData() {
@@ -164,6 +195,9 @@ function getUserData() {
           $("#friendListCheckboxes").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
           $("#accountName").append(userName);
           $("#accountProfilePicture").attr("src", picture);
+
+          var loggedIn = true;
+          return loggedIn;
           
         });
       }

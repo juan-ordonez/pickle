@@ -76,6 +76,17 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	box-shadow:none;
 }
 
+#loginSpinner {
+	color: #E91E63; 
+	display:none;
+	position: relative;
+	top: -225px;
+}
+
+#loginPicture .invisible {
+	visibility: hidden;
+}
+
 #notificationBadge {
 	position: absolute;
 	bottom: 18px;

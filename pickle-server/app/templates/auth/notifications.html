@@ -18,6 +18,7 @@
 
 <body>
     <div id="notifications">
+<<<<<<< HEAD
     {% for i in notifications %}
         <a id="{{i[0]}}" href="{{i[5]}}" class="notificationTab"><div class="d-flex align-items-center">
               <div class="thumbnail mr-3">
@@ -28,6 +29,19 @@
         
     {% endfor %}
 </div>
+=======
+        {% for i in notifications %}
+        <a id={{i[0]}} onclick=open({{i[5]}})>
+            <div class="d-flex align-items-center">
+                <div class="thumbnail mr-3">
+                    <img src={{i[4]}}>
+                </div>
+                <p class="notification"><strong>{{i[1]}}</strong> {{i[3]}}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+>>>>>>> 77d3d94c69dc434fbc1d4683bf159d81c0843e3d
 </body>
 
 

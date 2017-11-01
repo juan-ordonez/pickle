@@ -6,13 +6,14 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
      url = activeTab.url;
  });
 
-chrome.storage.local.get('id', function (result) {
-        userID = result.id;
-        console.log(userID);
-    });
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    userID = request.id;
+ 
+  });
 chrome.gcm.onMessage.addListener(function(payload) {
   console.log(payload.data);
-  
+  console.log(userID);
   
   var profilePic = payload.data.pic;
   var user = payload.data.first;

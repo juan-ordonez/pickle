@@ -138,8 +138,13 @@ function getUserData() {
 
           var activeTab = arrayOfTabs[0];
           url = activeTab.url;
-          $("#commentsBody").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()});
-            
+          $("#commentsBody").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function(){
+                  if ($("#formNewComments").height() > 425) {
+                    $("#formNewComments").removeClass("commentsNoScroll");
+                    $("#formNewComments").addClass("commentsScroll");
+                    $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+                  }
+              });  
           $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()});
           $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url});
           $("#friendListCheckboxes").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
@@ -185,6 +190,12 @@ $(document).on("click", "#submitComment", function(){
     $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
     //Clear textarea
     $("#newComment").val("");
+  }
+  //Make container scrollable if enough comments are posted
+  if ($("#formNewComments").height() > 425) {
+    $("#formNewComments").removeClass("commentsNoScroll");
+    $("#formNewComments").addClass("commentsScroll");
+    $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
   }
 });
 

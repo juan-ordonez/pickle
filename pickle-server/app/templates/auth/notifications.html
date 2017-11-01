@@ -19,7 +19,7 @@
 <body>
     <div id="notifications">
     {% for i in notifications %}
-        <a id={{i[0]}} onclick=open({{i[5]}})><div class="d-flex align-items-center">
+        <a id="{{i[0]}}" href="{{i[5]}}" class="notificationTab"><div class="d-flex align-items-center">
               <div class="thumbnail mr-3">
                 <img src={{i[4]}}>
               </div>

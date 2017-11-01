@@ -7,12 +7,10 @@ from BeautifulSoup import BeautifulSoup
 def canonical(url):
 	try: 
 		#Get HTML of url
-		req = urllib2.Request(url)
-		response = urllib2.urlopen(req)
-		html = response.read()
-
+		page = urllib.urlopen(url).read()
+		
 		#Find canonical URL
-		soup = BeautifulSoup(html)
+		soup = BeautifulSoup(page)
 		canonicalUrl = soup.find(rel="canonical").get('href')
 		return canonicalUrl
 

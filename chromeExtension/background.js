@@ -34,7 +34,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
     	console.log(notif);
     	chrome.storage.local.set(dict);
     });
-    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : url});
+    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : commentUrl});
   }
   
 })

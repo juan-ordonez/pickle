@@ -157,7 +157,9 @@ function getUserData() {
                     $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
                   }
               });  
-          $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()});
+          $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function(data) {
+            
+          });
           $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url});
           $("#friendListCheckboxes").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
           $("#accountName").append(userName);
@@ -293,10 +295,26 @@ chrome.gcm.onMessage.addListener(function(payload) {
     $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 
   } else if (window.location.href == chrome.extension.getURL('notifications.html')) {
-    $("#notifications").prepend('<a onclick=open('+commentUrl+')><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+'</p></div></a>');
-    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : url});
+    console.log(commentUrl);
+    $("#notifications").prepend('<a href="'+commentUrl+'" class="notificationTab"><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+'</p></div></a>');
+    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : commentUrl});
   }
 })
+
+
+$(document).on("click", ".notificationTab", function(event){ 
+
+  url = $(event.target.closest("a")).attr("href");
+
+  chrome.tabs.create({'url': url}, function(tab) {
+          // Tab opened.
+       });
+
+
+  // $.post("http://pickle-server-183401.appspot.com/reset", {"id" : userID});
+
+});
+
 
 
 

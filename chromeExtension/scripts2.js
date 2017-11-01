@@ -5,8 +5,7 @@ var friendsArray;
 var session;
 var url;
 var picture;
-
-
+var notifications;
 
 
 if (document.getElementById("logoutButton")) {
@@ -19,9 +18,8 @@ function logout(e) {
   if (session) {
     $.get("https://pickle-server-183401.appspot.com/logout/" + session, function(data){
       getUserData();
-    });
-  }
-
+      });
+    }
   }
 
 
@@ -37,14 +35,20 @@ function comment(e) {
 
      var activeTab = arrayOfTabs[0];
      url = activeTab.url;
+
+     var tags;
+
+     if (document.getElementById('checkFriends').checked) {
+      tags = JSON.stringify(friendsArray);
+     } else {
+      tags = []
+      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+        tags.push(element.id);
+        });
+     }
      
-    
-    console.log(url);
-    console.log(friendsArray);
-    console.log(userID);
-    console.log(value);
-    $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : JSON.stringify(friendsArray)});
-    $.get("http://pickle-server-183401.appspot.com/friendsarray/" + userID, function(data) {
+    $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags}, function(data) {
+      console.log(data);
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
       if (data.length > 0) {
@@ -60,8 +64,8 @@ function comment(e) {
       contentType:"application/json; charset=utf-8",
       dataType:"json",
       success: function(){}
-      });
-  }
+        });
+      }
   
     });
     
@@ -75,25 +79,21 @@ if (document.getElementById("loginButton")) {
 }
 
 function login(e) {
-  // var loginWindow = window.open("http://localhost:4000/connect/", "myWindowName", "toolbar = 0, scrollbars = 1, statusbar = 0, menubar = 0, resizable = 0, height = 1, width = 1");
+  
   e.preventDefault();
   window.open("https://pickle-server-183401.appspot.com/login/");
   window.location.replace("popup.html");
-  console.log('test');
   getUserData();
-  console.log(session)
-
 
 }
 
 
 function getUserData() {
   
-
   cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"}, function(data) {
     
   if (data.length >= 1) { 
-    if (window.location.href == "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/register.html") {
+    if (window.location.href == chrome.extension.getURL('register.html')) {
       return
     }
 
@@ -101,14 +101,10 @@ function getUserData() {
 
     var senderIds = ["511642730215"];
     chrome.gcm.register(senderIds, function (registrationID) {
-      console.log(session);
-      console.log(registrationID);
-
     $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
     });
     
     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
-      console.log(data);
       json = JSON.parse(data);
       if (json.status == false) {
         window.location.replace("register.html");
@@ -126,20 +122,36 @@ function getUserData() {
           friendsArray = json.friends;
           userID = json.id;
           picture = json.picture;
+          notifications = json.notifications;
+          console.log(userID);
+          if (notifications == 0){
+            $("#numNotifications").hide();
+          } else {
+            if (document.getElementById("numNotifications")) {
+              document.getElementById("numNotifications").innerHTML = notifications;
+              $("#numNotifications").show();
+            }
+          }
+
+          chrome.storage.local.set({'id': userID});
           chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
-              var activeTab = arrayOfTabs[0];
-              url = activeTab.url;
-              $("#commentsBody").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()});
-            });
+          var activeTab = arrayOfTabs[0];
+          url = activeTab.url;
+          $("#commentsBody").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()});
+            
+          $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()});
+          $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url});
+          $("#friendListCheckboxes").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
+          
+        });
       }
 
 
     });
 
   } else {
-  console.log(window.location.href);
-  if (window.location.href != "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/register.html") {
+  if (window.location.href != chrome.extension.getURL('register.html')) {
     window.location.replace("register.html");
       } 
     }
@@ -149,11 +161,9 @@ function getUserData() {
 }
 
 
-if (window.location.href != "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/register.html") {
+if (window.location.href != chrome.extension.getURL('register.html')) {
   getUserData();
 }
-
-
 
 $("#iframe").on("load", function() {
   var iframe = document.getElementById("iframe");
@@ -183,7 +193,7 @@ $(document).on("click", "#submitComment", function(){
 $(document).on("click", ".likeButton", function(){
   var likes = 0;
   var id = decodeURIComponent($(this).closest(".commentGroup").attr('id'));
-  console.log(id);
+  
   $likeButton = $(this).children("a");
   if ($likeButton.hasClass("active") !== false) {
     //Decrease number of likes
@@ -198,15 +208,17 @@ $(document).on("click", ".likeButton", function(){
     $.post("http://pickle-server-183401.appspot.com/like/", {"commentID" : id, "userID" : userID});
   
 
-$.get("http://pickle-server-183401.appspot.com/commentUser/" + id, function(data) {
+  $.get("http://pickle-server-183401.appspot.com/commentUser/" + id, function(data) {
+    data = JSON.parse(data);
+
+  if (userName.split(" ")[0] != data['first']) {
 
 
 
 
-json = JSON.stringify({ "data": {"status" : "liked your comment", "pic" : data['picture'], "first" : data['first'], "comment" : "like", "url" : data['url']}, 
+  json = JSON.stringify({ "data": {"status" : "liked your comment", "pic" : data['picture'], "first" : data['first'], "comment" : "like", "url" : data['url']}, 
         "registration_ids": data['ids'] });
-
-$.ajax({
+  $.ajax({
       url:"https://gcm-http.googleapis.com/gcm/send",
       type:"POST",
       data:json,
@@ -218,6 +230,8 @@ $.ajax({
       success: function(){}
       });
 
+}
+
 });
 
 
@@ -227,15 +241,19 @@ $.ajax({
 });
 
 
+$(document).on("click", "#notificationsBell", function(){
+
+  $.post("http://pickle-server-183401.appspot.com/reset", {"id" : userID});
+
+});
+
+
 // chrome.gcm.onMessage.addListener(function(message) {
 
 //   console.log(message)
 // });
 
-
 chrome.gcm.onMessage.addListener(function(payload) {
-  console.log(payload.data);
-  console.log(url);
 
   var profilePic = payload.data.pic;
   var user = payload.data.first;
@@ -243,16 +261,28 @@ chrome.gcm.onMessage.addListener(function(payload) {
   var commentUrl = payload.data.url;
   var notification = payload.data.status;
 
-  if (window.location.href == "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/popup.html") {
+  if (window.location.href == chrome.extension.getURL('popup.html')) {
     //Append new comment
     $("#commentsBody").append('<div class="commentGroup"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div></div>');
     //Scroll to bottom of window
     $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 
-  } else if (window.location.href == "chrome-extension://cnnmgoelhbbpdgnppkoagfhndfochjlp/notifications.html") {
-    $(".cardListGroup").prepend('<div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+'</p></div>');
+  } else if (window.location.href == chrome.extension.getURL('notifications.html')) {
+    $("#notifications").prepend('<a onclick=open('+commentUrl+')><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+'</p></div></a>');
+    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : url});
   }
 })
+
+function open(url) {
+
+chrome.tabs.create({'url': url}, function(tab) {
+    // Tab opened.
+});
+
+}
+
+
+      
 
 
 

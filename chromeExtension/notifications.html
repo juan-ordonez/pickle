@@ -33,7 +33,7 @@
         <!-- dummy anchor to prevent autofocus-->
         <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
         <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
-        <a class="nav-link active" href="#"><i class="fa fa-bell fa-lg"></i></a>
+        <a class="nav-link active" href="#"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
         <a class="nav-link" href="account.html"><i class="fa fa-user fa-lg"></i></a>
       </div> 
     </nav>
@@ -44,56 +44,7 @@
 
         <!-- Example notifications -->
         <div class="cardList">
-          <div class="cardListGroup">
-
-            <a href="#"><div class="d-flex align-items-center">
-              <div class="thumbnail mr-3">
-                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/16583473_379492249096678_5400214466052751360_a.jpg">
-              </div>
-              <p class="notification"><strong>Juan</strong> commented on Netflix</p>
-            </div></a>
-
-            <a href="#"><div class="d-flex align-items-center">
-              <div class="thumbnail mr-3">
-                <img src="https://scontent-lax3-1.xx.fbcdn.net/v/t31.0-8/1116043_10151512871487237_564361818_o.jpg?oh=478cae4a925b31909b4022117bd701b6&oe=5A3AB97A">
-              </div>
-              <p class="notification"><strong>Vanessa</strong> tagged you on Amazon</p>
-            </div></a>
-
-            <a href="#"><div class="d-flex align-items-center">
-              <div class="thumbnail mr-3">
-                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/11910064_1513922588898767_476983264_a.jpg">
-              </div>
-              <p class="notification"><strong>Gagan</strong> commented on Rotten Tomatoes</p>
-            </div></a>
-
-            <a href="#"><div class="d-flex align-items-center">
-              <div class="thumbnail mr-3">
-                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s320x320/21819708_347904258955471_4687591791493382144_n.jpg">
-              </div>
-              <p class="notification"><strong>Shannon</strong> liked your comment on The Huffington Post</p>
-            </div></a>
-
-            <a href="#"><div class="d-flex align-items-center">
-              <div class="thumbnail mr-3">
-                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/11849262_801659613283800_1482640784_a.jpg">
-              </div>
-              <p class="notification"><strong>Roman</strong> tagged you on Coinbase</p>
-            </div></a>
-
-            <a href="#"><div class="d-flex align-items-center">
-              <div class="thumbnail mr-3">
-                <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s320x320/14597220_1305405389501853_1107640381664657408_a.jpg">
-              </div>
-              <p class="notification"><strong>Amanda</strong> liked your comment on Lonely Planet</p>
-            </div></a>
-            
-            <a href="#"><div class="d-flex align-items-center">
-              <div class="thumbnail mr-3">
-                <img src="https://scontent-lax3-1.xx.fbcdn.net/v/t1.0-1/p320x320/16865189_10104935164263085_1958013047684281725_n.jpg?oh=401f41d30e990904fb903265afbbe58d&oe=5A882FA4">
-              </div>
-              <p class="notification"><strong>Clay</strong> commented on Spotify</p>
-            </div></a>
+          <div class="cardListGroup" id="notifications">
           </div>
         </div>
 
@@ -107,7 +58,7 @@
   <script type="text/javascript" src="js/popper.js"></script>
   <script type="text/javascript" src="js/autosize.min.js"></script>
   <script type="text/javascript" src="js/waves.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="scripts2.js"></script>
   <!-- js for popup.html -->
   <!-- <script src="js/popup.js"></script> -->

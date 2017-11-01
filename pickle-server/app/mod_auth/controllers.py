@@ -20,7 +20,7 @@ import operator
 from app.mod_auth.forms import LoginForm, RegistrationForm, RemoveForm
 
 # Import module models (i.e. User)
-from app.mod_auth.models import User, Comment, Session, tags_table
+from app.mod_auth.models import User, Comment, Session, tags_table, Notification
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, user_logged_in, current_user
 
@@ -46,6 +46,7 @@ from oauth2client.client import GoogleCredentials
 from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
 import ast
 from selenium import webdriver
+from helpers import canonical
 
 credentials = GoogleCredentials.get_application_default()
 
@@ -154,7 +155,7 @@ def user(cookie):
     for friend in session.friends:
         friends.append(friend.id)
     
-    return json.dumps({"status" : True, "name" : session.name, "friends" : friends, "email" : session.email, "updated" : user.updated, "id" : session.id, "picture" : user.picture})
+    return json.dumps({"status" : True, "name" : session.name, "friends" : friends, "email" : session.email, "updated" : user.updated, "id" : session.id, "picture" : user.picture, "notifications" : user.numNotifications})
 
 
 @mod_auth.route('/logout/<cookie>', methods=['GET'])
@@ -170,7 +171,7 @@ def logout(cookie):
 @mod_auth.route('/comment/', methods=['POST'])
 @crossdomain(origin='*')
 def comment():
-    comment = Comment(request.form['string'], request.form['url'], str(datetime.now()))
+    comment = Comment(request.form['string'], canonical(request.form['url']), str(datetime.now()))
     user = User.query.filter_by(id=request.form['userId']).first()
     user.commentsWritten.append(comment)
     db.session.add(user)
@@ -181,22 +182,28 @@ def comment():
         taggedUser.commentsTaggedIn.append(comment)
     user.commentsTaggedIn.append(comment)
     db.session.commit()
-    return str("Comment added")
+
+
+
+    friends = set([])
+    for session in user.friendSession:
+        if session.authToken and session.id in tags:
+            friends.add(session.authToken)
+    
+    return json.dumps(list(friends))
 
 
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
 @crossdomain(origin='*')
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
-    url = request.form['url']
+    url = canonical(request.form['url'])
     comments = []
     for comment in user.commentsTaggedIn:
         if comment.url == url:
             comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), user in comment.likers))
 
     comments = sorted(comments, reverse=False, key=lambda c : c[2])
-
-
 
     templateData = {
         
@@ -254,22 +261,29 @@ def friends(user):
 
 
 
-@mod_auth.route('/domainComments', methods=['GET'])
+@mod_auth.route('/domainComments', methods=['GET', 'POST'])
 @crossdomain(origin='*')
 def domain():
     comments = {}
     user = User.query.filter_by(id=request.form['user']).first()
-    url = request.form['url']
+    url = canonical(request.form['url'])
     parsed_uri = urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
     for comment in user.commentsTaggedIn:
-        if domain in comment.url:
-            new = comment.url.replace(domain, '')
+        if domain in comment.url and comment.url != url:
+            soup = BeautifulSoup(urllib.urlopen(comment.url))
+            new = str(soup.title.string)
+            if len(new) > 16:
+                new = new[:16] + '...'
             if new not in comments.keys():
-                comments[new] = 1
+                comments[new] = [1, url]
             else:
-                comments[new] += 1
-    sortedComments = sorted(comments.items(), key=operator.itemgetter(1), reverse=True)
+                comments[new][0] += 1
+
+    urls = []
+    for comment in comments.keys():
+        urls.append((comment, comments[comment][0], comments[comment][1]))
+    sortedComments = sorted(urls, key=lambda c: c[1], reverse=True)
     templateData = {
         'comments' : sortedComments
         
@@ -295,106 +309,62 @@ def commentUser(id):
     info['ids'] = list(ids)
     return json.dumps(info)
 
+
+@mod_auth.route('/notification/', methods=['GET','POST'])
+@crossdomain(origin='*')
+def notification():
+    user = User.query.filter_by(id=request.form['id']).first()
+    notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], canonical(request.form['url']))
+    user.notifications.append(notification)
+    user.numNotifications += 1
+    db.session.commit()
     
+    return "notification added"
+
+
+
+@mod_auth.route('/loadnotifications/', methods=['GET','POST'])
+@crossdomain(origin='*')
+def loadnotifications():
+    notifications = []
+    user = User.query.filter_by(id=request.form['id']).first()
+    for notification in user.notifications:
+        notifications.append((urllib.quote(notification.id), notification.name, notification.time, notification.message, notification.picture, notification.url))
     
 
+    comments = sorted(notifications, reverse=True, key=lambda c : c[2])
+    templateData = {
+        'notifications' : comments
+        
+    }
+    return render_template('auth/notifications.html', **templateData)
 
 
+@mod_auth.route('/reset', methods=['POST'])
+@crossdomain(origin='*')
+def reset():
+    user = User.query.filter_by(id=request.form['id']).first()
+    user.numNotifications = 0
+    db.session.commit()
+    return "reset"
 
+
+@mod_auth.route('/friends/', methods=['GET','POST'])
+@crossdomain(origin='*')
+def friendsList():
+    friends = []
+    user = User.query.filter_by(id=request.form['id']).first()
+    ids = ast.literal_eval(str(request.form['friends']))
+    for friend in ids:
+        user = User.query.filter_by(id=friend).first()
+        friends.append((friend, user.name))
+    templateData = {
+        'friends' : friends
+        
+    }
+    return render_template('auth/friends.html', **templateData)
 
 
 
     
-
-
-
-
-
-# #Delete account controller
-# @mod_auth.route("/remove/", methods=['GET','POST'])
-# @login_required
-# def remove():
-#     if request.method == 'GET':
-#         return render_template('auth/remove.html', username=current_user.email)
-#     #Check that email is correct
-#     if not(current_user.email == request.form['email']):
-#         flash("Error: Email or password is incorrect.")
-#         return render_template('auth/remove.html', username=current_user.email)
-#     #Check that password is correct
-#     if not(request.form['password'] == current_user.password):
-#         flash("Error: Email or password is incorrect.")
-#         return render_template('auth/remove.html', username=current_user.email)
-#     #Check that passwords match
-#     if not(request.form['password'] == request.form['passwordRepeat']):
-#         flash("Error: Passwords do not match.")
-#         return render_template('auth/remove.html', username=current_user.email)
-#     user = User.query.filter_by(email=request.form['email']).first()
-#     logout_user()
-#     db.session.delete(user)
-#     db.session.commit()
-#     return redirect(url_for('auth.removeSuccess', email=user.email))
-
-# #Dashboard controller
-# @mod_auth.route("/dashboard", methods=['GET','POST'])
-# @login_required
-# def dashboard():
-#     likes = 0   #total likes
-#     comments = 0 #total comments
-#     posts = 0 #total posts
-#     media = []
-#     names = []
-#     pictures = []  
-#     numPostsArray = []  #posts per influencer
-#     likesArray = []     #likes per influencer
-#     commentsArray = [] #comments per influencer
-#     totalPostsArray = []
-#     totalLikesArray = []
-#     totalCommentsArray = []
-#     stars = []
-#     engagement = []
-
-#     # if session.get('instagram_access_token') and session.get('instagram_user'):
-#     # userAPI = InstagramAPI(access_token=session['instagram_access_token'])
-#     # recent_media, next = userAPI.user_recent_media(user_id=session['instagram_user'].get('id'),count=25)
-    
-#     templateData = influencerLoop(current_user.influencers, likes, comments, posts, media, names, pictures, numPostsArray, likesArray, 
-#         commentsArray, totalPostsArray, totalLikesArray, totalCommentsArray, engagement, stars, current_user)
-
-#     return render_template('auth/dashboard.html', **templateData)
-#     # else:
-#     #     return redirect(url_for('auth.user_photos'))
-
-
-# @mod_auth.route("/remove/<email>", methods=['GET','POST']) 
-# def removeSuccess(email):
-#     flash(email + "'s account has been removed.")
-#     return redirect(url_for("auth.register"))
-
-
-
-# #Adding new Influencer
-# @mod_auth.route("/addinfluencer", methods=['GET','POST'])
-# @login_required
-# def add():
-#     influencer = Influencer(request.form['handle'], None)
-#     followers = request.form['followers']
-#     influencer.followers = followers
-#     influencer.users.append(current_user)
-#     db.session.add(influencer)
-#     db.session.commit()
-#     flash("Influencer has been added")
-#     return redirect(url_for('auth.manage'))
-
-# #Removing Influencer
-# @mod_auth.route("/removeinfluencer", methods=['GET','POST'])
-# @login_required
-# def removeInfluencer():
-#     influencer = Influencer.query.filter_by(handle=request.form['handle']).first()
-#     for lead in influencer.leads:
-#         db.session.delete(lead)
-#     current_user.influencers.remove(influencer)
-#     db.session.delete(influencer)
-#     db.session.commit()
-#     flash("Influencer has been removed")
-#     return redirect(url_for('auth.manage'))
 

@@ -33,8 +33,11 @@
         <!-- dummy anchor to prevent autofocus-->
         <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
         <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
-        <a class="nav-link" href="notifications.html"><i class="fa fa-bell fa-lg"></i></a>
+        <a class="nav-link" href="notifications.html"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
         <a class="nav-link active" href="#"><i class="fa fa-user fa-lg"></i></a>
+        <div id="notificationBadge">
+          <span class="badge badge-primary" id="numNotifications"></span>
+        </div>
       </div> 
     </nav>
 
@@ -42,10 +45,9 @@
       
       <div class="d-flex flex-column align-items-center" style="margin-top: 4rem;">
         <div class="profilePic mb-3">
-          <img src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/16583473_379492249096678_5400214466052751360_a.jpg">
+          <img id="acountProfilePicture" src="https://scontent-lax3-1.cdninstagram.com/t51.2885-19/s150x150/16583473_379492249096678_5400214466052751360_a.jpg">
         </div>
-        <strong>Juan Ordonez</strong>
-        Karma: 181
+        <strong id="accountName">Juan Ordonez</strong>
         <a class="btn btn-primary btn-block mt-3" href="#" role="button">Invite Friends</a>
         <a class="btn btn-outline-secondary btn-block" id="logoutButton" role="button">Logout</a>
       </div>

@@ -1,3 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Influencers - LikeWallet</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="{{ url_for('static', filename='css/mdb.min.css') }}" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+
+<body>
+
+<a class="btn btn-facebook mt-3" role="button" id="loginButton">
+            <div class="d-flex justify-content-center align-items-center">
+              <i class="fa fa-facebook-official fa-2x mr-3"></i> Log In with Facebook
+            </div>
+          </a>
+
+
+  </body>
+
+
+
+
+
 <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}"></script>
     <!-- Bootstrap tooltips -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/tether.min.js') }}"></script>
@@ -8,6 +41,10 @@
 
 
 <script>
+
+
+$(document).on("click", "#loginButton", function(){
+
 var userID;
 var userName;
 var userEmail;
@@ -61,8 +98,13 @@ window.fbAsyncInit = function() {
    }(document, 'script', 'facebook-jssdk'));
 
 
+});
+
+
   
 </script>
+
+</html>
 
 
 

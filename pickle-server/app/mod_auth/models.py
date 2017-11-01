@@ -99,15 +99,17 @@ class Notification(db.Model):
 	time = db.Column(db.String(512))
 	message = db.Column(db.String(128))
 	picture = db.Column(db.String(1024))
+	url = db.Column(db.String(512))
 	user_id = db.Column(db.String(128), db.ForeignKey('auth_user.id'))
 
 
 	
-	def __init__(self, name, time, message, picture):
+	def __init__(self, name, time, message, picture, url):
 		self.name = name
 		self.time = time
 		self.message = message
 		self.picture = picture
+		self.url = url
 		hashed = hashlib.sha1()
 		unique = str(name) + str(time) + str(message) + str(picture)
 		hashed.update(unique.encode('utf-8'))

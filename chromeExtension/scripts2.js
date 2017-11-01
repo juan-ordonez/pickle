@@ -176,7 +176,7 @@ function getUserData() {
             }
           }
 
-          chrome.storage.local.set({'id': userID});
+          
           chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
           var activeTab = arrayOfTabs[0];

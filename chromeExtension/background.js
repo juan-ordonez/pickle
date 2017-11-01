@@ -25,7 +25,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
   if (views.length == 0) {
   	chrome.notifications.create({   
     type: 'basic', 
-    iconUrl: 'icon.png', 
+    iconUrl: 'iconBig.png', 
     title: "Yipp", 
     message: user+' '+notification 
     }, function (notif) {

@@ -26,7 +26,6 @@ body .containerComments {
 	width: 100%;
 	height: 453px !important;
 	overflow: scroll;
-	border-style: solid;
 }
 
 h1 {
@@ -83,7 +82,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 #formNewComments {
 	width: 368px;
-	border-style:solid;
 }
 
 .commentsNoScroll {

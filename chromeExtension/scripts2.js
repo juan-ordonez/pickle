@@ -326,13 +326,17 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
   if (window.location.href == chrome.extension.getURL('popup.html')) {
     //Append new comment
+    if (commentUrl == url) {
+    
+  
     $("#commentsBody").append('<div class="commentGroup"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div></div>');
     //Scroll to bottom of window
     $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+  }
 
   } else if (window.location.href == chrome.extension.getURL('notifications.html')) {
     console.log(commentUrl);
-    $("#notifications").prepend('<a href="'+commentUrl+'" class="notificationTab"><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+'</p></div></a>');
+    console.log(url);
     $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : commentUrl});
   }
 })

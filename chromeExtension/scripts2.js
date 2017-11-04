@@ -35,6 +35,7 @@ function comment(e) {
 
      var activeTab = arrayOfTabs[0];
      url = activeTab.url;
+     pageTitle = activeTab.title;
 
      var tags;
 
@@ -62,19 +63,30 @@ function comment(e) {
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
       if (data.length > 0) {
-      json = JSON.stringify({ "data": {"status" : "tagged you in a comment", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url}, 
-        "registration_ids": data });
-    $.ajax({
-      url:"https://gcm-http.googleapis.com/gcm/send",
-      type:"POST",
-      data:json,
-      beforeSend: function(request) {
-          request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
-      },
-      contentType:"application/json; charset=utf-8",
-      dataType:"json",
-      success: function(){}
-        });
+
+        if (document.getElementById('checkFriends').checked) {
+
+          json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
+            "registration_ids": data });
+        }
+
+        else {
+          json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
+            "registration_ids": data });
+        }
+
+        $.ajax({
+          url:"https://gcm-http.googleapis.com/gcm/send",
+          type:"POST",
+          data:json,
+          beforeSend: function(request) {
+              request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+          },
+          contentType:"application/json; charset=utf-8",
+          dataType:"json",
+          success: function(){}
+            });
+
       }
   
     });

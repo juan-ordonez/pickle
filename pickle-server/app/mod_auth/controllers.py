@@ -314,7 +314,7 @@ def commentUser(id):
 @crossdomain(origin='*')
 def notification():
     user = User.query.filter_by(id=request.form['id']).first()
-    notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], canonical(request.form['url']))
+    notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], canonical(request.form['url']), request.form['page'])
     user.notifications.append(notification)
     user.numNotifications += 1
     db.session.commit()

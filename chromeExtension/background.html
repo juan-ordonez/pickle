@@ -82,12 +82,14 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
 
 chrome.gcm.onMessage.addListener(function(payload) {
+  console.log(payload.data.pageTitle);
   console.log(payload.data);
   console.log(userID);
   
   var profilePic = payload.data.pic;
   var user = payload.data.first;
   var comment = payload.data.comment;
+  var page = payload.data.pageTitle;
   var commentUrl = payload.data.url;
   var notification = payload.data.status;
 
@@ -98,7 +100,9 @@ chrome.gcm.onMessage.addListener(function(payload) {
     type: 'basic', 
     iconUrl: 'iconBig.png', 
     title: "Yipp", 
-    message: user+' '+notification 
+    
+    //message: user+' '+notification+' '+page
+    message: page
     }, function (notif) {
     	dict = {};
     	dict[notif] = commentUrl;

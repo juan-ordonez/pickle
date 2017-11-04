@@ -74,30 +74,33 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
 
 chrome.gcm.onMessage.addListener(function(payload) {
+
   console.log(payload.data);
   console.log(userID);
   
   var profilePic = payload.data.pic;
   var user = payload.data.first;
   var comment = payload.data.comment;
+  var page = payload.data.pageTitle;
   var commentUrl = payload.data.url;
   var notification = payload.data.status;
 
   var views = chrome.extension.getViews({type : "popup"});
   console.log(views.length);
   if (views.length == 0) {
-  	chrome.notifications.create({   
+    chrome.notifications.create({   
     type: 'basic', 
     iconUrl: 'iconBig.png', 
-    title: "Yipp", 
-    message: user+' '+notification 
+    title: user+' '+notification+' '+page, 
+    message: comment
+
     }, function (notif) {
-    	dict = {};
-    	dict[notif] = commentUrl;
-    	console.log(notif);
-    	chrome.storage.local.set(dict);
+      dict = {};
+      dict[notif] = commentUrl;
+      console.log(notif);
+      chrome.storage.local.set(dict);
     });
-    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : commentUrl});
+    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : commentUrl, "page" : page});
   }
   
 })

@@ -100,6 +100,7 @@ class Notification(db.Model):
 	message = db.Column(db.String(128))
 	picture = db.Column(db.String(1024))
 	url = db.Column(db.String(512))
+	page = db.Column(db.String(512))
 	user_id = db.Column(db.String(128), db.ForeignKey('auth_user.id'))
 
 

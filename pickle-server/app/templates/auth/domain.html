@@ -19,7 +19,7 @@
 <body>
     <div id="comments">
     {% for i in comments %}
-        <a><div class="d-flex justify-content-between">
+        <a href="{{i[3]}}" class="notificationTab"><div class="d-flex justify-content-between">
                 <strong>{{i[0]}}</strong>
                 {{i[1]}} comments
               </div></a>

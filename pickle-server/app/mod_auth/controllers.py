@@ -106,11 +106,16 @@ def register():
         
         user = User.query.filter_by(id=data['id']).first()
 
+
+        email = None
+        if 'email' in data.keys():
+            email = data['email']
+
         if user:
             user.updated = True
 
         else:
-            create = User(data['id'], data['name'], data['email'], data['picture'])
+            create = User(data['id'], data['name'], email, data['picture'])
             create.updated = True
             for friend in data['friends']:
                 friendObject = User.query.filter_by(id=friend['id']).first()
@@ -122,7 +127,7 @@ def register():
             
         session = Session.query.filter_by(cookie=request.cookies["fbsr_1430922756976623"]).first()
         if not session:
-            session = Session(request.cookies["fbsr_1430922756976623"], data['id'], data['name'], data['email'])
+            session = Session(request.cookies["fbsr_1430922756976623"], data['id'], data['name'], email)
             db.session.add(session)
         
         
@@ -276,13 +281,13 @@ def domain():
             if len(new) > 16:
                 new = new[:16] + '...'
             if new not in comments.keys():
-                comments[new] = [1, url]
+                comments[new] = [1, url, comment.url]
             else:
                 comments[new][0] += 1
 
     urls = []
     for comment in comments.keys():
-        urls.append((comment, comments[comment][0], comments[comment][1]))
+        urls.append((comment, comments[comment][0], comments[comment][1], comments[comment][2]))
     sortedComments = sorted(urls, key=lambda c: c[1], reverse=True)
     templateData = {
         'comments' : sortedComments
@@ -314,7 +319,11 @@ def commentUser(id):
 @crossdomain(origin='*')
 def notification():
     user = User.query.filter_by(id=request.form['id']).first()
+    #Create notification with page title field set to empty by default
     notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], canonical(request.form['url']))
+    #If the request from background.js contains a title page, update the field in notification
+    if request.form['page']:
+        notification.page = request.form['page']
     user.notifications.append(notification)
     user.numNotifications += 1
     db.session.commit()

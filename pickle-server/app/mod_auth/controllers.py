@@ -320,7 +320,9 @@ def commentUser(id):
 def notification():
     user = User.query.filter_by(id=request.form['id']).first()
     #Create notification with page title field set to empty by default
+
     notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], canonical(request.form['url']))
+
     #If the request from background.js contains a title page, update the field in notification
     if request.form['page']:
         notification.page = request.form['page']

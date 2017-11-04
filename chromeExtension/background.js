@@ -81,6 +81,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
   var profilePic = payload.data.pic;
   var user = payload.data.first;
   var comment = payload.data.comment;
+  //Added a variable for the page title to create the notification
   var page = payload.data.pageTitle;
   var commentUrl = payload.data.url;
   var notification = payload.data.status;
@@ -91,7 +92,9 @@ chrome.gcm.onMessage.addListener(function(payload) {
     chrome.notifications.create({   
     type: 'basic', 
     iconUrl: 'iconBig.png', 
+    //Added the page name to the notification (to be shown in the title of the notification) 
     title: user+' '+notification+' '+page, 
+    //Show the actual comment in the message
     message: comment
 
     }, function (notif) {

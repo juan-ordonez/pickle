@@ -35,6 +35,7 @@ function comment(e) {
 
      var activeTab = arrayOfTabs[0];
      url = activeTab.url;
+     //Get title of current chrome tab to show in notification (see below)
      pageTitle = activeTab.title;
 
      var tags;
@@ -64,12 +65,13 @@ function comment(e) {
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
       if (data.length > 0) {
 
+        //If comment is for all friends, then notification should say that user left a comment on a page title
         if (document.getElementById('checkFriends').checked) {
 
           json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
         }
-
+        //Else if comment is for specific friends, notification should say that the user tagged those users on a page title
         else {
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });

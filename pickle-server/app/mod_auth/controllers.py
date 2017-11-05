@@ -340,7 +340,7 @@ def loadnotifications():
     notifications = []
     user = User.query.filter_by(id=request.form['id']).first()
     for notification in user.notifications:
-        notifications.append((urllib.quote(notification.id), notification.name, notification.time, notification.message, notification.picture, notification.url))
+        notifications.append((urllib.quote(notification.id), notification.name, notification.time, notification.message, notification.picture, notification.url, notification.page))
     
 
     comments = sorted(notifications, reverse=True, key=lambda c : c[2])

@@ -16,6 +16,16 @@ $('#newComment').each(function(){
   $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 });
 
+//Press enter to submit textarea, Shift+enter for new line
+$("#newComment").keypress(function (e) {
+    if(e.which == 13 && !e.shiftKey) {        
+        //$(this).closest("form").submit();
+        $("#submitComment").trigger("click");
+        e.preventDefault();
+        return false;
+    }
+});
+
 //Prevent dropup from auto-closing
 $(document).on('click', '#formNewComments .dropdown-menu', function (e) {
   e.stopPropagation();

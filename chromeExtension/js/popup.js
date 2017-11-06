@@ -4,11 +4,6 @@ Waves.init();
 
 $('.btn').mouseup(function() { this.blur() });
 
-//Enable tooltips
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-
 //Scroll to bottom of chat page each time popup is opened
 $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 

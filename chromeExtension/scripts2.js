@@ -196,6 +196,10 @@ function getUserData() {
           var activeTab = arrayOfTabs[0];
           url = activeTab.url;
           $("#commentsBody").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function(){
+                  //Enable tooltips
+                  $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                  })
                   $("#formNewComments .loadingSpinner").hide();
                   if ($("#formNewComments").height() > 425) {
                     $("#formNewComments").removeClass("commentsNoScroll");

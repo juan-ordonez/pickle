@@ -79,7 +79,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 #friendsListDropdown {
-	max-height: 400px; 
+	max-height: 350px; 
 	overflow-y:auto; 
 	overflow-x:hidden;
 }

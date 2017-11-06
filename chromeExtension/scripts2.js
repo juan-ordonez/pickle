@@ -279,13 +279,13 @@ $(document).on("click", "#submitComment", function(){
 
 //Like a comment
 $(document).on("click", ".likeButton", function(){
-  var likes = 0;
+  $likeButton = $(this).children("a");
+  var likes = parseInt($likeButton.text());
   var id = decodeURIComponent($(this).closest(".commentGroup").attr('id'));
   
-  $likeButton = $(this).children("a");
-  if ($likeButton.hasClass("active") !== false) {
+  if ($likeButton.hasClass("active") == true) {
     //Decrease number of likes
-    likes = likes;
+    likes = likes - 1;
     $(this).replaceWith('<div class="likeButton"><a href="#"><i class="fa fa-heart"></i> '+likes+'</a></div>');
     $.post("http://pickle-server-183401.appspot.com/unlike/", {"commentID" : id, "userID" : userID});
   }

@@ -70,13 +70,13 @@ function comment(e) {
 
           json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : data, "url" : url});
+          $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : JSON.stringify(data), "url" : url});
         }
         //Else if comment is for specific friends, notification should say that the user tagged those users on a page title
         else {
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : data, "url" : url});
+          $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : JSON.stringify(data), "url" : url});
         
 
         }

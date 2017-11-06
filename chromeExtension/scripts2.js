@@ -70,13 +70,14 @@ function comment(e) {
 
           json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : JSON.stringify(data), "url" : url});
+          $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : JSON.stringify({"ids" : JSON.stringify(data)}), "url" : url});
         }
         //Else if comment is for specific friends, notification should say that the user tagged those users on a page title
         else {
+          console.log(JSON.stringify(data));
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : JSON.stringify(data), "url" : url});
+          $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : JSON.stringify({"ids" : JSON.stringify(data)}), "url" : url});
         
 
         }
@@ -306,6 +307,7 @@ $(document).on("click", ".likeButton", function(){
 
   json = JSON.stringify({ "data": {"status" : "liked your comment", "pic" : data['picture'], "first" : data['first'], "comment" : "like", "url" : data['url']}, 
         "registration_ids": data['ids'] });
+  $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : data['picture'], "user" : userName.split(" ")[0], "notification" : "liked your comment", "cookies" : JSON.stringify({"ids" : JSON.stringify(data['ids'])}), "url" : data['url']});
   $.ajax({
       url:"https://gcm-http.googleapis.com/gcm/send",
       type:"POST",
@@ -351,7 +353,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
   if (window.location.href == chrome.extension.getURL('popup.html')) {
 
-    if (commentUrl == url) {
+    if (commentUrl == url && comment != 'like') {
     //Append new comment
     $("#commentsBody").append('<div class="commentGroup"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div></div>');
     //Scroll to bottom of window

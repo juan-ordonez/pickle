@@ -326,9 +326,10 @@ def commentUser(id):
 @crossdomain(origin='*')
 def notification():
     ids = []
-    cookies = ast.literal_eval(str(request.form['cookies']))
+    cookies = ast.literal_eval(str(ast.literal_eval(str(request.form['cookies']))['ids']))
+    print(type(cookies))
     for cookie in cookies:
-        session = Session.query.filter_by(cookie=cookie).first()
+        session = Session.query.filter_by(authToken=cookie).first()
         if session.id not in ids:
             user = User.query.filter_by(id=session.id).first()
             #Create notification with page title field set to empty by default
@@ -403,6 +404,17 @@ def friendsTokens():
     
 
     return json.dumps(list(friends))
+
+
+
+@mod_auth.route('/canonicalize/', methods=['POST'])
+@crossdomain(origin='*')
+def canonicalize():
+    url = request.form['url']
+    url = canonical(url)
+    
+
+    return url
 
 
 

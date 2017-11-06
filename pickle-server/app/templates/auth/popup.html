@@ -19,15 +19,23 @@
 <body>
     <div id="comments">
     {% for i in comments %}
-        {% if i[6] %}
-    <div class="commentGroup" id={{i[5]}}><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src={{i[4]}}>
-        </div><div class="chatBubble"><strong>{{i[3]}}</strong> {{i[0]}} </div>
-        <div class="likeButton"><a href="#" class="active"><i class="fa fa-heart"></i> {{i[1]}}</a></div></div></div>
-        {% else %}
-            <div class="commentGroup" id={{i[5]}}><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src={{i[4]}}>
-        </div><div class="chatBubble"><strong>{{i[3]}}</strong> {{i[0]}} </div>
-        <div class="likeButton"><a href="#"><i class="fa fa-heart"></i> {{i[1]}}</a></div></div></div>
-        {% endif %}
+        <div class="commentGroup" id={{i[5]}}>
+            <div class="d-flex flex-nowrap align-items-center">
+                <div class="thumbnail align-self-start">
+                    <img src={{i[4]}}>
+                </div>
+                <div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: {{i[6]}}">
+                    <strong>{{i[3]}}</strong> {{i[0]}} 
+                </div>
+                <div class="likeButton">
+                    {% if i[7] %}
+                    <a href="#" class="active"><i class="fa fa-heart"></i> {{i[1]}}</a>
+                    {% else %}
+                    <a href="#"><i class="fa fa-heart"></i> {{i[1]}}</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     {% endfor %}
 </div>
 </body>

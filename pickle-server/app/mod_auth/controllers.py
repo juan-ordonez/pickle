@@ -206,7 +206,14 @@ def loadComment():
     comments = []
     for comment in user.commentsTaggedIn:
         if comment.url == url:
-            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), user in comment.likers))
+            #Get names of users tagged in comment
+            tagNames =[]
+            for tag in comment.users:
+                tagNames.append(tag.name)
+            #Convert list into string
+            tagNamesString = ', '.join(tagNames)
+            #Append data of comment to comments array
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagNamesString, user in comment.likers))
 
     comments = sorted(comments, reverse=False, key=lambda c : c[2])
 

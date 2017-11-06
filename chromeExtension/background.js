@@ -9,7 +9,11 @@ var notifications;
 
 
 
-cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"}, function(data) {
+
+chrome.gcm.onMessage.addListener(function(payload) {
+
+
+  cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"}, function(data) {
     
   if (data.length >= 1) { 
     
@@ -21,6 +25,7 @@ cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"
     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
       json = JSON.parse(data);
       if (json.status == false) {
+        console.log("false");
         return;
       } else if (json.updated == false) {
         // var iframe;
@@ -30,6 +35,7 @@ cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"
         // iframe.src = "https://pickle-server-183401.appspot.com/connect/";
         // iframe.style.display = 'none';
         // document.body.appendChild(iframe);
+        console.log("needs to be updated");
       } else {
           userName = json.name;
           userEmail = json.email;
@@ -72,9 +78,6 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
      url = activeTab.url;
  });
 
-
-chrome.gcm.onMessage.addListener(function(payload) {
-
   console.log(payload.data);
   console.log(userID);
   
@@ -106,7 +109,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
     $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : commentUrl, "page" : page});
   }
   
-})
+});
 
 
 chrome.notifications.onClicked.addListener(function (id) {

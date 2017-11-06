@@ -208,7 +208,7 @@ def loadComment():
         if comment.url == url:
             #Get names of users tagged in comment
             tagNames =[]
-            for tag in comment.users:
+            for tag in comment.usersTagged:
                 tagNames.append(tag.name)
             #Convert list into string
             tagNamesString = ', '.join(tagNames)

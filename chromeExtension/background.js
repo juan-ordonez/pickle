@@ -106,7 +106,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
       console.log(notif);
       chrome.storage.local.set(dict);
     });
-    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : profilePic, "user" : user, "notification" : notification, "id" : userID, "url" : commentUrl, "page" : page});
+    
   }
   
 });

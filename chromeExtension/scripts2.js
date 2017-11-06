@@ -192,10 +192,12 @@ function getUserData() {
           console.log(userID);
           if (notifications == 0){
             $("#numNotifications").hide();
+            chrome.browserAction.setBadgeText({text: ""});
           } else {
             if (document.getElementById("numNotifications")) {
               document.getElementById("numNotifications").innerHTML = notifications;
               $("#numNotifications").show();
+              chrome.browserAction.setBadgeText({text: notifications.toString()});
             }
           }
 

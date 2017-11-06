@@ -24,7 +24,7 @@ function logout(e) {
 
 
 if (document.getElementById("submitComment")) {
-  document.getElementById("submitComment").addEventListener("click", comment);
+  $(document).on("click", "#submitComment", comment);
 }
 
 function comment(e) {

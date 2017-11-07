@@ -317,6 +317,7 @@ def commentUser(id):
     info['picture'] = user.picture
     info['first'] = user.name.split(' ')[0]
     info['url'] = comment.url
+    info['id'] = user.id
     sessions = Session.query.filter_by(name=user.name).all()
     ids = set()
     for session in sessions:

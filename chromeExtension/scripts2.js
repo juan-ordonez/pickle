@@ -58,18 +58,12 @@ function comment(e) {
      chrome.storage.local.get(['tags', 'public'], function (result) {
 
       tags = result['tags'];
-<<<<<<< HEAD
-=======
 
->>>>>>> 8bb54d70bed95f9aa10a8d536ead0748ee30287e
      console.log(tags);
 
       all = result['public'];
 
-<<<<<<< HEAD
-     
-=======
->>>>>>> 8bb54d70bed95f9aa10a8d536ead0748ee30287e
+
      console.log(userID);
     $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
       console.log(data);

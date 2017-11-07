@@ -6,6 +6,7 @@ var session;
 var url;
 var picture;
 var notifications;
+var pageTitle
 
 
 if (document.getElementById("logoutButton")) {
@@ -73,7 +74,7 @@ function comment(e) {
             "registration_ids": data });
           $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : JSON.stringify(array), "url" : url});
         }
-        //Else if comment is for specific friends, notification should say that the user tagged those users on a page title
+        //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
         else {
           var array = data.slice();
           console.log(JSON.stringify(data));
@@ -193,10 +194,12 @@ function getUserData() {
           console.log(userID);
           if (notifications == 0){
             $("#numNotifications").hide();
+            chrome.browserAction.setBadgeText({text: ""});
           } else {
             if (document.getElementById("numNotifications")) {
               document.getElementById("numNotifications").innerHTML = notifications;
               $("#numNotifications").show();
+              chrome.browserAction.setBadgeText({text: notifications.toString()});
             }
           }
 
@@ -304,25 +307,23 @@ $(document).on("click", ".likeButton", function(){
 
   if (userName.split(" ")[0] != data['first']) {
 
+    //pass in pageTitle="" temporarily so chrome.notifications doesn't print undefined
+    json = JSON.stringify({ "data": {"status" : "liked your comment", "pic" : picture, "first" : userName.split(" ")[0], "comment" : "like", "url" : data['url'], "pageTitle" : ""}, 
+          "registration_ids": data['ids'] });
+    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "liked your comment", "cookies" : JSON.stringify({"ids" : JSON.stringify(data['ids'])}), "url" : data['url']});
+    $.ajax({
+        url:"https://gcm-http.googleapis.com/gcm/send",
+        type:"POST",
+        data:json,
+        beforeSend: function(request) {
+            request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+        },
+        contentType:"application/json; charset=utf-8",
+        dataType:"json",
+        success: function(){}
+        });
 
-
-
-  json = JSON.stringify({ "data": {"status" : "liked your comment", "pic" : data['picture'], "first" : data['first'], "comment" : "like", "url" : data['url']}, 
-        "registration_ids": data['ids'] });
-  $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : data['picture'], "user" : userName.split(" ")[0], "notification" : "liked your comment", "cookies" : JSON.stringify({"ids" : JSON.stringify(data['ids'])}), "url" : data['url']});
-  $.ajax({
-      url:"https://gcm-http.googleapis.com/gcm/send",
-      type:"POST",
-      data:json,
-      beforeSend: function(request) {
-          request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
-      },
-      contentType:"application/json; charset=utf-8",
-      dataType:"json",
-      success: function(){}
-      });
-
-}
+  }
 
 });
 

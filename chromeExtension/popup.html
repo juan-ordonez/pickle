@@ -50,7 +50,7 @@
             <a class="nav-link active" data-toggle="tab" href="#comments" role="tab">This page</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#otherPages" role="tab">Other pages</a>
+            <a class="nav-link" data-toggle="tab" href="#otherPages" role="tab">Discover</a>
           </li>
         </ul>
       </div>
@@ -75,7 +75,9 @@
                   </button>
 
                   <div id="friendsListDropdown" class="dropdown-menu">
-
+                    <div class="form-check dropdown-item">
+                      <strong>Send to...</strong>
+                    </div>
                     <div class="form-check dropdown-item">
                       <label class="form-check-label">
                         <input class="form-check-input" id="checkFriends" type="checkbox" checked="checked" value="">
@@ -89,8 +91,8 @@
 
                   </div>
                 </div>
-                <label class="sr-only" for="newComment">Add Comment</label>
-                <textarea class="form-control" id="newComment" rows="1" placeholder="Add Comment"></textarea>
+                <label class="sr-only" for="newComment">Comment on this web page</label>
+                <textarea class="form-control" id="newComment" rows="1" placeholder="Comment on this web page"></textarea>
                 <span class="input-group-btn">
                   <button type="submit" class="btn btn-primary" id="submitComment"><i class="fa fa-paper-plane"></i></button>
                 </span>
@@ -103,7 +105,7 @@
 
       <div class="tab-pane" id="otherPages" role="tabpanel">
         <div class="container">
-          <p><strong>Other pages with comments</strong></p>
+          <p><strong>Other comments on this website</strong></p>
 
           <i class="loadingSpinner fa fa-circle-o-notch fa-2x fa-spin mt-5"></i>
           <div class="cardList" style="display:none;">

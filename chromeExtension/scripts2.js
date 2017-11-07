@@ -58,15 +58,13 @@ function comment(e) {
      chrome.storage.local.get(['tags', 'public'], function (result) {
 
       tags = result['tags'];
-<<<<<<< HEAD
+
      console.log(tags);
-=======
+
       all = result['public'];
 
-     
->>>>>>> 7a430f8a581718192fc7f210930d0070beaca4fa
      console.log(userID);
-    $.post('http://localhost:4000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
+    $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
       console.log(data);
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
@@ -78,7 +76,7 @@ function comment(e) {
 
           json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle});
+          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle});
         }
         //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
         else {
@@ -86,7 +84,7 @@ function comment(e) {
           console.log(JSON.stringify(data));
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
+          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
         
 
         }
@@ -216,7 +214,7 @@ function getUserData() {
 
           var activeTab = arrayOfTabs[0];
 
-          $.post("http://localhost:4000/canonicalize/", {"url" : activeTab.url}, function(data) {
+          $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
             url = data;
             console.log(url);
 
@@ -323,7 +321,7 @@ $(document).on("click", ".likeButton", function(){
       var activeTab = arrayOfTabs[0];
       pageTitle = activeTab.title;
 
-      $.get("http://localhost:4000/commentUser/" + id, function(data) {
+      $.get("https://pickle-server-183401.appspot.com/commentUser/" + id, function(data) {
       data = JSON.parse(data);
 
         if (userName.split(" ")[0] != data['first']) {
@@ -333,7 +331,7 @@ $(document).on("click", ".likeButton", function(){
                 "registration_ids": data['ids'] });
           var tags = '["'+data['id']+'"]';
           console.log(tags);
-          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "liked your comment on", "cookies" : tags, "url" : data['url'], "page" : pageTitle});
+          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "liked your comment on", "cookies" : tags, "url" : data['url'], "page" : pageTitle});
           //$.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
           //$.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
           $.ajax({

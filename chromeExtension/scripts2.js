@@ -58,7 +58,7 @@ function comment(e) {
      chrome.storage.local.get('tags', function (result) {
 
       tags = result['tags'];
-     
+     console.log(tags);
      console.log(userID);
     $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags}, function(data) {
       console.log(data);
@@ -290,7 +290,7 @@ $(document).on("click", ".likeButton", function(){
   $likeButton = $(this).children("a");
   var likes = parseInt($likeButton.text());
   var id = decodeURIComponent($(this).closest(".commentGroup").attr('id'));
-  
+
   if ($likeButton.hasClass("active") == true) {
     //Decrease number of likes
     likes = likes - 1;
@@ -303,34 +303,40 @@ $(document).on("click", ".likeButton", function(){
     $(this).replaceWith('<div class="likeButton"><a href="#" class="active"><i class="fa fa-heart"></i> '+likes+'</a></div>');
     $.post("http://pickle-server-183401.appspot.com/like/", {"commentID" : id, "userID" : userID});
   
+    chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+      var activeTab = arrayOfTabs[0];
+      pageTitle = activeTab.title;
 
-  $.get("http://pickle-server-183401.appspot.com/commentUser/" + id, function(data) {
-    data = JSON.parse(data);
+      $.get("http://localhost:4000/commentUser/" + id, function(data) {
+      data = JSON.parse(data);
 
-  if (userName.split(" ")[0] != data['first']) {
+        if (userName.split(" ")[0] != data['first']) {
 
-    //pass in pageTitle="" temporarily so chrome.notifications doesn't print undefined
-    json = JSON.stringify({ "data": {"status" : "liked your comment", "pic" : picture, "first" : userName.split(" ")[0], "comment" : "like", "url" : data['url'], "pageTitle" : ""}, 
-          "registration_ids": data['ids'] });
-    $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "liked your comment", "cookies" : JSON.stringify({"ids" : JSON.stringify(data['ids'])}), "url" : data['url']});
-    $.ajax({
-        url:"https://gcm-http.googleapis.com/gcm/send",
-        type:"POST",
-        data:json,
-        beforeSend: function(request) {
-            request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
-        },
-        contentType:"application/json; charset=utf-8",
-        dataType:"json",
-        success: function(){}
-        });
+          //pass in pageTitle="" temporarily so chrome.notifications doesn't print undefined
+          json = JSON.stringify({ "data": {"status" : "liked your comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : "", "url" : data['url'], "pageTitle" : pageTitle}, 
+                "registration_ids": data['ids'] });
+          var tags = '["'+data['id']+'"]';
+          console.log(tags);
+          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "liked your comment on", "cookies" : tags, "url" : data['url'], "page" : pageTitle});
+          //$.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
+          //$.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
+          $.ajax({
+            url:"https://gcm-http.googleapis.com/gcm/send",
+            type:"POST",
+            data:json,
+            beforeSend: function(request) {
+                request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+            },
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+            success: function(){}
+          });
 
+        }
+
+      });
+    });
   }
-
-});
-
-
-}
 
 
 });

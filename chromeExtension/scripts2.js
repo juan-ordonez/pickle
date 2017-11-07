@@ -58,13 +58,11 @@ function comment(e) {
      chrome.storage.local.get(['tags', 'public'], function (result) {
 
       tags = result['tags'];
-<<<<<<< HEAD
      console.log(tags);
-=======
+
       all = result['public'];
 
      
->>>>>>> 7a430f8a581718192fc7f210930d0070beaca4fa
      console.log(userID);
     $.post('http://localhost:4000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
       console.log(data);

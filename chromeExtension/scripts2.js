@@ -8,7 +8,6 @@ var picture;
 var notifications;
 var pageTitle
 
-
 if (document.getElementById("logoutButton")) {
   document.getElementById("logoutButton").addEventListener("click", logout);
 }
@@ -213,8 +212,10 @@ function getUserData() {
 
           var activeTab = arrayOfTabs[0];
 
-          $.post("http://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
+          $.post("http://localhost:4000/canonicalize/", {"url" : activeTab.url}, function(data) {
             url = data;
+            console.log(url);
+
             $("#commentsBody").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function(){
                     //Enable tooltips
                     $(function () {

@@ -1,5 +1,5 @@
 import requests
-import urllib2
+import urllib
 from BeautifulSoup import BeautifulSoup
 
 """For a given URL, retrieve HTML and look for potential canonical URL. 
@@ -14,6 +14,7 @@ def canonical(url):
 		canonicalUrl = soup.find(rel="canonical").get('href')
 		return canonicalUrl
 
-	except:
+	except Exception as e:
+		print e
 		return url
 

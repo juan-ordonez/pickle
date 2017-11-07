@@ -123,6 +123,7 @@ def register():
                     friendObject.updated = False
                     for comment in friendObject.commentsWritten:
                         if comment.public:
+                            print(comment.string)
                             create.commentsTaggedIn.append(comment)
 
         

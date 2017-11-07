@@ -326,12 +326,14 @@ def commentUser(id):
 @crossdomain(origin='*')
 def notification():
     ids = []
-    cookies = ast.literal_eval(str(ast.literal_eval(str(request.form['cookies']))['ids']))
-    print(type(cookies))
+    cookies = ast.literal_eval(str(request.form['cookies']))
+    print(len(cookies))
     for cookie in cookies:
         session = Session.query.filter_by(authToken=cookie).first()
+        print(session.id)
         if session.id not in ids:
             user = User.query.filter_by(id=session.id).first()
+            print(user.name)
             #Create notification with page title field set to empty by default
 
             notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], canonical(request.form['url']))
@@ -342,7 +344,7 @@ def notification():
             user.notifications.append(notification)
             user.numNotifications += 1
             ids.append(session.id)
-    db.session.commit()
+            db.session.commit()
     
     return "notification added"
 

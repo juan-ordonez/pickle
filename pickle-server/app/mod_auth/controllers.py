@@ -121,6 +121,9 @@ def register():
                 friendObject = User.query.filter_by(id=friend['id']).first()
                 if friendObject:
                     friendObject.updated = False
+                    for comment in friendObject.commentsWritten:
+                        if comment.public:
+                            create.commentsTaggedIn.append(comment)
 
         
             db.session.add(create)
@@ -177,6 +180,7 @@ def logout(cookie):
 @crossdomain(origin='*')
 def comment():
     comment = Comment(request.form['string'], canonical(request.form['url']), str(datetime.now()))
+    comment.public = request.form['public']
     user = User.query.filter_by(id=request.form['userId']).first()
     user.commentsWritten.append(comment)
     db.session.add(user)

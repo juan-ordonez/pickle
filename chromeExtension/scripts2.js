@@ -72,7 +72,7 @@ function comment(e) {
 
           json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : JSON.stringify(array), "url" : url});
+          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : JSON.stringify(array), "url" : url, "page" : pageTitle});
         }
         //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
         else {
@@ -80,7 +80,7 @@ function comment(e) {
           console.log(JSON.stringify(data));
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : JSON.stringify(array), "url" : url});
+          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : JSON.stringify(array), "url" : url, "page" : pageTitle});
         
 
         }

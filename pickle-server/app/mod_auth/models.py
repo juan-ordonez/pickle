@@ -58,6 +58,7 @@ class Comment(db.Model):
 	string = db.Column(db.String(128))
 	url = db.Column(db.String(512))
 	time = db.Column(db.String(128))
+	public = db.Column(db.Boolean)
 	user_id = db.Column(db.String(128), db.ForeignKey('auth_user.id'))
 	numLikes = db.Column(db.Integer)
 
@@ -67,6 +68,7 @@ class Comment(db.Model):
 		self.string = string
 		self.url = url
 		self.time = time
+		self.public = False
 		hashed = hashlib.sha1()
 		unique = str(url) + str(string) + str(time)
 		hashed.update(unique.encode('utf-8'))

@@ -40,27 +40,30 @@ function comment(e) {
      pageTitle = activeTab.title;
 
      var tags;
+     var all;
 
      if (document.getElementById('checkFriends').checked) {
         chrome.storage.local.set({'tags': JSON.stringify(friendsArray)});
+        chrome.storage.local.set({'public' : true})
      } else {
       ids = []
       $('.form-check-input:checkbox:checked').get().forEach(function(element) {
         ids.push(element.id);
         console.log(ids);
         chrome.storage.local.set({'tags': JSON.stringify(ids)});
-
-        
-        });
+      });
+      chrome.storage.local.set({'public' : ""})
 
      }
 
-     chrome.storage.local.get('tags', function (result) {
+     chrome.storage.local.get(['tags', 'public'], function (result) {
 
       tags = result['tags'];
+      all = result['public'];
+
      
      console.log(userID);
-    $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags}, function(data) {
+    $.post('http://localhost:4000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
       console.log(data);
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];

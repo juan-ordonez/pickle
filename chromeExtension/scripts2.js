@@ -64,7 +64,7 @@ function comment(e) {
       console.log(data);
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
-      if (data.length > 0) {
+      
 
         //If comment is for all friends, then notification should say that user left a comment on a page title
         if (document.getElementById('checkFriends').checked) {
@@ -72,7 +72,7 @@ function comment(e) {
 
           json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : JSON.stringify(array), "url" : url, "page" : pageTitle});
+          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle});
         }
         //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
         else {
@@ -80,25 +80,27 @@ function comment(e) {
           console.log(JSON.stringify(data));
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : JSON.stringify(array), "url" : url, "page" : pageTitle});
+          $.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
         
 
         }
 
+        if (data.length > 0) {
 
 
 
-        $.ajax({
-          url:"https://gcm-http.googleapis.com/gcm/send",
-          type:"POST",
-          data:json,
-          beforeSend: function(request) {
-              request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
-          },
-          contentType:"application/json; charset=utf-8",
-          dataType:"json",
-          success: function(){}
-            });
+
+          $.ajax({
+            url:"https://gcm-http.googleapis.com/gcm/send",
+            type:"POST",
+            data:json,
+            beforeSend: function(request) {
+                request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+            },
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+            success: function(){}
+              });
 
       }
   

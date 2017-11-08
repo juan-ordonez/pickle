@@ -30,21 +30,37 @@ if (document.getElementById("submitComment")) {
 function comment(e) {
 
   e.preventDefault();
-  var value = $("#newComment").val();
-  chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
-     var activeTab = arrayOfTabs[0];
-     url = activeTab.url;
-     //Get title of current chrome tab to show in notification (see below)
-     pageTitle = activeTab.title;
+  var checked = document.querySelectorAll('input:checked');
 
-     var tags;
-     var all;
+  // there are no checked checkboxes
+  if (checked.length === 0) {
 
-     if (document.getElementById('checkFriends').checked) {
+      // Kill click event:
+      e.stopPropagation();
+      // Toggle dropdown if not already visible:
+      if ($("#friendsListDropdown").is(":hidden")){
+        $('.dropdown-toggle').dropdown('toggle');
+      }
+
+  // there are some checked checkboxes
+  } else {
+
+      var value = $("#newComment").val();
+      chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+
+      var activeTab = arrayOfTabs[0];
+      url = activeTab.url;
+      //Get title of current chrome tab to show in notification (see below)
+      pageTitle = activeTab.title;
+
+      var tags;
+      var all;
+
+      if (document.getElementById('checkFriends').checked) {
         chrome.storage.local.set({'tags': JSON.stringify(friendsArray)});
         chrome.storage.local.set({'public' : true})
-     } else {
+      } else {
       ids = []
       $('.form-check-input:checkbox:checked').get().forEach(function(element) {
         ids.push(element.id);
@@ -53,19 +69,19 @@ function comment(e) {
       });
       chrome.storage.local.set({'public' : ""})
 
-     }
+      }
 
-     chrome.storage.local.get(['tags', 'public'], function (result) {
+      chrome.storage.local.get(['tags', 'public'], function (result) {
 
       tags = result['tags'];
 
-     console.log(tags);
+      console.log(tags);
 
       all = result['public'];
 
 
-     console.log(userID);
-    $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
+      console.log(userID);
+      $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
       console.log(data);
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
@@ -114,6 +130,29 @@ function comment(e) {
 });
     
   });
+
+    //Append new comment to html using javascript
+
+    var comment = $("#newComment").val();
+    var user = userName.split(" ")[0];
+    var profilePic = picture;
+    //Check if comment is not empty
+    if (comment !== "") {
+      //Append new comment
+      $("#commentsBody").append('<div class="commentGroup"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div></div>');
+      //Scroll to bottom of window
+      $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+      //Clear textarea
+      $("#newComment").val("");
+    }
+    //Make container scrollable if enough comments are posted
+    if ($("#formNewComments").height() > 425) {
+      $("#formNewComments").removeClass("commentsNoScroll");
+      $("#formNewComments").addClass("commentsScroll");
+      $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+    }
+
+  }
   
 }
 
@@ -274,31 +313,6 @@ $("#iframe").on("load", function() {
   var iframe = document.getElementById("iframe");
   iframe.parentNode.removeChild(iframe);
 });
-
-
-//Post new comment 
-$(document).on("click", "#submitComment", function(){
-  //Retrieve comment entered by user
-  var comment = $("#newComment").val();
-  var user = userName.split(" ")[0];
-  var profilePic = picture;
-  //Check if comment is not empty
-  if (comment !== "") {
-    //Append new comment
-    $("#commentsBody").append('<div class="commentGroup"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div></div>');
-    //Scroll to bottom of window
-    $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-    //Clear textarea
-    $("#newComment").val("");
-  }
-  //Make container scrollable if enough comments are posted
-  if ($("#formNewComments").height() > 425) {
-    $("#formNewComments").removeClass("commentsNoScroll");
-    $("#formNewComments").addClass("commentsScroll");
-    $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-  }
-});
-
 
 //Like a comment
 $(document).on("click", ".likeButton", function(){

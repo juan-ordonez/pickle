@@ -337,7 +337,6 @@ def notification():
     for cookie in cookies:
         user = User.query.filter_by(id=cookie).first()
         
-        print(user.name)
         #Create notification with page title field set to empty by default
 
         notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], canonical(request.form['url']))

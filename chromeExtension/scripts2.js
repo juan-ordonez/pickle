@@ -19,6 +19,8 @@ function logout(e) {
     $.get("https://pickle-server-183401.appspot.com/logout/" + session, function(data){
       getUserData();
       });
+    //Set icon to inactive state
+    chrome.browserAction.setIcon({path:"iconInactive128.png"});
     }
   }
 
@@ -238,6 +240,9 @@ function getUserData() {
           picture = json.picture;
           notifications = json.notifications;
           console.log(userID);
+          //Set icon to active state
+          chrome.browserAction.setIcon({path:"iconActive128.png"});
+
           if (notifications == 0){
             $("#numNotifications").hide();
             chrome.browserAction.setBadgeText({text: ""});

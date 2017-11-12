@@ -9,7 +9,7 @@ def canonical(url):
 		#Get HTML of url
 		page = urllib.urlopen(url).read()
 		#Find canonical URL
-		head = SoupStrainer('link', {'rel': 'canonical'})
+		head = SoupStrainer('link', rel = 'canonical')
 		soup = BeautifulSoup(page, parseOnlyThese=head)
 		canonicalUrl = soup.find(rel="canonical").get('href')
 		return canonicalUrl
@@ -17,4 +17,3 @@ def canonical(url):
 	except Exception as e:
 		print e
 		return url
-

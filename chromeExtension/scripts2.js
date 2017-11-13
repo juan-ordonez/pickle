@@ -181,6 +181,7 @@ var iframeClick = function () {
             $(".fa-circle-o-notch").show();
             $(document).ready(function($) {
               setTimeout(function() {
+                chrome.browserAction.setPopup({popup : "popup.html"});
                 window.location.replace("popup.html");
               }, 5000);
             });
@@ -425,6 +426,16 @@ $(document).on("click", ".notificationTab", function(event){
   // $.post("http://pickle-server-183401.appspot.com/reset", {"id" : userID});
 
 });
+
+chrome.runtime.sendMessage({handshake: "connect"}, function(response) {
+  console.log(response.commentsHTML);
+});
+
+
+chrome.storage.onChanged.addListener(function(changes, areaName) {
+    console.log("changed yoooo");
+    });
+
 
 
 

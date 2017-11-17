@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
 
-  "name": "YippDEV",
+  "name": "Yipp",
   "description": "Leave messages for your friends on any website",
-  "version": "1.21",
+  "version": "1.30",
   "browser_action": {
     "default_icon": "iconActive128.png",
     "default_popup": "popup.html",

@@ -1,6 +1,5 @@
 from requests import get
 from BeautifulSoup import BeautifulSoup, SoupStrainer
-import lxml.html
 
 """For a given URL, retrieve HTML and look for potential canonical URL. 
    Returns canonical URL if found, or regular URL otherwise"""
@@ -12,8 +11,9 @@ def canonical(url):
 		response = get(url, headers=headers)
 		page = response.text
 		#Find canonical URL
-		links = lxml.html.fromstring(page).find("head").findall("link")
-		canonicalUrl = [link.attrib['href'] for link in links if "canonical" in lxml.html.tostring(link)][0]
+		head = SoupStrainer('link', rel = 'canonical')
+		soup = BeautifulSoup(page, parseOnlyThese=head)
+		canonicalUrl = soup.find(rel="canonical").get('href')
 		return canonicalUrl
 
 	except Exception as e:

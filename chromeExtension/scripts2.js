@@ -122,40 +122,7 @@ function comment(e) {
       chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
         picture : picture, pageTitle : pageTitle, checked : document.getElementById('checkFriends').checked});
 
-<<<<<<< HEAD
-      //Get string with tagged ids 
-      var idsString = ids.slice();
-      idsString.push(userID.toString());
-      idsString.sort();
-      var idsString = idsString.join('-');
-      //Get string with tagged names
-      names.push(userName);
-      names.sort();
-      var namesString = names.join(', ');
 
-      //Append new comment to html using javascript
-
-      //Get user name
-      var user = userName.split(" ")[0];
-
-
-      
-      
-      //Check if comment is not empty
-      if (comment !== "") {
-        //Append new comment
-        $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><i class="fa fa-circle-o-notch fa-spin"></i></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
-        //Show reply button if popup is showing all comments (user not in a conversation)
-        if ($("#closeFriends").attr("style") == "display: none;") {
-          $(".replyBtn").show();
-        }
-        //Scroll to bottom of window
-        $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-        //Clear textarea
-        $("#newComment").val("");
-        //Enable tooltip
-        $('[data-toggle="tooltip"]').tooltip();
-=======
     });
 
     //Get string with tagged ids 
@@ -182,7 +149,7 @@ function comment(e) {
       //Show reply button if popup is showing all comments (user not in a conversation)
       if ($("#closeFriends").attr("style") == "display: none;") {
         $(".replyBtn").show();
->>>>>>> 8e87302f598d68e5ff2919a7eb952b0b0bec676b
+
       }
       //Scroll to bottom of window
       $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);

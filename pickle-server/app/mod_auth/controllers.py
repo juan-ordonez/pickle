@@ -120,19 +120,28 @@ def register():
             for friend in data['friends']:
                 friendObject = User.query.filter_by(id=friend['id']).first()
                 if friendObject:
-                    friendObject.updated = False
+                    sessions = Session.query.filter_by(id=friendObject.id).all()
+                    for session in sessions:
+                        session.friends.append(create)
+                    friendObject.updated = True
                     for comment in friendObject.commentsWritten:
                         if comment.public:
-                            print(comment.string)
                             create.commentsTaggedIn.append(comment)
 
         
             db.session.add(create)
-            
-        session = Session.query.filter_by(cookie=request.cookies["fbsr_1430922756976623"]).first()
-        if not session:
-            session = Session(request.cookies["fbsr_1430922756976623"], data['id'], data['name'], email)
-            db.session.add(session)
+
+        if 'authToken' in data.keys():
+            session = Session.query.filter_by(cookie=data['authToken']).first()
+            if not session:
+                session = Session(data['authToken'], data['id'], data['name'], email)
+                db.session.add(session)
+
+        else:
+            session = Session.query.filter_by(cookie=request.cookies["fbsr_1430922756976623"]).first()
+            if not session:
+                session = Session(request.cookies["fbsr_1430922756976623"], data['id'], data['name'], email)
+                db.session.add(session)
         
         
         if data['friends']:
@@ -180,7 +189,7 @@ def logout(cookie):
 @mod_auth.route('/comment/', methods=['POST'])
 @crossdomain(origin='*')
 def comment():
-    comment = Comment(request.form['string'], request.form['url'], str(datetime.now()))
+    comment = Comment(request.form['string'], canonical(request.form['url']), str(datetime.now()))
     comment.public = request.form['public']
     user = User.query.filter_by(id=request.form['userId']).first()
     user.commentsWritten.append(comment)
@@ -207,7 +216,7 @@ def comment():
 @crossdomain(origin='*')
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
-    url = request.form['url']
+    url = canonical(request.form['url'])
     comments = []
     for comment in user.commentsTaggedIn:
         if comment.url == url:
@@ -339,7 +348,7 @@ def notification():
         
         #Create notification with page title field set to empty by default
 
-        notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], request.form['url'])
+        notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], canonical(request.form['url']))
         #If the request from background.js contains a title page, update the field in notification
         if request.form['page']:
             notification.page = request.form['page']

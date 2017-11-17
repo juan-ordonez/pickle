@@ -18,9 +18,13 @@ if (document.getElementById("logoutButton")) {
 function logout(e) {
   
   e.preventDefault();
+
   chrome.storage.local.get(['session'], function(response) {
+
     session = response['session'];
+  
     if (session) {
+      //Log user out
       $.get("https://pickle-server-183401.appspot.com/logout/" + session, function(data){
         chrome.browserAction.setPopup({popup : "register.html"});
         window.location.replace("register.html");
@@ -29,7 +33,6 @@ function logout(e) {
       chrome.browserAction.setIcon({path:"iconInactive128.png"});
     }
   chrome.storage.local.clear();
-
 
   });
   
@@ -44,86 +47,68 @@ function comment(e) {
 
   e.preventDefault();
 
-  var checked = document.querySelectorAll('input:checked');
-
   // Open dropdown with friends checkboxes if user submits comment without choosing any friends
+  var checked = document.querySelectorAll('input:checked');
   if (checked.length === 0) {
-
       e.stopPropagation();
       if ($("#friendsListDropdown").is(":hidden")){
-      $('.dropdown-toggle').dropdown('toggle');
+        $('.dropdown-toggle').dropdown('toggle');
       }
-
-  // Else proceed submitting the comment
   } 
-
+  // Else proceed submitting the comment
   else {
 
     //Get string of comment submitted by user
     var value = $("#newComment").val();
 
+    //Get the url and title of the page on which the comment is being posted
     chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
-
-      //Get the url and title of the page on which the comment is being posted
       var activeTab = arrayOfTabs[0];
       url = activeTab.url;
       pageTitle = activeTab.title;
-
     });   
 
-    var tags;
-    var all;
-
-    //Initialize arrays for ids and names of friends tagged in comment 
-    ids = []; //moved out of else loop below
-    names = []; //new, needed for grouping, added by Juan
+    //Get the following comment data
+    ids = []; //Array of ids tagged in comment
+    names = []; //Array of names tagged in comment
+    var tags; // String with ids tagged in comment
+    var all; // Boolean for whether the comment is for all friends or not
 
     //If the user is tagging all friends in comment
     if (document.getElementById('checkFriends').checked) {
 
-      // New, needed for grouping, added by Juan
-      // Get ids and names of all the user's friends
       ids = friendsArray;
       $('#friends .form-check-input').get().forEach(function(element) {
         names.push($(element).parent().text().trim());
       });
-
-      //store tags and public boolean (all friends tagged) in storage
       chrome.storage.local.set({'tags': JSON.stringify(friendsArray)});
       chrome.storage.local.set({'public' : true});
 
     } 
     //Else if user only tagging selected friends
     else {
-
-      //Get ids and names of tagged friends
       $('.form-check-input:checkbox:checked').get().forEach(function(element) {
         ids.push(element.id);
         names.push($(element).parent().text().trim()); //new, needed for grouping, added by Juan
         console.log(ids);
       });
-
-      //store tags and public boolean (empty because only select friends tagged) in storage
       chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : ""})
 
     }
 
+    //Send all comment data to background page
     chrome.storage.local.get(['tags', 'public'], function (result) {
-
       tags = result['tags'];
-
-      console.log(tags);
-
       all = result['public'];
-
-      console.log(userID);
-
       chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
         picture : picture, pageTitle : pageTitle, checked : document.getElementById('checkFriends').checked});
-
-
     });
+
+    //Append new comment to html using javascript
+
+    //Get user name
+    var user = userName.split(" ")[0];
 
     //Get string with tagged ids 
     var idsString = ids.slice();
@@ -136,258 +121,70 @@ function comment(e) {
     var namesString = names.join(', ');
     console.log(namesString);
     console.log(idsString);
-
-    //Append new comment to html using javascript
-
-    //Get user name
-    var user = userName.split(" ")[0];
     
-    //Check if comment is not empty
+    //Append new comment
     if (value !== "") {
-      //Append new comment
-      $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
-      //Show reply button if popup is showing all comments (user not in a conversation)
-      if ($("#closeFriends").attr("style") == "display: none;") {
-        $(".replyBtn").show();
-
-      }
-      //Scroll to bottom of window
-      $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-      //Clear textarea
-      $("#newComment").val("");
-      //Enable tooltip
-      $('[data-toggle="tooltip"]').tooltip();
-      //Make container scrollable if enough comments are posted
-      if ($("#formNewComments").height() > 425) {
-        $("#formNewComments").removeClass("commentsNoScroll");
-        $("#formNewComments").addClass("commentsScroll");
-        $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-      }
+      appendComment(user, value, picture, namesString, idsString);
     }
 
   }
 
 }
 
-
-  
-
-
-
-//if (document.getElementById("loginButton")) {
-  //document.getElementById("loginButton").addEventListener("click", login);
-//}
-
-//function login(e) {
-  
-  //e.preventDefault();
-  //window.open("https://pickle-server-183401.appspot.com/login/");
-  //window.location.replace("popup.html");
-  //getUserData();
-
-//}
-
-// var iframeClick = function () {
-//     var isOverIframe = false,
-//     windowLostBlur = function () {
-//         if (isOverIframe === true) {
-//             // DO STUFF
-//             $("#loginPicture").addClass("invisible");
-//             $(".fa-circle-o-notch").show();
-//             $(document).ready(function($) {
-//               setTimeout(function() {
-//                 window.location.replace("popup.html");
-//               }, 5000);
-//             });
-            
-//             isOverIframe = false;
-//         }
-//     };
-//     jQuery(window).focus();
-//     jQuery('#iframeFB').mouseenter(function(){
-//         isOverIframe = true;
-//         console.log(isOverIframe);
-//     });
-//     jQuery('#iframeFB').mouseleave(function(){
-//         isOverIframe = false;
-//         console.log(isOverIframe);
-//     });
-//     jQuery(window).blur(function () {
-//         windowLostBlur();
-//     });
-// };
-// iframeClick();
-
-
-// function getUserData() {
-  
-//   cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"}, function(data) {
-    
-//   if (data.length >= 1) { 
-//     if (window.location.href == chrome.extension.getURL('register.html')) {
-//       return
-//     }
-
-//     session = data[0].value
-
-//     var senderIds = ["511642730215"];
-//     chrome.gcm.register(senderIds, function (registrationID) {
-//     $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
-//     });
-    
-//     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
-//       json = JSON.parse(data);
-//       if (json.status == false) {
-//         window.location.replace("register.html");
-//       } else if (json.updated == false) {
-//         var iframe;
-
-//         iframe = document.createElement('iframe');
-//         iframe.id = "iframe"
-//         iframe.src = "https://pickle-server-183401.appspot.com/connect/";
-//         iframe.style.display = 'none';
-//         document.body.appendChild(iframe);
-//       } else {
-//           userName = json.name;
-//           userEmail = json.email;
-//           friendsArray = json.friends;
-//           userID = json.id;
-//           picture = json.picture;
-//           notifications = json.notifications;
-//           console.log(userID);
-//           //Set icon to active state
-//           chrome.browserAction.setIcon({path:"iconActive128.png"});
-
-//           if (notifications == 0){
-//             $("#numNotifications").hide();
-//             chrome.browserAction.setBadgeText({text: ""});
-//           } else {
-//             if (document.getElementById("numNotifications")) {
-//               document.getElementById("numNotifications").innerHTML = notifications;
-//               $("#numNotifications").show();
-//               chrome.browserAction.setBadgeText({text: notifications.toString()});
-//             }
-//           }
-
-          
-//           chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
-
-//           var activeTab = arrayOfTabs[0];
-
-//           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
-//             url = data;
-//             console.log(url);
-
-//             $("#commentsBody").load("http://localhost:5000/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function(){
-//                     //Enable tooltips
-//                     $(function () {
-//                       $('[data-toggle="tooltip"]').tooltip()
-//                     })
-//                     $("#formNewComments .loadingSpinner").hide();
-//                     if ($("#formNewComments").height() > 425) {
-//                       $("#formNewComments").removeClass("commentsNoScroll");
-//                       $("#formNewComments").addClass("commentsScroll");
-//                       $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-//                     }
-//                 });  
-//             $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function(data) {
-//               $("#notificationsContainer .loadingSpinner").hide();
-//               $("#notificationsContainer .cardList").show();
-//             });
-//             $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url}, function(){
-//               $("#otherPages .loadingSpinner").hide();
-//               $("#otherPages .cardList").show();
-//             });
-//             $("#friendListCheckboxes").load("http://localhost:5000/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
-//             $("#accountName").append(userName);
-//             $("#accountProfilePicture").attr("src", picture);
-
-
-
-//         });
-
-
-          
-//         });
-//       }
-
-
-//     });
-
-//   } else {
-//   if (window.location.href != chrome.extension.getURL('register.html')) {
-//     window.location.replace("register.html");
-//       } 
-//     }
-
-//   });
-
-// }
-
-
-// if (window.location.href != chrome.extension.getURL('register.html')) {
-//   getUserData();
-// }
-
-$("#iframe").on("load", function() {
-  var iframe = document.getElementById("iframe");
-  iframe.parentNode.removeChild(iframe);
-});
-
-//Like a comment
+//Liking or unliking a comment when user clicks heart icon
 $(document).on("click", ".likeButton", function(){
+  //Get id of the comment and the number of likes it has
   $likeButton = $(this).children("a");
   var likes = parseInt($likeButton.text());
   var id = decodeURIComponent($(this).closest(".commentGroup").attr('id'));
 
+  //Decrease number of likes if user is unliking
   if ($likeButton.hasClass("active") == true) {
-    //Decrease number of likes
     likes = likes - 1;
     $(this).replaceWith('<div class="likeButton"><a href="#"><i class="fa fa-heart"></i> '+likes+'</a></div>');
     $.post("http://pickle-server-183401.appspot.com/unlike/", {"commentID" : id, "userID" : userID});
   }
+  //Increase number of likes if user is liking and send notification
   else {
-    //Increment number of likes
     likes = likes + 1;
     $(this).replaceWith('<div class="likeButton"><a href="#" class="active"><i class="fa fa-heart"></i> '+likes+'</a></div>');
     $.post("http://pickle-server-183401.appspot.com/like/", {"commentID" : id, "userID" : userID});
   
+    //Get the title of the user's current tab
     chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
       var activeTab = arrayOfTabs[0];
       pageTitle = activeTab.title;
+    });
 
-      $.get("https://pickle-server-183401.appspot.com/commentUser/" + id, function(data) {
-      data = JSON.parse(data);
+    //Get data about comment being liked
+    $.get("https://pickle-server-183401.appspot.com/commentUser/" + id, function(data) {
+    data = JSON.parse(data);
 
-        if (userName.split(" ")[0] != data['first']) {
+      //Send notification if user is not liking his own comment
+      if (userName.split(" ")[0] != data['first']) {
 
-          //pass in pageTitle="" temporarily so chrome.notifications doesn't print undefined
-          json = JSON.stringify({ "data": {"status" : "liked your comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : "", "url" : data['url'], "pageTitle" : pageTitle}, 
-                "registration_ids": data['ids'] });
-          var tags = '["'+data['id']+'"]';
-          console.log(tags);
-          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "liked your comment on", "cookies" : tags, "url" : data['url'], "page" : pageTitle});
-          //$.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
-          //$.post("http://localhost:4000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
-          $.ajax({
-            url:"https://gcm-http.googleapis.com/gcm/send",
-            type:"POST",
-            data:json,
-            beforeSend: function(request) {
-                request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
-            },
-            contentType:"application/json; charset=utf-8",
-            dataType:"json",
-            success: function(){}
-          });
+        //post notification to db
+        var tags = '["'+data['id']+'"]';
+        $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "liked your comment on", "cookies" : tags, "url" : data['url'], "page" : pageTitle});
+        //Send push message for chrome notification
+        json = JSON.stringify({ "data": {"status" : "liked your comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : "", "url" : data['url'], "pageTitle" : pageTitle}, 
+              "registration_ids": data['ids'] });
+        $.ajax({
+          url:"https://gcm-http.googleapis.com/gcm/send",
+          type:"POST",
+          data:json,
+          beforeSend: function(request) {
+              request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+          },
+          contentType:"application/json; charset=utf-8",
+          dataType:"json",
+          success: function(){}
+        });
 
-        }
+      }
 
-      });
     });
   }
-
-
 });
 
 
@@ -399,8 +196,7 @@ $(document).on("click", "#notificationsBell", function(){
 
 });
 
-
-
+//Append incoming comment when user is on same url with comment tab opened
 chrome.gcm.onMessage.addListener(function(payload) {
 
   var profilePic = payload.data.pic;
@@ -410,27 +206,33 @@ chrome.gcm.onMessage.addListener(function(payload) {
   var notification = payload.data.status;
   var idsString = payload.data.ids;
   var namesString = payload.data.names;
-  console.log(window.location.href);
+
   if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
-    console.log("messagwe received");
 
     connect("first"); 
 
     if (commentUrl == url && comment != 'like') {
-    //Append new comment
-    $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment hiddenComment" style="display:none;"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
-    if ($(".temporaryComment").last().attr("class").split(' ')[1] == $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
-      $(".temporaryComment").last().show();
-    }
-    //Show reply button if popup is showing all comments (user not in a conversation)
-    if ($("#closeFriends").attr("style") == "display: none;") {
-      $(".replyBtn").show();
-    }
-    //Enable tooltip
-    $('[data-toggle="tooltip"]').tooltip();
-    //Scroll to bottom of window
-    $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-  } 
+
+      // appendComment(user, comment, profilePic, namesString, idsString);
+      // $(".temporaryComment").last().addClass("hiddenComment");
+      // $(".temporaryComment").last().hide();
+      // if ($(".temporaryComment").last().attr("class").split(' ')[1] == $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
+      //    $(".temporaryComment").last().show();
+      // }
+      //Append new comment
+      $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
+      if ($(".temporaryComment").last().attr("class").split(' ')[1] == $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
+        $(".temporaryComment").last().show();
+      }
+      //Show reply button if popup is showing all comments (user not in a conversation)
+      if ($("#closeFriends").attr("style") == "display: none;") {
+        $(".replyBtn").show();
+      }
+      //Enable tooltip
+      $('[data-toggle="tooltip"]').tooltip();
+      //Scroll to bottom of window
+      $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+      }
 
   } else if (window.location.href == chrome.extension.getURL('notifications.html')) {
     console.log(commentUrl);
@@ -582,6 +384,27 @@ chrome.runtime.onMessage.addListener(
     }
   });
 
+//Append html of new comment to body of existing comments
+function appendComment(user, value, picture, names, ids) {
+  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+names+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+names+'</p></div>');
+  //Show reply button if user is not in reply mode
+  if ($("#closeFriends").attr("style") == "display: none;") {
+    $(".replyBtn").show();
+  }
+  $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight); //Scroll to bottom of window
+  $("#newComment").val(""); //Clear textarea
+  $('[data-toggle="tooltip"]').tooltip(); //Enable tooltip
+  scrollable($("#formNewComments")); //Make container scrollable if enough comments are posted
+}
+
+//makes a container scrollable after it reaches a certain height
+function scrollable(container) {
+  if (container.height() > 425) {
+    container.removeClass("commentsNoScroll");
+    container.addClass("commentsScroll");
+    container.parent().scrollTop(container.parent()[0].scrollHeight);
+  }
+}
 
 
 

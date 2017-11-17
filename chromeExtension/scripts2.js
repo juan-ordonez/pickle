@@ -55,42 +55,46 @@ function comment(e) {
       }
 
   // Else proceed submitting the comment
-  } else {
+  } 
 
-      //Get string of comment submitted by user
-      var value = $("#newComment").val();
+  else {
 
-      chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+    //Get string of comment submitted by user
+    var value = $("#newComment").val();
+
+    chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
       //Get the url and title of the page on which the comment is being posted
       var activeTab = arrayOfTabs[0];
       url = activeTab.url;
       pageTitle = activeTab.title;
 
-      var tags;
-      var all;
+    });   
 
-      //Initialize arrays for ids and names of friends tagged in comment 
-      ids = []; //moved out of else loop below
-      names = []; //new, needed for grouping, added by Juan
+    var tags;
+    var all;
 
-      //If the user is tagging all friends in comment
-      if (document.getElementById('checkFriends').checked) {
+    //Initialize arrays for ids and names of friends tagged in comment 
+    ids = []; //moved out of else loop below
+    names = []; //new, needed for grouping, added by Juan
 
-        // New, needed for grouping, added by Juan
-        // Get ids and names of all the user's friends
-        ids = friendsArray;
-        $('#friends .form-check-input').get().forEach(function(element) {
-          names.push($(element).parent().text().trim());
-        });
+    //If the user is tagging all friends in comment
+    if (document.getElementById('checkFriends').checked) {
 
-        //store tags and public boolean (all friends tagged) in storage
-        chrome.storage.local.set({'tags': JSON.stringify(friendsArray)});
-        chrome.storage.local.set({'public' : true});
+      // New, needed for grouping, added by Juan
+      // Get ids and names of all the user's friends
+      ids = friendsArray;
+      $('#friends .form-check-input').get().forEach(function(element) {
+        names.push($(element).parent().text().trim());
+      });
 
-      } 
-      //Else if user only tagging selected friends
-      else {
+      //store tags and public boolean (all friends tagged) in storage
+      chrome.storage.local.set({'tags': JSON.stringify(friendsArray)});
+      chrome.storage.local.set({'public' : true});
+
+    } 
+    //Else if user only tagging selected friends
+    else {
 
       //Get ids and names of tagged friends
       $('.form-check-input:checkbox:checked').get().forEach(function(element) {
@@ -103,9 +107,9 @@ function comment(e) {
       chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : ""})
 
-      }
+    }
 
-      chrome.storage.local.get(['tags', 'public'], function (result) {
+    chrome.storage.local.get(['tags', 'public'], function (result) {
 
       tags = result['tags'];
 
@@ -118,6 +122,7 @@ function comment(e) {
       chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
         picture : picture, pageTitle : pageTitle, checked : document.getElementById('checkFriends').checked});
 
+<<<<<<< HEAD
       //Get string with tagged ids 
       var idsString = ids.slice();
       idsString.push(userID.toString());
@@ -150,17 +155,48 @@ function comment(e) {
         $("#newComment").val("");
         //Enable tooltip
         $('[data-toggle="tooltip"]').tooltip();
+=======
+    });
+
+    //Get string with tagged ids 
+    var idsString = ids.slice();
+    idsString.push(userID.toString());
+    idsString.sort();
+    var idsString = idsString.join('-');
+    //Get string with tagged names
+    names.push(userName);
+    names.sort();
+    var namesString = names.join(', ');
+    console.log(namesString);
+    console.log(idsString);
+
+    //Append new comment to html using javascript
+
+    //Get user name
+    var user = userName.split(" ")[0];
+    
+    //Check if comment is not empty
+    if (value !== "") {
+      //Append new comment
+      $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
+      //Show reply button if popup is showing all comments (user not in a conversation)
+      if ($("#closeFriends").attr("style") == "display: none;") {
+        $(".replyBtn").show();
+>>>>>>> 8e87302f598d68e5ff2919a7eb952b0b0bec676b
       }
+      //Scroll to bottom of window
+      $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+      //Clear textarea
+      $("#newComment").val("");
+      //Enable tooltip
+      $('[data-toggle="tooltip"]').tooltip();
       //Make container scrollable if enough comments are posted
       if ($("#formNewComments").height() > 425) {
         $("#formNewComments").removeClass("commentsNoScroll");
         $("#formNewComments").addClass("commentsScroll");
         $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
       }
-
-});
-    
-  });
+    }
 
   }
 
@@ -415,7 +451,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
     if (commentUrl == url && comment != 'like') {
     //Append new comment
-    $("#comments").append('<div class="commentGroup '+idsString+' temporaryComment hiddenComment" style="display:none;"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
+    $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment hiddenComment" style="display:none;"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
     if ($(".temporaryComment").last().attr("class").split(' ')[1] == $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
       $(".temporaryComment").last().show();
     }

@@ -1,22 +1,17 @@
-from requests import get
-from BeautifulSoup import BeautifulSoup, SoupStrainer
+import metadata_parser
 
 """For a given URL, retrieve HTML and look for potential canonical URL. 
    Returns canonical URL if found, or regular URL otherwise"""
 def canonical(url):
-	try: 
-		#Get HTML of url
-		#page = urllib.urlopen(url).read()
+	try:
 		headers = {'User-Agent':'Mozilla/5.0'}
-		response = get(url, headers=headers)
-		page = response.text
-		#Find canonical URL
-		head = SoupStrainer('link', rel = 'canonical')
-		soup = BeautifulSoup(page, parseOnlyThese=head)
-		canonicalUrl = soup.find(rel="canonical").get('href')
-		return canonicalUrl
+		page = metadata_parser.MetadataParser(url=url, url_headers=headers)
+		canonical = page.get_metadata('canonical')
 
-	except Exception as e:
-		print e
+		if canonical:
+			return canonical
 		return url
+	except:
+		return url
+
 

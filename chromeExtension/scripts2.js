@@ -252,7 +252,7 @@ $(document).on("click", ".notificationTab", function(event){
           // Tab opened.
        });
 
-
+  connect("first");
 });
 
 
@@ -405,26 +405,4 @@ function scrollable(container) {
     container.parent().scrollTop(container.parent()[0].scrollHeight);
   }
 }
-
-
-
-
-
-
-
-
-
-
-      
-
-
-
-
-
-
-
-
-
-
-
 

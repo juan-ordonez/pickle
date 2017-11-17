@@ -16,6 +16,9 @@ var successURL = 'www.facebook.com/connect/login_success.html';
 chrome.gcm.onMessage.addListener(function(payload) {
 
   done = false;
+  var views = chrome.extension.getViews({type : "popup"});
+  console.log(views.length);
+  if (views.length == 0) {
   chrome.storage.local.get(['accessToken'], function(data) {
     
   if (data['accessToken'] != null) { 
@@ -23,14 +26,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
     
     session = data['accessToken'];
     console.log(session);
-
-    var senderIds = ["511642730215"];
-    chrome.gcm.register(senderIds, function (registrationID) {
-    $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
-    });
-
-   
-    
+  
     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
       json = JSON.parse(data);
       if (json.status == false) {
@@ -61,6 +57,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
     }
 
   });
+}
 
 
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
@@ -80,9 +77,6 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   var commentUrl = payload.data.url;
   var notification = payload.data.status;
 
-  var views = chrome.extension.getViews({type : "popup"});
-  console.log(views.length);
-  if (views.length == 0) {
     chrome.notifications.create({   
     type: 'basic', 
     iconUrl: 'iconBig.png', 
@@ -98,7 +92,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
       chrome.storage.local.set(dict);
     });
     
-  }
+  
   
 });
 
@@ -115,6 +109,10 @@ chrome.notifications.onClicked.addListener(function (id) {
         
     });
 
+  chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
+  done = false;
+  getUserData();
+
 
 
 });
@@ -122,17 +120,13 @@ chrome.notifications.onClicked.addListener(function (id) {
 
 function getUserData() {
 
-  chrome.storage.local.get(['accessToken'], function(data) {
+  chrome.storage.local.get(['accessToken', 'userName', 'userEmail', 'session', 'picture', 'userID'], function(data) {
     
   if (data['accessToken'] != null) { 
 
+
     
     session = data['accessToken'];
-
-    var senderIds = ["511642730215"];
-    chrome.gcm.register(senderIds, function (registrationID) {
-    $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
-    });
     
     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data) {
       json = JSON.parse(data);
@@ -140,14 +134,7 @@ function getUserData() {
       if (json.status == false) {
         console.log("logged out");
         chrome.browserAction.setPopup({popup : "register.html"});
-      } else if (json.updated == false) {
-        var iframe;
-
-        iframe = document.createElement('iframe');
-        iframe.id = "iframe"
-        iframe.src = "https://pickle-server-183401.appspot.com/connect/";
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
+    
       } else {
           console.log("logged in");
           chrome.browserAction.setPopup({popup : "popup.html"});
@@ -355,6 +342,10 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
+          var senderIds = ["511642730215"];
+          chrome.gcm.register(senderIds, function (registrationID) {
+            $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
+          });
         
 
         }

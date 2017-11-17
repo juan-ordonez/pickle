@@ -170,164 +170,6 @@ function comment(e) {
 }
 
 
-  
-
-
-
-//if (document.getElementById("loginButton")) {
-  //document.getElementById("loginButton").addEventListener("click", login);
-//}
-
-//function login(e) {
-  
-  //e.preventDefault();
-  //window.open("https://pickle-server-183401.appspot.com/login/");
-  //window.location.replace("popup.html");
-  //getUserData();
-
-//}
-
-// var iframeClick = function () {
-//     var isOverIframe = false,
-//     windowLostBlur = function () {
-//         if (isOverIframe === true) {
-//             // DO STUFF
-//             $("#loginPicture").addClass("invisible");
-//             $(".fa-circle-o-notch").show();
-//             $(document).ready(function($) {
-//               setTimeout(function() {
-//                 window.location.replace("popup.html");
-//               }, 5000);
-//             });
-            
-//             isOverIframe = false;
-//         }
-//     };
-//     jQuery(window).focus();
-//     jQuery('#iframeFB').mouseenter(function(){
-//         isOverIframe = true;
-//         console.log(isOverIframe);
-//     });
-//     jQuery('#iframeFB').mouseleave(function(){
-//         isOverIframe = false;
-//         console.log(isOverIframe);
-//     });
-//     jQuery(window).blur(function () {
-//         windowLostBlur();
-//     });
-// };
-// iframeClick();
-
-
-// function getUserData() {
-  
-//   cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"}, function(data) {
-    
-//   if (data.length >= 1) { 
-//     if (window.location.href == chrome.extension.getURL('register.html')) {
-//       return
-//     }
-
-//     session = data[0].value
-
-//     var senderIds = ["511642730215"];
-//     chrome.gcm.register(senderIds, function (registrationID) {
-//     $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
-//     });
-    
-//     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
-//       json = JSON.parse(data);
-//       if (json.status == false) {
-//         window.location.replace("register.html");
-//       } else if (json.updated == false) {
-//         var iframe;
-
-//         iframe = document.createElement('iframe');
-//         iframe.id = "iframe"
-//         iframe.src = "https://pickle-server-183401.appspot.com/connect/";
-//         iframe.style.display = 'none';
-//         document.body.appendChild(iframe);
-//       } else {
-//           userName = json.name;
-//           userEmail = json.email;
-//           friendsArray = json.friends;
-//           userID = json.id;
-//           picture = json.picture;
-//           notifications = json.notifications;
-//           console.log(userID);
-//           //Set icon to active state
-//           chrome.browserAction.setIcon({path:"iconActive128.png"});
-
-//           if (notifications == 0){
-//             $("#numNotifications").hide();
-//             chrome.browserAction.setBadgeText({text: ""});
-//           } else {
-//             if (document.getElementById("numNotifications")) {
-//               document.getElementById("numNotifications").innerHTML = notifications;
-//               $("#numNotifications").show();
-//               chrome.browserAction.setBadgeText({text: notifications.toString()});
-//             }
-//           }
-
-          
-//           chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
-
-//           var activeTab = arrayOfTabs[0];
-
-//           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
-//             url = data;
-//             console.log(url);
-
-//             $("#commentsBody").load("http://localhost:5000/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function(){
-//                     //Enable tooltips
-//                     $(function () {
-//                       $('[data-toggle="tooltip"]').tooltip()
-//                     })
-//                     $("#formNewComments .loadingSpinner").hide();
-//                     if ($("#formNewComments").height() > 425) {
-//                       $("#formNewComments").removeClass("commentsNoScroll");
-//                       $("#formNewComments").addClass("commentsScroll");
-//                       $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-//                     }
-//                 });  
-//             $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function(data) {
-//               $("#notificationsContainer .loadingSpinner").hide();
-//               $("#notificationsContainer .cardList").show();
-//             });
-//             $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url}, function(){
-//               $("#otherPages .loadingSpinner").hide();
-//               $("#otherPages .cardList").show();
-//             });
-//             $("#friendListCheckboxes").load("http://localhost:5000/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
-//             $("#accountName").append(userName);
-//             $("#accountProfilePicture").attr("src", picture);
-
-
-
-//         });
-
-
-          
-//         });
-//       }
-
-
-//     });
-
-//   } else {
-//   if (window.location.href != chrome.extension.getURL('register.html')) {
-//     window.location.replace("register.html");
-//       } 
-//     }
-
-//   });
-
-// }
-
-
-// if (window.location.href != chrome.extension.getURL('register.html')) {
-//   getUserData();
-// }
 
 $("#iframe").on("load", function() {
   var iframe = document.getElementById("iframe");
@@ -449,6 +291,8 @@ $(document).on("click", ".notificationTab", function(event){
   chrome.tabs.create({'url': url}, function(tab) {
           // Tab opened.
        });
+
+  connect("first");
 
 
 });
@@ -581,27 +425,5 @@ chrome.runtime.onMessage.addListener(
       window.location.replace("popup.html");
     }
   });
-
-
-
-
-
-
-
-
-
-
-
-      
-
-
-
-
-
-
-
-
-
-
 
 

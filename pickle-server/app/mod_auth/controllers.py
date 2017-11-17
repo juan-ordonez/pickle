@@ -120,19 +120,28 @@ def register():
             for friend in data['friends']:
                 friendObject = User.query.filter_by(id=friend['id']).first()
                 if friendObject:
-                    friendObject.updated = False
+                    sessions = Session.query.filter_by(id=friendObject.id).all()
+                    for session in sessions:
+                        session.friends.append(create)
+                    friendObject.updated = True
                     for comment in friendObject.commentsWritten:
                         if comment.public:
-                            print(comment.string)
                             create.commentsTaggedIn.append(comment)
 
         
             db.session.add(create)
-            
-        session = Session.query.filter_by(cookie=request.cookies["fbsr_1430922756976623"]).first()
-        if not session:
-            session = Session(request.cookies["fbsr_1430922756976623"], data['id'], data['name'], email)
-            db.session.add(session)
+
+        if 'authToken' in data.keys():
+            session = Session.query.filter_by(cookie=data['authToken']).first()
+            if not session:
+                session = Session(data['authToken'], data['id'], data['name'], email)
+                db.session.add(session)
+
+        else:
+            session = Session.query.filter_by(cookie=request.cookies["fbsr_1430922756976623"]).first()
+            if not session:
+                session = Session(request.cookies["fbsr_1430922756976623"], data['id'], data['name'], email)
+                db.session.add(session)
         
         
         if data['friends']:
@@ -297,7 +306,7 @@ def friends(user):
 def domain():
     comments = {}
     user = User.query.filter_by(id=request.form['user']).first()
-    url = canonical(request.form['url'])
+    url = request.form['url']
     parsed_uri = urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
     for comment in user.commentsTaggedIn:
@@ -436,6 +445,9 @@ def canonicalize():
     
 
     return url
+
+
+
 
 
 

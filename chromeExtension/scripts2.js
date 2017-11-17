@@ -6,7 +6,10 @@ var session;
 var url;
 var picture;
 var notifications;
-var pageTitle
+var pageTitle;
+var commentsHTML;
+var notificationsHTML;
+var commentsHTML;
 
 if (document.getElementById("logoutButton")) {
   document.getElementById("logoutButton").addEventListener("click", logout);
@@ -15,13 +18,21 @@ if (document.getElementById("logoutButton")) {
 function logout(e) {
   
   e.preventDefault();
-  if (session) {
-    $.get("https://pickle-server-183401.appspot.com/logout/" + session, function(data){
-      getUserData();
-      });
-    //Set icon to inactive state
-    chrome.browserAction.setIcon({path:"iconInactive128.png"});
+  chrome.storage.local.get(['session'], function(response) {
+    session = response['session'];
+    if (session) {
+      $.get("https://pickle-server-183401.appspot.com/logout/" + session, function(data){
+        chrome.browserAction.setPopup({popup : "register.html"});
+        window.location.replace("register.html");
+        });
+      //Set icon to inactive state
+      chrome.browserAction.setIcon({path:"iconInactive128.png"});
     }
+  chrome.storage.local.clear();
+
+
+  });
+  
   }
 
 
@@ -104,6 +115,9 @@ function comment(e) {
 
       console.log(userID);
 
+      chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
+        picture : picture, pageTitle : pageTitle, checked : document.getElementById('checkFriends').checked});
+
       //Get string with tagged ids 
       var idsString = ids.slice();
       idsString.push(userID.toString());
@@ -114,58 +128,58 @@ function comment(e) {
       names.sort();
       var namesString = names.join(', ');
 
-      $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
-        console.log(data);
-        data = JSON.parse(data);
-        // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
+      // $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
+      //   console.log(data);
+      //   data = JSON.parse(data);
+      //   // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
         
-        //If comment is for all friends, then notification should say that user left a comment on a page title
-        if (document.getElementById('checkFriends').checked) {
-          var array = data.slice();
+      //   //If comment is for all friends, then notification should say that user left a comment on a page title
+      //   if (document.getElementById('checkFriends').checked) {
+      //     var array = data.slice();
 
-          json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "ids" : idsString, "names" : namesString}, 
-            "registration_ids": data });
-          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(){
-            //remove loading spinner
-            $(".temporaryComment .likeButton i").last().remove();
-            $(".temporaryComment .likeButton").last().append('<a href="#"><i class="fa fa-heart"></i> 0</a>');
-          });
-        }
-        //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
-        else {
-          var array = data.slice();
-          console.log(JSON.stringify(data));
-          json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "ids" : idsString, "names" : namesString}, 
-            "registration_ids": data });
-          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(){
-            //remove loading spinner
-            $(".temporaryComment .likeButton i").last().remove();
-            $(".temporaryComment .likeButton").last().append('<a href="#"><i class="fa fa-heart"></i> 0</a>');
-          });
+      //     json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "ids" : idsString, "names" : namesString}, 
+      //       "registration_ids": data });
+      //     $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(){
+      //       //remove loading spinner
+      //       $(".temporaryComment .likeButton i").last().remove();
+      //       $(".temporaryComment .likeButton").last().append('<a href="#"><i class="fa fa-heart"></i> 0</a>');
+      //     });
+      //   }
+      //   //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
+      //   else {
+      //     var array = data.slice();
+      //     console.log(JSON.stringify(data));
+      //     json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "ids" : idsString, "names" : namesString}, 
+      //       "registration_ids": data });
+      //     $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(){
+      //       //remove loading spinner
+      //       $(".temporaryComment .likeButton i").last().remove();
+      //       $(".temporaryComment .likeButton").last().append('<a href="#"><i class="fa fa-heart"></i> 0</a>');
+      //     });
         
 
-        }
+      //   }
 
-        if (data.length > 0) {
-
-
+      //   if (data.length > 0) {
 
 
-          $.ajax({
-            url:"https://gcm-http.googleapis.com/gcm/send",
-            type:"POST",
-            data:json,
-            beforeSend: function(request) {
-                request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
-            },
-            contentType:"application/json; charset=utf-8",
-            dataType:"json",
-            success: function(){}
-              });
 
-        }
 
-      });
+      //     $.ajax({
+      //       url:"https://gcm-http.googleapis.com/gcm/send",
+      //       type:"POST",
+      //       data:json,
+      //       beforeSend: function(request) {
+      //           request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+      //       },
+      //       contentType:"application/json; charset=utf-8",
+      //       dataType:"json",
+      //       success: function(){}
+      //         });
+
+      //   }
+
+      // });
 
       //Append new comment to html using javascript
 
@@ -216,147 +230,147 @@ function comment(e) {
 
 //}
 
-var iframeClick = function () {
-    var isOverIframe = false,
-    windowLostBlur = function () {
-        if (isOverIframe === true) {
-            // DO STUFF
-            $("#loginPicture").addClass("invisible");
-            $(".fa-circle-o-notch").show();
-            $(document).ready(function($) {
-              setTimeout(function() {
-                window.location.replace("popup.html");
-              }, 5000);
-            });
+// var iframeClick = function () {
+//     var isOverIframe = false,
+//     windowLostBlur = function () {
+//         if (isOverIframe === true) {
+//             // DO STUFF
+//             $("#loginPicture").addClass("invisible");
+//             $(".fa-circle-o-notch").show();
+//             $(document).ready(function($) {
+//               setTimeout(function() {
+//                 window.location.replace("popup.html");
+//               }, 5000);
+//             });
             
-            isOverIframe = false;
-        }
-    };
-    jQuery(window).focus();
-    jQuery('#iframeFB').mouseenter(function(){
-        isOverIframe = true;
-        console.log(isOverIframe);
-    });
-    jQuery('#iframeFB').mouseleave(function(){
-        isOverIframe = false;
-        console.log(isOverIframe);
-    });
-    jQuery(window).blur(function () {
-        windowLostBlur();
-    });
-};
-iframeClick();
+//             isOverIframe = false;
+//         }
+//     };
+//     jQuery(window).focus();
+//     jQuery('#iframeFB').mouseenter(function(){
+//         isOverIframe = true;
+//         console.log(isOverIframe);
+//     });
+//     jQuery('#iframeFB').mouseleave(function(){
+//         isOverIframe = false;
+//         console.log(isOverIframe);
+//     });
+//     jQuery(window).blur(function () {
+//         windowLostBlur();
+//     });
+// };
+// iframeClick();
 
 
-function getUserData() {
+// function getUserData() {
   
-  cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"}, function(data) {
+//   cookie = chrome.cookies.getAll({ url: "https://pickle-server-183401.appspot.com"}, function(data) {
     
-  if (data.length >= 1) { 
-    if (window.location.href == chrome.extension.getURL('register.html')) {
-      return
-    }
+//   if (data.length >= 1) { 
+//     if (window.location.href == chrome.extension.getURL('register.html')) {
+//       return
+//     }
 
-    session = data[0].value
+//     session = data[0].value
 
-    var senderIds = ["511642730215"];
-    chrome.gcm.register(senderIds, function (registrationID) {
-    $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
-    });
+//     var senderIds = ["511642730215"];
+//     chrome.gcm.register(senderIds, function (registrationID) {
+//     $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
+//     });
     
-    $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
-      json = JSON.parse(data);
-      if (json.status == false) {
-        window.location.replace("register.html");
-      } else if (json.updated == false) {
-        var iframe;
+//     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
+//       json = JSON.parse(data);
+//       if (json.status == false) {
+//         window.location.replace("register.html");
+//       } else if (json.updated == false) {
+//         var iframe;
 
-        iframe = document.createElement('iframe');
-        iframe.id = "iframe"
-        iframe.src = "https://pickle-server-183401.appspot.com/connect/";
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-      } else {
-          userName = json.name;
-          userEmail = json.email;
-          friendsArray = json.friends;
-          userID = json.id;
-          picture = json.picture;
-          notifications = json.notifications;
-          console.log(userID);
-          //Set icon to active state
-          chrome.browserAction.setIcon({path:"iconActive128.png"});
+//         iframe = document.createElement('iframe');
+//         iframe.id = "iframe"
+//         iframe.src = "https://pickle-server-183401.appspot.com/connect/";
+//         iframe.style.display = 'none';
+//         document.body.appendChild(iframe);
+//       } else {
+//           userName = json.name;
+//           userEmail = json.email;
+//           friendsArray = json.friends;
+//           userID = json.id;
+//           picture = json.picture;
+//           notifications = json.notifications;
+//           console.log(userID);
+//           //Set icon to active state
+//           chrome.browserAction.setIcon({path:"iconActive128.png"});
 
-          if (notifications == 0){
-            $("#numNotifications").hide();
-            chrome.browserAction.setBadgeText({text: ""});
-          } else {
-            if (document.getElementById("numNotifications")) {
-              document.getElementById("numNotifications").innerHTML = notifications;
-              $("#numNotifications").show();
-              chrome.browserAction.setBadgeText({text: notifications.toString()});
-            }
-          }
+//           if (notifications == 0){
+//             $("#numNotifications").hide();
+//             chrome.browserAction.setBadgeText({text: ""});
+//           } else {
+//             if (document.getElementById("numNotifications")) {
+//               document.getElementById("numNotifications").innerHTML = notifications;
+//               $("#numNotifications").show();
+//               chrome.browserAction.setBadgeText({text: notifications.toString()});
+//             }
+//           }
 
           
-          chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+//           chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
-          var activeTab = arrayOfTabs[0];
+//           var activeTab = arrayOfTabs[0];
 
-          $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
-            url = data;
-            console.log(url);
+//           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
+//             url = data;
+//             console.log(url);
 
-            $("#commentsBody").load("http://localhost:5000/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function(){
-                    //Enable tooltips
-                    $(function () {
-                      $('[data-toggle="tooltip"]').tooltip()
-                    })
-                    $("#formNewComments .loadingSpinner").hide();
-                    if ($("#formNewComments").height() > 425) {
-                      $("#formNewComments").removeClass("commentsNoScroll");
-                      $("#formNewComments").addClass("commentsScroll");
-                      $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-                    }
-                });  
-            $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function(data) {
-              $("#notificationsContainer .loadingSpinner").hide();
-              $("#notificationsContainer .cardList").show();
-            });
-            $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url}, function(){
-              $("#otherPages .loadingSpinner").hide();
-              $("#otherPages .cardList").show();
-            });
-            $("#friendListCheckboxes").load("http://localhost:5000/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
-            $("#accountName").append(userName);
-            $("#accountProfilePicture").attr("src", picture);
+//             $("#commentsBody").load("http://localhost:5000/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function(){
+//                     //Enable tooltips
+//                     $(function () {
+//                       $('[data-toggle="tooltip"]').tooltip()
+//                     })
+//                     $("#formNewComments .loadingSpinner").hide();
+//                     if ($("#formNewComments").height() > 425) {
+//                       $("#formNewComments").removeClass("commentsNoScroll");
+//                       $("#formNewComments").addClass("commentsScroll");
+//                       $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+//                     }
+//                 });  
+//             $("#notifications").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function(data) {
+//               $("#notificationsContainer .loadingSpinner").hide();
+//               $("#notificationsContainer .cardList").show();
+//             });
+//             $("#others").load("http://pickle-server-183401.appspot.com/domainComments #comments", {"user" : userID.toString(), "url" : url}, function(){
+//               $("#otherPages .loadingSpinner").hide();
+//               $("#otherPages .cardList").show();
+//             });
+//             $("#friendListCheckboxes").load("http://localhost:5000/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)});
+//             $("#accountName").append(userName);
+//             $("#accountProfilePicture").attr("src", picture);
 
 
 
-        });
+//         });
 
 
           
-        });
-      }
+//         });
+//       }
 
 
-    });
+//     });
 
-  } else {
-  if (window.location.href != chrome.extension.getURL('register.html')) {
-    window.location.replace("register.html");
-      } 
-    }
+//   } else {
+//   if (window.location.href != chrome.extension.getURL('register.html')) {
+//     window.location.replace("register.html");
+//       } 
+//     }
 
-  });
+//   });
 
-}
+// }
 
 
-if (window.location.href != chrome.extension.getURL('register.html')) {
-  getUserData();
-}
+// if (window.location.href != chrome.extension.getURL('register.html')) {
+//   getUserData();
+// }
 
 $("#iframe").on("load", function() {
   var iframe = document.getElementById("iframe");
@@ -422,15 +436,13 @@ $(document).on("click", ".likeButton", function(){
 
 $(document).on("click", "#notificationsBell", function(){
 
+  chrome.storage.local.set({notifications : 0});
+
   $.post("http://pickle-server-183401.appspot.com/reset", {"id" : userID});
 
 });
 
 
-// chrome.gcm.onMessage.addListener(function(message) {
-
-//   console.log(message)
-// });
 
 chrome.gcm.onMessage.addListener(function(payload) {
 
@@ -444,6 +456,9 @@ chrome.gcm.onMessage.addListener(function(payload) {
   console.log(window.location.href);
   if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
     console.log("messagwe received");
+
+    connect("first"); 
+
     if (commentUrl == url && comment != 'like') {
     //Append new comment
     $("#comments").append('<div class="commentGroup '+idsString+' temporaryComment hiddenComment" style="display:none;"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
@@ -465,9 +480,11 @@ chrome.gcm.onMessage.addListener(function(payload) {
     $("#notifications").prepend('<a href="'+commentUrl+'" class="notificationTab"><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+'</p></div></a>');
     
   } 
-})
+
+});
 
 
+//click notification to lead to tagged url
 $(document).on("click", ".notificationTab", function(event){ 
 
   url = $(event.target.closest("a")).attr("href");
@@ -477,9 +494,143 @@ $(document).on("click", ".notificationTab", function(event){
        });
 
 
-  // $.post("http://pickle-server-183401.appspot.com/reset", {"id" : userID});
+});
+
+
+//gather data from local storage after background processing 
+function connect(message) {
+chrome.extension.sendMessage({"handshake" : message},function(response){
+  console.log(response.done);
+  if (response.done) {
+    chrome.storage.local.get(['commentsHTML', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
+      'notificationsHTML', 'friendsHTML', 'userID'], function (result) {
+
+      commentsHTML = result['commentsHTML'];
+      userName = result['userName'];
+      userEmail = result['userEmail'];
+      friendsArray = result['friendsArray'];
+      session = result['session'];
+      url = result['url'];
+      console.log(url);
+      picture = result['picture'];
+      notifications = result['notifications'];
+      notificationsHTML = result['notificationsHTML'];
+      friendsHTML = result['friendsHTML'];
+      userID = result['userID'];
+    if (commentsHTML != null) {
+      $("#commentsBody").html(commentsHTML);
+    } else {
+      console.log("null");
+      $("#commentsBody").html(' ');
+    }
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+                    })
+    $("#formNewComments .loadingSpinner").hide();
+    if ($("#formNewComments").height() > 425) {
+      $("#formNewComments").removeClass("commentsNoScroll");
+      $("#formNewComments").addClass("commentsScroll");
+      $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+    }
+
+      if (notificationsHTML != null) { 
+        $("#notifications").html(notificationsHTML);
+      } else {
+        $("#notifications").html(' ');
+      }
+      $("#notificationsContainer .loadingSpinner").hide();
+      $("#notificationsContainer .cardList").show();
+      if (friendsHTML != null) {
+        $("#friendListCheckboxes").html(friendsHTML);
+      } else {
+        $("#friendListCheckboxes").html(' ');
+      }
+
+      if (notifications == 0){
+        $("#numNotifications").hide();
+        chrome.browserAction.setBadgeText({text: ""});
+      } else {
+        if (document.getElementById("numNotifications")) {
+          document.getElementById("numNotifications").innerHTML = notifications;
+          $("#numNotifications").show();
+          chrome.browserAction.setBadgeText({text: notifications.toString()});
+        }
+      }
+
+    });
+
+  } else {
+    connect("message");
+  }
+  
+});
+
+}
+
+
+// if loading the popup page, load data via the background page
+if (window.location.href == chrome.extension.getURL('popup.html')) {
+  $("#numNotifications").hide();
+  
+  connect("first");
+
+}
+
+// login facebook authentication
+$(document).on("click", "#loginButton", function(event){ 
+
+  url = "https://www.facebook.com/dialog/oauth?client_id=1430922756976623&response_type=token&scope=public_profile,email,user_friends&redirect_uri=http://www.facebook.com/connect/login_success.html";
+
+  chrome.windows.create({'url': url, focused : false, width : 750, height : 750, type : "popup"}, function(tab) {
+          // Tab opened.
+       });
 
 });
+
+
+// populate notifications tab
+if (window.location.href == chrome.extension.getURL('notifications.html')) {
+
+  chrome.storage.local.get(['notificationsHTML'], function(result) {
+
+    notificationsHTML = result['notificationsHTML'];
+    if (notificationsHTML != null) { 
+          $("#notifications").html(notificationsHTML);
+        } else {
+          $("#notifications").html(' ');
+        }
+        $("#notificationsContainer .loadingSpinner").hide();
+        $("#notificationsContainer .cardList").show();
+
+    })
+}
+
+// populate account tab
+if (window.location.href == chrome.extension.getURL('account.html')) {
+  chrome.storage.local.get(['picture', 'userName'], function(result) {
+    userName = result['userName'];
+    picture = result['picture'];
+    $("#accountName").append(userName);
+    $("#accountProfilePicture").attr("src", picture);
+});
+}
+
+
+// message listener for background communication
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(request.handshake);
+    if (request.handshake == "login") {
+      window.location.replace("popup.html");
+    }
+  });
+
+
+
+
+
+
+
 
 
 

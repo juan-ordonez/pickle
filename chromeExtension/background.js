@@ -57,7 +57,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
     }
 
   });
-}
+
 
 
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
@@ -92,7 +92,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
       chrome.storage.local.set(dict);
     });
     
-  
+  }
   
 });
 

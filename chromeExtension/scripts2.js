@@ -128,68 +128,18 @@ function comment(e) {
       names.sort();
       var namesString = names.join(', ');
 
-      // $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
-      //   console.log(data);
-      //   data = JSON.parse(data);
-      //   // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
-        
-      //   //If comment is for all friends, then notification should say that user left a comment on a page title
-      //   if (document.getElementById('checkFriends').checked) {
-      //     var array = data.slice();
-
-      //     json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "ids" : idsString, "names" : namesString}, 
-      //       "registration_ids": data });
-      //     $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(){
-      //       //remove loading spinner
-      //       $(".temporaryComment .likeButton i").last().remove();
-      //       $(".temporaryComment .likeButton").last().append('<a href="#"><i class="fa fa-heart"></i> 0</a>');
-      //     });
-      //   }
-      //   //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
-      //   else {
-      //     var array = data.slice();
-      //     console.log(JSON.stringify(data));
-      //     json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "ids" : idsString, "names" : namesString}, 
-      //       "registration_ids": data });
-      //     $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(){
-      //       //remove loading spinner
-      //       $(".temporaryComment .likeButton i").last().remove();
-      //       $(".temporaryComment .likeButton").last().append('<a href="#"><i class="fa fa-heart"></i> 0</a>');
-      //     });
-        
-
-      //   }
-
-      //   if (data.length > 0) {
-
-
-
-
-      //     $.ajax({
-      //       url:"https://gcm-http.googleapis.com/gcm/send",
-      //       type:"POST",
-      //       data:json,
-      //       beforeSend: function(request) {
-      //           request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
-      //       },
-      //       contentType:"application/json; charset=utf-8",
-      //       dataType:"json",
-      //       success: function(){}
-      //         });
-
-      //   }
-
-      // });
-
       //Append new comment to html using javascript
 
       //Get user name
       var user = userName.split(" ")[0];
+
+
+      
       
       //Check if comment is not empty
       if (comment !== "") {
         //Append new comment
-        $("#comments").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><i class="fa fa-circle-o-notch fa-spin"></i></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
+        $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><i class="fa fa-circle-o-notch fa-spin"></i></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
         //Show reply button if popup is showing all comments (user not in a conversation)
         if ($("#closeFriends").attr("style") == "display: none;") {
           $(".replyBtn").show();
@@ -213,8 +163,12 @@ function comment(e) {
   });
 
   }
-  
+
 }
+
+
+  
+
 
 
 //if (document.getElementById("loginButton")) {

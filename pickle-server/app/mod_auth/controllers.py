@@ -208,17 +208,31 @@ def comment():
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
     url = canonical(request.form['url'])
+    
+    #Get IDs of friends of user
+    friends = set([])
+    for session in user.friendSession:
+        if session.authToken:
+            friends.add(session.id)
+    
+
     comments = []
+    #For each comment that the user has been tagged on
     for comment in user.commentsTaggedIn:
+        # If the url of the comment matches the current url that the user is on
         if comment.url == url:
-            #Get names of users tagged in comment
-            tagNames =[]
+            #Get names and IDs of all user's friends also tagged in the comment
+            tagNames = []
+            tagIds = []
             for tag in comment.usersTagged:
-                tagNames.append(tag.name)
-            #Convert list into string
-            tagNamesString = ', '.join(tagNames)
+                if tag.id in friends or tag.id == user.id:
+                    tagNames.append(tag.name)
+                    tagIds.append(tag.id)
+            #Convert list of friends tagged into string
+            tagNamesString = ', '.join(sorted(tagNames))
+            tagIdsString = '-'.join(sorted(tagIds))
             #Append data of comment to comments array
-            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagNamesString, user in comment.likers))
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, user in comment.likers))
 
     comments = sorted(comments, reverse=False, key=lambda c : c[2])
 
@@ -391,9 +405,9 @@ def friendsList():
         user = User.query.filter_by(id=friend).first()
         friends.append((friend, user.name))
     templateData = {
-        'friends' : friends
-        
+        'friends' : sorted(friends, key=lambda c : c[1])
     }
+
     return render_template('auth/friends.html', **templateData)
 
 

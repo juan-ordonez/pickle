@@ -1,5 +1,4 @@
-import requests
-import urllib
+from requests import get
 from BeautifulSoup import BeautifulSoup, SoupStrainer
 
 """For a given URL, retrieve HTML and look for potential canonical URL. 
@@ -7,7 +6,10 @@ from BeautifulSoup import BeautifulSoup, SoupStrainer
 def canonical(url):
 	try: 
 		#Get HTML of url
-		page = urllib.urlopen(url).read()
+		#page = urllib.urlopen(url).read()
+		headers = {'User-Agent':'Mozilla/5.0'}
+		response = get(url, headers=headers)
+		page = response.text
 		#Find canonical URL
 		head = SoupStrainer('link', rel = 'canonical')
 		soup = BeautifulSoup(page, parseOnlyThese=head)
@@ -17,3 +19,4 @@ def canonical(url):
 	except Exception as e:
 		print e
 		return url
+

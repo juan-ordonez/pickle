@@ -102,8 +102,16 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 #loginSpinner {
 	color: #E91E63; 
 	display:none;
-	position: relative;
-	top: -225px;
+	position: absolute;
+	top: 220px;
+}
+
+#logoutButton {
+	color: #424242 !important;
+}
+
+#logoutButton:hover {
+	color: #ffffff!important;
 }
 
 .loadingSpinner {
@@ -154,8 +162,8 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .btn-facebook:hover {
   color: #FFFFFF !important;
-  background-color: #3B5998;
-  border-color: #3B5998;
+  background-color: #30497c;
+  border-color: #30497c;
 }
 
 .btn-facebook:focus, .btn-primary.focus {
@@ -172,7 +180,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
   color: #FFFFFF !important;
   background-color: #3B5998;
   border-color: #3B5998;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+  box-shadow: none;
 }
 
 .btn-outline-secondary {
@@ -251,6 +259,10 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .commentGroup a:hover {
 	color: #C2185B;
+}
+
+.disableClick{
+    pointer-events: none;
 }
 
 .dropdown-item:hover {

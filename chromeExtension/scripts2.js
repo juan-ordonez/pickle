@@ -196,7 +196,7 @@ $(document).on("click", "#notificationsBell", function(){
 
 });
 
-//Append incoming comment when user is on same url with comment tab opened
+//Listen for incoming new comments or notifications
 chrome.gcm.onMessage.addListener(function(payload) {
 
   var profilePic = payload.data.pic;
@@ -207,11 +207,16 @@ chrome.gcm.onMessage.addListener(function(payload) {
   var idsString = payload.data.ids;
   var namesString = payload.data.names;
 
+  console.log("message received 1");
+
+  //Append incoming comment when user is on same url with comment tab opened
   if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 
     connect("first"); 
 
     if (commentUrl == url && comment != 'like') {
+
+      console.log("message received 2");
 
       // appendComment(user, comment, profilePic, namesString, idsString);
       // $(".temporaryComment").last().addClass("hiddenComment");
@@ -219,8 +224,9 @@ chrome.gcm.onMessage.addListener(function(payload) {
       // if ($(".temporaryComment").last().attr("class").split(' ')[1] == $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
       //    $(".temporaryComment").last().show();
       // }
+
       //Append new comment
-      $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
+      $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+' scripts2'+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
       if ($(".temporaryComment").last().attr("class").split(' ')[1] == $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
         $(".temporaryComment").last().show();
       }
@@ -232,34 +238,34 @@ chrome.gcm.onMessage.addListener(function(payload) {
       $('[data-toggle="tooltip"]').tooltip();
       //Scroll to bottom of window
       $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+
       }
 
+    //Append incoming notification when user is in notification tab
   } else if (window.location.href == chrome.extension.getURL('notifications.html')) {
     console.log(commentUrl);
     $("#notifications").prepend('<a href="'+commentUrl+'" class="notificationTab"><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+'</p></div></a>');
-    
   } 
 
 });
 
 
-//click notification to lead to tagged url
+//click notification to open tab with tagged url
 $(document).on("click", ".notificationTab", function(event){ 
-
   url = $(event.target.closest("a")).attr("href");
-
   chrome.tabs.create({'url': url}, function(tab) {
           // Tab opened.
        });
-
   connect("first");
 });
 
 
 //gather data from local storage after background processing 
 function connect(message) {
+//Ask background if loading is done
 chrome.extension.sendMessage({"handshake" : message},function(response){
   console.log(response.done);
+  //Get data from storage if background is done loading
   if (response.done) {
     chrome.storage.local.get(['commentsHTML', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
       'notificationsHTML', 'friendsHTML', 'userID'], function (result) {
@@ -270,7 +276,6 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
       friendsArray = result['friendsArray'];
       session = result['session'];
       url = result['url'];
-      console.log(url);
       picture = result['picture'];
       notifications = result['notifications'];
       notificationsHTML = result['notificationsHTML'];
@@ -286,11 +291,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
         $('[data-toggle="tooltip"]').tooltip()
                     })
     $("#formNewComments .loadingSpinner").hide();
-    if ($("#formNewComments").height() > 425) {
-      $("#formNewComments").removeClass("commentsNoScroll");
-      $("#formNewComments").addClass("commentsScroll");
-      $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
-    }
+    scrollable($("#formNewComments"));
 
       if (notificationsHTML != null) { 
         $("#notifications").html(notificationsHTML);
@@ -317,7 +318,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
       }
 
     });
-
+  // If background is not done loading, keep asking
   } else {
     connect("message");
   }
@@ -330,47 +331,43 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
 // if loading the popup page, load data via the background page
 if (window.location.href == chrome.extension.getURL('popup.html')) {
   $("#numNotifications").hide();
-  
   connect("first");
-
 }
 
 // login facebook authentication
 $(document).on("click", "#loginButton", function(event){ 
-
   url = "https://www.facebook.com/dialog/oauth?client_id=1430922756976623&response_type=token&scope=public_profile,email,user_friends&redirect_uri=http://www.facebook.com/connect/login_success.html";
-
   chrome.windows.create({'url': url, focused : false, width : 750, height : 750, type : "popup"}, function(tab) {
           // Tab opened.
-       });
-
+  });
+  $("#loginPicture").css("visibility", "hidden");
+  $("#loginSpinner").show();
+  $(".btn-facebook").addClass("disableClick");
 });
 
 
 // populate notifications tab
 if (window.location.href == chrome.extension.getURL('notifications.html')) {
-
   chrome.storage.local.get(['notificationsHTML'], function(result) {
+  notificationsHTML = result['notificationsHTML'];
+  if (notificationsHTML != null) { 
+        $("#notifications").html(notificationsHTML);
+      } else {
+        $("#notifications").html(' ');
+      }
+      $("#notificationsContainer .loadingSpinner").hide();
+      $("#notificationsContainer .cardList").show();
 
-    notificationsHTML = result['notificationsHTML'];
-    if (notificationsHTML != null) { 
-          $("#notifications").html(notificationsHTML);
-        } else {
-          $("#notifications").html(' ');
-        }
-        $("#notificationsContainer .loadingSpinner").hide();
-        $("#notificationsContainer .cardList").show();
-
-    })
+  })
 }
 
 // populate account tab
 if (window.location.href == chrome.extension.getURL('account.html')) {
   chrome.storage.local.get(['picture', 'userName'], function(result) {
-    userName = result['userName'];
-    picture = result['picture'];
-    $("#accountName").append(userName);
-    $("#accountProfilePicture").attr("src", picture);
+  userName = result['userName'];
+  picture = result['picture'];
+  $("#accountName").append(userName);
+  $("#accountProfilePicture").attr("src", picture);
 });
 }
 
@@ -386,7 +383,7 @@ chrome.runtime.onMessage.addListener(
 
 //Append html of new comment to body of existing comments
 function appendComment(user, value, picture, names, ids) {
-  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+names+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+names+'</p></div>');
+  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+names+'"><strong>'+user+' scripts2'+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+names+'</p></div>');
   //Show reply button if user is not in reply mode
   if ($("#closeFriends").attr("style") == "display: none;") {
     $(".replyBtn").show();

@@ -383,13 +383,14 @@ chrome.runtime.onMessage.addListener(
 
 //Append html of new comment to body of existing comments
 function appendComment(user, value, picture, names, ids) {
-  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+names+'"><strong>'+user+' scripts2'+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+names+'</p></div>');
+  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+names+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+names+'</p></div>');
   //Show reply button if user is not in reply mode
   if ($("#closeFriends").attr("style") == "display: none;") {
     $(".replyBtn").show();
   }
   $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight); //Scroll to bottom of window
   $("#newComment").val(""); //Clear textarea
+  autosize.update($("#newComment")); //Set height of comment input back to 1
   $('[data-toggle="tooltip"]').tooltip(); //Enable tooltip
   scrollable($("#formNewComments")); //Make container scrollable if enough comments are posted
 }

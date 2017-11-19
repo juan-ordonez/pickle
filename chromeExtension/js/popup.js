@@ -15,7 +15,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 
 //Autosize textarea for new comments
-autosize(document.querySelectorAll('#newComment'));
+autosize($('#newComment'));
 //Scroll to bottom of page after each textarea resize
 $('#newComment').each(function(){
   autosize(this);
@@ -35,9 +35,16 @@ $("#newComment").keypress(function (e) {
 
 //Prevent dropup from auto-closing
 $(document).on('click', '#formNewComments .dropdown-menu', function (e) {
-  e.stopPropagation();
+	e.stopPropagation();
 });
 
+//Disable/enable scrolling on comments when friends dropup is opened/closed
+$(".input-group-btn").on("shown.bs.dropdown", function(){
+	$(".containerComments").attr("style", "overflow:hidden!important;");
+});
+$(".input-group-btn").on("hide.bs.dropdown", function(){
+	$(".containerComments").attr("style", "");
+});
 
 $(document).on("click", "#friendListCheckboxes input", function(){
 	$("#checkFriends").removeAttr("checked");

@@ -292,6 +292,11 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
                     })
     $("#formNewComments .loadingSpinner").hide();
     scrollable($("#formNewComments"));
+    //Convert all urls into links
+    $('p').linkify();
+    $("body").linkify({
+      target: "_blank"
+    });
 
       if (notificationsHTML != null) { 
         $("#notifications").html(notificationsHTML);
@@ -393,6 +398,11 @@ function appendComment(user, value, picture, names, ids) {
   autosize.update($("#newComment")); //Set height of comment input back to 1
   $('[data-toggle="tooltip"]').tooltip(); //Enable tooltip
   scrollable($("#formNewComments")); //Make container scrollable if enough comments are posted
+  //Convert all urls into links
+  $('p').linkify();
+  $("body").linkify({
+    target: "_blank"
+  });
 }
 
 //makes a container scrollable after it reaches a certain height

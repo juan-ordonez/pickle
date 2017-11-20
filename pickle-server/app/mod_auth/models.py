@@ -22,6 +22,11 @@ likes_table = db.Table('likes_table', db.Model.metadata,
     db.Column('comment_id', db.String(128), db.ForeignKey('auth_comment.id'))
 )
 
+browsing_table = db.Table('browsing_table', db.Model.metadata,
+    db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
+    db.Column('url_id', db.String(1024), db.ForeignKey('auth_url.id'))
+)
+
 
 
 class User(UserMixin, db.Model):
@@ -36,6 +41,7 @@ class User(UserMixin, db.Model):
 	numNotifications = db.Column(db.Integer)
 	commentsWritten = db.relationship("Comment", backref="user", lazy='dynamic')
 	commentsTaggedIn = db.relationship("Comment", secondary=tags_table, backref=db.backref('usersTagged', lazy='dynamic'))
+	browsingData = db.relationship("URL", secondary=browsing_table, backref=db.backref('users', lazy='dynamic'))
 	friendSession = db.relationship("Session", secondary=session_table, backref=db.backref('friends', lazy='dynamic'))
 	likes = db.relationship("Comment", secondary=likes_table, backref=db.backref('likers', lazy='dynamic'))
 
@@ -117,6 +123,28 @@ class Notification(db.Model):
 		unique = str(name) + str(time) + str(message) + str(picture)
 		hashed.update(unique.encode('utf-8'))
 		self.id = str(hashed)
+
+
+
+class URL(db.Model):
+	__tablename__ = 'auth_url'
+
+	id = db.Column(db.String(1024), primary_key=True)
+	string = db.Column(db.String(1024))
+	time = db.Column(db.String(512))
+
+
+	
+	def __init__(self, time, string):
+		self.string = string
+		self.time = time
+		hashed = hashlib.sha1()
+		unique = str(string) + str(time)
+		hashed.update(unique.encode('utf-8'))
+		self.id = str(hashed)
+
+
+
 
 
 

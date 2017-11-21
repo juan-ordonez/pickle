@@ -66,9 +66,9 @@ $(document).on("click", ".replyBtn", function(){
 	//Remove tags from previously hidden comments
 	$(".commentGroup").removeClass("hiddenComment");
 	// Get tagged ids from html
-	var commentIds = $(this).parent().attr("class").split(' ')[1];
+	var commentIds = $(this).parent().parent().attr("class").split(' ')[1];
 	//Get tagged names from html
-	var commentNames = $(this).siblings("p").text().split(', ');
+	var commentNames = $(this).parent().siblings("p").text().split(', ');
 	//Scroll down with animation
 	$(".containerComments").animate({ scrollTop: $("#formNewComments").height() }, 200, function(){
 		//Adapt scrolling settings
@@ -88,9 +88,10 @@ $(document).on("click", ".replyBtn", function(){
 	$(".commentGroup").not("."+commentIds).addClass("hiddenComment");
 	//Fade out comments to be hidden
 	$(".commentGroup").not("."+commentIds).animate({ opacity: 0 });
-	$(".replyBtn").fadeOut();
 	$("#closeFriends").show();
 	$("#bottomNav p").text("");
+	$(".replyBtn").fadeOut();
+	$(".replyBtn").siblings().fadeOut();
 	
 	//Add names selected to title of bottomNav
 	var bottomNavTitle = "";  
@@ -138,6 +139,7 @@ $(document).on("click", "#closeFriends", function(){
 		}
 	});
 	$(".replyBtn").show();
+	$(".replyBtn").siblings().show();
 	$("#closeFriends").hide();
 	$("#bottomNav p").text(pageTitle.trimToLength(40));
 	$(".form-check-input").removeAttr("checked");

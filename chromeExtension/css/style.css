@@ -252,15 +252,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	padding-top: 1rem;
 }
 
-.commentGroup a {
-	color: #424242;
-	text-decoration: none !important;
-}
-
-.commentGroup a:hover {
-	color: #C2185B;
-}
-
 .disableClick{
     pointer-events: none;
 }
@@ -284,6 +275,15 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	width: auto;
 	text-align: center;
 	padding: 0.5rem;
+}
+
+.likeButton a {
+	color: #424242;
+	text-decoration: none !important;
+}
+
+.likeButton a:hover {
+	color: #C2185B;
 }
 
 .likeButton .active {

@@ -28,15 +28,18 @@
                     <strong>{{i[3]}}</strong> {{i[0]}} 
                 </div>
                 <div class="likeButton">
-                    {% if i[8] %}
+                    {% if i[9] %}
                     <a href="#" class="active"><i class="fa fa-heart"></i> {{i[1]}}</a>
                     {% else %}
                     <a href="#"><i class="fa fa-heart"></i> {{i[1]}}</a>
                     {% endif %}
                 </div>
             </div>
-            <a class="replyBtn mb-0" href="#"><small>Reply</small></a>
-            <p style="display:none;">{{i[7]}}</p>
+            <div class="d-flex justify-content-start align-items-start">
+                <a class="replyBtn mb-0" href="#"><small>Reply</small></a>
+                <p class="ml-1 mb-0" style="color:#9E9E9E"><small>• {{i[8]}}</small></p>
+            </div>
+            <p style="display: none;">{{i[7]}}</p>
         </div>
     {% endfor %}
 </div>

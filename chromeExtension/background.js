@@ -11,7 +11,8 @@ var commentsHTML;
 var friendsHTML;
 var done = false;
 var successURL = 'www.facebook.com/connect/login_success.html';
-var permissions = ['10211224416434502'];
+var permissions = ['10104245444052958', '10154968082405887', '10210745892870161', '10110218120691089', '1749276548424629', 
+'10214918996198053', '10208790333316152', '10211069478313182', '1874294392586134', '1398761930234829'];
 
 
 chrome.gcm.onMessage.addListener(function(payload) {
@@ -44,7 +45,12 @@ chrome.gcm.onMessage.addListener(function(payload) {
           userID = json.id;
           picture = json.picture;
           notifications = json.notifications;
-          console.log(userID);
+          console.log(notifications);
+          notifications = notifications + 1;
+          
+          chrome.browserAction.setBadgeText({text: notifications.toString()});
+            
+          
 
           $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
               notificationsHTML = $("#notifications").html();
@@ -147,7 +153,6 @@ function getUserData() {
           userID = json.id;
           picture = json.picture;
           notifications = json.notifications;
-          console.log(userID);
           //Set icon to active state
           chrome.browserAction.setIcon({path:"iconActive128.png"});
 
@@ -351,7 +356,9 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
           console.log(JSON.stringify(data));
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle});
+          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(data) {
+            console.log(data);
+          });
           var senderIds = ["511642730215"];
           chrome.gcm.register(senderIds, function (registrationID) {
             $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
@@ -389,6 +396,8 @@ function logData() {
 
        var activeTab = arrayOfTabs[0];
        url = activeTab.url;
+       console.log(activeTab.title);
+       console.log(typeof(activeTab.title))
        $.post("https://pickle-server-183401.appspot.com/history/", {"url" : url, "user" : id});
    });
   }

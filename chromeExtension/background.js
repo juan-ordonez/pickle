@@ -15,6 +15,19 @@ var permissions = ['10104245444052958', '10154968082405887', '10210745892870161'
 '10214918996198053', '10208790333316152', '10211069478313182', '1874294392586134', '1398761930234829'];
 
 
+chrome.storage.local.get(['accessToken'], function(result) {
+
+  var token = result['accessToken'];
+
+  if (token) {
+    chrome.browserAction.setPopup({popup : "popup.html"});
+
+  }
+
+
+});
+
+
 chrome.gcm.onMessage.addListener(function(payload) {
 
   done = true;
@@ -324,6 +337,7 @@ chrome.storage.local.get(['accessToken'], function(result) {
     });
   } else {
     console.log(token);
+    chrome.browserAction.setPopup({popup : "popup.html"});
 
   }
 

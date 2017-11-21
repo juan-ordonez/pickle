@@ -46,7 +46,7 @@ from oauth2client.client import GoogleCredentials
 from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
 import ast
 from selenium import webdriver
-from helpers import canonical
+from helpers import canonical, getTimeLabel
 
 credentials = GoogleCredentials.get_application_default()
 
@@ -239,8 +239,9 @@ def loadComment():
             #Convert list of friends tagged into string
             tagNamesString = ', '.join(sorted(tagNames))
             tagIdsString = '-'.join(sorted(tagIds))
+
             #Append data of comment to comments array
-            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, user in comment.likers))
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), user in comment.likers))
 
     comments = sorted(comments, reverse=False, key=lambda c : c[2])
 

@@ -20,7 +20,7 @@ import operator
 from app.mod_auth.forms import LoginForm, RegistrationForm, RemoveForm
 
 # Import module models (i.e. User)
-from app.mod_auth.models import User, Comment, Session, tags_table, Notification
+from app.mod_auth.models import User, Comment, Session, tags_table, Notification, URL
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, user_logged_in, current_user
 
@@ -145,7 +145,6 @@ def register():
         
         
         if data['friends']:
-            print(data['friends'])
             for friend in data['friends']:
                 userFriend = User.query.filter_by(id=friend['id']).first()
                 if userFriend and userFriend not in session.friends:
@@ -357,7 +356,6 @@ def commentUser(id):
 def notification():
     
     cookies = ast.literal_eval(str(request.form['cookies']))
-    print(len(cookies))
     for cookie in cookies:
         user = User.query.filter_by(id=cookie).first()
         
@@ -367,7 +365,6 @@ def notification():
         #If the request from background.js contains a title page, update the field in notification
         if request.form['page']:
             notification.page = request.form['page']
-        print (notification.message)
         db.session.add(notification)
         notification.user = user
         user.numNotifications += 1
@@ -446,6 +443,28 @@ def canonicalize():
     
 
     return url
+
+
+
+@mod_auth.route('/history/', methods=['POST'])
+@crossdomain(origin='*')
+def history():
+    url = canonical(request.form['url'])
+    userID = request.form['user']
+
+    user = User.query.filter_by(id=userID).first()
+
+    if user:
+        history = URL.query.filter_by(string=url).filter_by(time=datetime.now()).first()
+        if history and history not in user.browsingData:
+            user.browsingData.append(history)
+        else:
+            history = URL(str(datetime.now()), url)
+            user.browsingData.append(history)
+            db.session.add(history)
+        db.session.commit()
+
+    return "browsing data added"
 
 
 

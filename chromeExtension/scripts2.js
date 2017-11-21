@@ -199,6 +199,8 @@ $(document).on("click", "#notificationsBell", function(){
 //Listen for incoming new comments or notifications
 chrome.gcm.onMessage.addListener(function(payload) {
 
+  console.log("received a new message!");
+
   var profilePic = payload.data.pic;
   var user = payload.data.first;
   var comment = payload.data.comment;
@@ -212,7 +214,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
   //Append incoming comment when user is on same url with comment tab opened
   if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 
-    connect("first"); 
+    // connect("first"); 
 
     if (commentUrl == url && comment != 'like') {
 

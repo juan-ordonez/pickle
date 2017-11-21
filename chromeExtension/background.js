@@ -11,14 +11,17 @@ var commentsHTML;
 var friendsHTML;
 var done = false;
 var successURL = 'www.facebook.com/connect/login_success.html';
+var permissions = ['10211224416434502'];
 
 
 chrome.gcm.onMessage.addListener(function(payload) {
 
-  done = false;
+  done = true;
   var views = chrome.extension.getViews({type : "popup"});
   console.log(views.length);
   if (views.length == 0) {
+    console.log("popup is shut");
+    done = false;
   chrome.storage.local.get(['accessToken'], function(data) {
     
   if (data['accessToken'] != null) { 
@@ -164,6 +167,7 @@ function getUserData() {
 
           var activeTab = arrayOfTabs[0];
 
+          console.log(activeTab.url);
 
           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
             url = data;
@@ -237,8 +241,14 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 
 });
 
-chrome.tabs.onUpdated.addListener(function(activeInfo) {
+chrome.tabs.onUpdated.addListener(function(activeInfo, load) {
+
+  
   onFacebookLogin();
+  if (load.status == "complete") {
+    logData();
+  }
+  
   
 
 });
@@ -326,7 +336,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
       
-
+        console.log(data);
         //If comment is for all friends, then notification should say that user left a comment on a page title
         if (checked) {
           var array = data.slice();
@@ -368,6 +378,25 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
   
     });
 }
+
+
+
+function logData() {
+  chrome.storage.local.get(['userID'], function(data) {
+    var id = data['userID'];
+    if (permissions.indexOf(id) != -1) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+
+       var activeTab = arrayOfTabs[0];
+       url = activeTab.url;
+       $.post("https://pickle-server-183401.appspot.com/history/", {"url" : url, "user" : id});
+   });
+  }
+
+  });
+
+}
+
 
 
 

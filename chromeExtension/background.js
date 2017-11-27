@@ -11,8 +11,7 @@ var commentsHTML;
 var friendsHTML;
 var done = false;
 var successURL = 'www.facebook.com/connect/login_success.html';
-var permissions = ['10104245444052958', '10154968082405887', '10210745892870161', '10110218120691089', '1749276548424629', 
-'10214918996198053', '10208790333316152', '10211069478313182', '1874294392586134', '1398761930234829'];
+var permissions = [];
 
 
 chrome.storage.local.get(['accessToken'], function(result) {

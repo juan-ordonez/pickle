@@ -3,7 +3,7 @@
 
   "name": "Yipp",
   "description": "Leave messages for your friends on any website",
-  "version": "1.30",
+  "version": "1.33",
   "browser_action": {
     "default_icon": "iconActive128.png",
     "default_popup": "register.html",

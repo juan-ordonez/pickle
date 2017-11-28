@@ -78,7 +78,7 @@ function comment(e) {
     if (document.getElementById('checkFriends').checked) {
 
       ids = friendsArray;
-      $('#friends .form-check-input').get().forEach(function(element) {
+      $('#friendListCheckboxes .form-check-input').get().forEach(function(element) {
         names.push($(element).parent().text().trim());
       });
       chrome.storage.local.set({'tags': JSON.stringify(friendsArray)});
@@ -89,7 +89,7 @@ function comment(e) {
     else {
       $('.form-check-input:checkbox:checked').get().forEach(function(element) {
         ids.push(element.id);
-        names.push($(element).parent().text().trim()); //new, needed for grouping, added by Juan
+        names.push($(element).parent().text().trim()); 
         console.log(ids);
       });
       chrome.storage.local.set({'tags': JSON.stringify(ids)});

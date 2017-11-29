@@ -279,7 +279,14 @@ chrome.runtime.onMessage.addListener(
       comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.checked);
       done = false;
 
-    } else if (request.handshake == "first") {
+    } 
+
+    else if (request.type == "like"){
+      like(request.userName. request.userID, request.id, request.liked, request.picture, request.pageTitle)
+      done = false;
+    }
+
+    else if (request.handshake == "first") {
         // chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
       getUserData();
       sendResponse({done : done});
@@ -390,7 +397,45 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
     });
 }
 
+function like(userName, userID, id, liked, picture, pageTitle){
 
+  if (liked == "false") {
+    $.post("http://pickle-server-183401.appspot.com/unlike/", {"commentID" : id, "userID" : userID});
+  }
+  else {
+    $.post("http://pickle-server-183401.appspot.com/like/", {"commentID" : id, "userID" : userID});
+  }
+
+  //Get data about comment being liked
+  $.get("https://pickle-server-183401.appspot.com/commentUser/" + id, function(data) {
+  data = JSON.parse(data);
+
+    //Send notification if user is not liking his own comment
+    if (userName.split(" ")[0] != data['first']) {
+
+      //post notification to db
+      var tags = '["'+data['id']+'"]';
+      $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "liked your comment on", "cookies" : tags, "url" : data['url'], "page" : pageTitle});
+      //Send push message for chrome notification
+      json = JSON.stringify({ "data": {"status" : "liked your comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : "", "url" : data['url'], "pageTitle" : pageTitle}, 
+            "registration_ids": data['ids'] });
+      $.ajax({
+        url:"https://gcm-http.googleapis.com/gcm/send",
+        type:"POST",
+        data:json,
+        beforeSend: function(request) {
+            request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+        },
+        contentType:"application/json; charset=utf-8",
+        dataType:"json",
+        success: function(){}
+      });
+
+    }
+
+  });
+
+}
 
 function logData() {
   chrome.storage.local.get(['userID'], function(data) {

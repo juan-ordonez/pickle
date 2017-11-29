@@ -65,8 +65,10 @@ chrome.gcm.onMessage.addListener(function(payload) {
           
 
           $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
+              console.log("UPDATING HTML");
               notificationsHTML = $("#notifications").html();
               chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
+              getUserData();
               
             });
          
@@ -366,7 +368,9 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
 
           json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle});
+          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
+            notify(data, json);
+          });
         }
         //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
         else {
@@ -374,28 +378,14 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
           console.log(JSON.stringify(data));
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
             "registration_ids": data });
-          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(data) {
-            console.log(data);
+          $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
+                notify(data, json);
           });
         
 
         }
 
-        if (data.length > 0) {
-
-          $.ajax({
-            url:"https://gcm-http.googleapis.com/gcm/send",
-            type:"POST",
-            data:json,
-            beforeSend: function(request) {
-                request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
-            },
-            contentType:"application/json; charset=utf-8",
-            dataType:"json",
-            success: function(){}
-              });
-
-      }
+        
   
     });
 }
@@ -418,6 +408,24 @@ function logData() {
 
   });
 
+}
+
+function notify(data, json) {
+  if (data.length > 0) {
+
+          $.ajax({
+            url:"https://gcm-http.googleapis.com/gcm/send",
+            type:"POST",
+            data:json,
+            beforeSend: function(request) {
+                request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+            },
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+            success: function(){}
+              });
+
+      }
 }
 
 

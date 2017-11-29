@@ -325,6 +325,11 @@ chrome.storage.local.get(['accessToken'], function(result) {
               
             });
 
+                  var senderIds = ["511642730215"];
+                  chrome.gcm.register(senderIds, function (registrationID) {
+                  $.post("https://pickle-server-183401.appspot.com/token/", {"session" : accessToken, "token" : registrationID});
+          });
+
                 });
               });
           });
@@ -371,10 +376,6 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
             "registration_ids": data });
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(data) {
             console.log(data);
-          });
-          var senderIds = ["511642730215"];
-          chrome.gcm.register(senderIds, function (registrationID) {
-            $.post("https://pickle-server-183401.appspot.com/token/", {"session" : session, "token" : registrationID});
           });
         
 

@@ -29,12 +29,10 @@ chrome.storage.local.get(['accessToken'], function(result) {
 
 chrome.gcm.onMessage.addListener(function(payload) {
 
-  done = true;
+  //done = true;
   var views = chrome.extension.getViews({type : "popup"});
-  console.log(views.length);
-  if (views.length == 0) {
-    console.log("popup is shut");
-    done = false;
+  //console.log(views.length);
+  done = false;
   chrome.storage.local.get(['accessToken'], function(data) {
     
   if (data['accessToken'] != null) { 
@@ -79,7 +77,8 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
   });
 
-
+if (views.length == 0) {
+//console.log("popup is shut");
 
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 

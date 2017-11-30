@@ -182,8 +182,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
   var notification = payload.data.status;
   var idsString = payload.data.ids;
   var namesString = payload.data.names;
-
-  console.log("message received 1");
+  var pageTitle = payload.data.pageTitle;
 
   //Append incoming comment when user is on same url with comment tab opened
   if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
@@ -191,8 +190,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
     // connect("first"); 
 
     if (commentUrl == url && comment != 'like') {
-
-      console.log("message received 2");
 
       // appendComment(user, comment, profilePic, namesString, idsString);
       // $(".temporaryComment").last().addClass("hiddenComment");
@@ -202,7 +199,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
       // }
 
       //Append new comment
-      $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+' scripts2'+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
+      $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
       if ($(".temporaryComment").last().attr("class").split(' ')[1] == $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
         $(".temporaryComment").last().show();
       }
@@ -220,7 +217,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
     //Append incoming notification when user is in notification tab
   } else if (window.location.href == chrome.extension.getURL('notifications.html')) {
     console.log(commentUrl);
-    $("#notifications").prepend('<a href="'+commentUrl+'" class="notificationTab"><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+'</p></div></a>');
+    $("#notifications").prepend('<a href="'+commentUrl+'" class="notificationTab"><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+' '+pageTitle+'</p></div></a>');
   } 
 
 });

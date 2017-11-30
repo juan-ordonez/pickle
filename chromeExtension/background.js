@@ -29,8 +29,10 @@ chrome.storage.local.get(['accessToken'], function(result) {
 
 chrome.gcm.onMessage.addListener(function(payload) {
 
+  //done = true;
   var views = chrome.extension.getViews({type : "popup"});
-  
+  //console.log(views.length);
+
   done = false;
   chrome.storage.local.get(['accessToken'], function(data) {
     
@@ -64,9 +66,11 @@ chrome.gcm.onMessage.addListener(function(payload) {
           $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
               console.log("UPDATING HTML");
               notificationsHTML = $("#notifications").html();
+
               chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
               // getUserData();
               
+
             });
          
           }
@@ -80,6 +84,8 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
 
 if (views.length == 0) {
+//console.log("popup is shut");
+
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
      var activeTab = arrayOfTabs[0];
@@ -281,8 +287,9 @@ chrome.runtime.onMessage.addListener(
     } 
 
     else if (request.type == "like"){
-      console.log(request);
+
       like(request.userName, request.userID, request.id, request.liked, request.picture, request.pageTitle);
+
       done = false;
     }
 

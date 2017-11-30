@@ -190,12 +190,14 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
       appendComment(user, comment, profilePic, namesString, idsString);
       //Hide the new comment if the user is in inside another group conversation
-      if ($(".temporaryComment").last().attr("class").split(' ')[1] !== $(".commentGroup").not(".hiddenComment").attr("class").split(' ')[1]) {
-        $(".temporaryComment").last().hide();
-        $(".temporaryComment").last().addClass("hiddenComment");
+      if ($("#closeFriends").attr("style") !== "display: none;") {
+        if ($(".temporaryComment").last().attr("class").split(' ')[1] !== $(".commentGroup").not(".hiddenComment").attr("class").split(' ')[1]) {
+          $(".temporaryComment").last().hide();
+          $(".temporaryComment").last().addClass("hiddenComment");
+        }
       }
 
-      }
+    }
 
     //Append incoming notification when user is in notification tab
   } else if (window.location.href == chrome.extension.getURL('notifications.html')) {

@@ -188,30 +188,12 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
     if (commentUrl == url && comment != 'like') {
 
-      // appendComment(user, comment, profilePic, namesString, idsString);
-      // $(".temporaryComment").last().addClass("hiddenComment");
-      // $(".temporaryComment").last().hide();
-      // if ($(".temporaryComment").last().attr("class").split(' ')[1] == $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
-      //    $(".temporaryComment").last().show();
-      // }
-
-      //Append new comment
-      //$("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
       appendComment(user, comment, profilePic, namesString, idsString);
       //Hide the new comment if the user is in inside another group conversation
-      if ($(".temporaryComment").last().attr("class").split(' ')[1] !== $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
+      if ($(".temporaryComment").last().attr("class").split(' ')[1] !== $(".commentGroup").not(".hiddenComment").attr("class").split(' ')[1]) {
         $(".temporaryComment").last().hide();
         $(".temporaryComment").last().addClass("hiddenComment");
       }
-      // //Show reply button if popup is showing all comments (user not in a conversation)
-      if ($("#closeFriends").attr("style") == "display: none;") {
-        $(".temporaryComment").last().show();
-      //   $(".replyBtn").show();
-      }
-      // //Enable tooltip
-      // $('[data-toggle="tooltip"]').tooltip();
-      // //Scroll to bottom of window
-      // $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 
       }
 

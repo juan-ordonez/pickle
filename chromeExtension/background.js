@@ -29,12 +29,9 @@ chrome.storage.local.get(['accessToken'], function(result) {
 
 chrome.gcm.onMessage.addListener(function(payload) {
 
-  done = true;
   var views = chrome.extension.getViews({type : "popup"});
-  console.log(views.length);
-  if (views.length == 0) {
-    console.log("popup is shut");
-    done = false;
+  
+  done = false;
   chrome.storage.local.get(['accessToken'], function(data) {
     
   if (data['accessToken'] != null) { 
@@ -68,7 +65,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               console.log("UPDATING HTML");
               notificationsHTML = $("#notifications").html();
               chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
-              getUserData();
+              // getUserData();
               
             });
          
@@ -82,7 +79,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
   });
 
 
-
+if (views.length == 0) {
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
      var activeTab = arrayOfTabs[0];
@@ -114,8 +111,10 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
       console.log(notif);
       chrome.storage.local.set(dict);
     });
-    
+
   }
+    
+  
   
 });
 
@@ -282,7 +281,8 @@ chrome.runtime.onMessage.addListener(
     } 
 
     else if (request.type == "like"){
-      like(request.userName. request.userID, request.id, request.liked, request.picture, request.pageTitle)
+      console.log(request);
+      like(request.userName, request.userID, request.id, request.liked, request.picture, request.pageTitle);
       done = false;
     }
 

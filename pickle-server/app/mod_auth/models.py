@@ -61,7 +61,7 @@ class Comment(db.Model):
 	__tablename__ = 'auth_comment'
 
 	id = db.Column(db.String(128), primary_key=True)
-	string = db.Column(db.String(128))
+	string = db.Column(db.String(256))
 	url = db.Column(db.String(512))
 	time = db.Column(db.String(128))
 	public = db.Column(db.Boolean)
@@ -105,7 +105,7 @@ class Notification(db.Model):
 	id = db.Column(db.String(1024), primary_key=True)
 	name = db.Column(db.String(128))
 	time = db.Column(db.String(512))
-	message = db.Column(db.String(128))
+	message = db.Column(db.String(256))
 	picture = db.Column(db.String(1024))
 	url = db.Column(db.String(512))
 	page = db.Column(db.String(512))

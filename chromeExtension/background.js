@@ -281,7 +281,7 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) { 
 
     if (request.type == "comment") {
-      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.checked);
+      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.names, request.ids, request.checked);
       done = false;
 
     } 
@@ -368,7 +368,7 @@ chrome.storage.local.get(['accessToken'], function(result) {
 
 
 
-function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
+function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, checked) {
 
   $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
       console.log(data);
@@ -380,7 +380,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
         if (checked) {
           var array = data.slice();
 
-          json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
+          json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids}, 
             "registration_ids": data });
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
             notify(data, json);
@@ -390,7 +390,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
         else {
           var array = data.slice();
           console.log(JSON.stringify(data));
-          json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle}, 
+          json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids}, 
             "registration_ids": data });
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
                 notify(data, json);

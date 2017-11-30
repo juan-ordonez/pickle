@@ -97,19 +97,8 @@ function comment(e) {
 
     }
 
-    //Send all comment data to background page
-    chrome.storage.local.get(['tags', 'public'], function (result) {
-      tags = result['tags'];
-      all = result['public'];
-      chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
-        picture : picture, pageTitle : pageTitle, checked : document.getElementById('checkFriends').checked});
-    });
-
-    //Append new comment to html using javascript
-
     //Get user name
     var user = userName.split(" ")[0];
-
     //Get string with tagged ids 
     var idsString = ids.slice();
     idsString.push(userID.toString());
@@ -121,8 +110,16 @@ function comment(e) {
     var namesString = names.join(', ');
     console.log(namesString);
     console.log(idsString);
-    
-    //Append new comment
+
+    //Send all comment data to background page
+    chrome.storage.local.get(['tags', 'public'], function (result) {
+      tags = result['tags'];
+      all = result['public'];
+      chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
+        picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, checked : document.getElementById('checkFriends').checked});
+    });
+
+    //Append new comment to html using javascript
     if (value !== "") {
       appendComment(user, value, picture, namesString, idsString);
     }
@@ -199,18 +196,22 @@ chrome.gcm.onMessage.addListener(function(payload) {
       // }
 
       //Append new comment
-      $("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
-      if ($(".temporaryComment").last().attr("class").split(' ')[1] == $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
-        $(".temporaryComment").last().show();
+      //$("#commentsBody").append('<div class="commentGroup '+idsString+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+profilePic+'></div><div class="chatBubble data-toggle="tooltip" data-placement="top" title="Viewable to: '+namesString+'"><strong>'+user+'</strong> '+comment+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a><p style="display:none;">'+namesString+'</p></div>');
+      appendComment(user, comment, profilePic, namesString, idsString);
+      //Hide the new comment if the user is in inside another group conversation
+      if ($(".temporaryComment").last().attr("class").split(' ')[1] !== $(".temporaryComment").last().prev().attr("class").split(' ')[1]) {
+        $(".temporaryComment").last().hide();
+        $(".temporaryComment").last().addClass("hiddenComment");
       }
-      //Show reply button if popup is showing all comments (user not in a conversation)
+      // //Show reply button if popup is showing all comments (user not in a conversation)
       if ($("#closeFriends").attr("style") == "display: none;") {
-        $(".replyBtn").show();
+        $(".temporaryComment").last().show();
+      //   $(".replyBtn").show();
       }
-      //Enable tooltip
-      $('[data-toggle="tooltip"]').tooltip();
-      //Scroll to bottom of window
-      $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+      // //Enable tooltip
+      // $('[data-toggle="tooltip"]').tooltip();
+      // //Scroll to bottom of window
+      // $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 
       }
 

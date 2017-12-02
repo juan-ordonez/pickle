@@ -48,7 +48,7 @@ function comment(e) {
   e.preventDefault();
 
   // Open dropdown with friends checkboxes if user submits comment without choosing any friends
-  var checked = document.querySelectorAll('input:checked');
+  var checked = $("friendListCheckboxes").children('input:checked');
   if (checked.length === 0) {
       e.stopPropagation();
       if ($("#friendsListDropdown").is(":hidden")){

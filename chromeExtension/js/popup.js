@@ -8,7 +8,7 @@ $('.btn').mouseup(function() { this.blur() });
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 	var activeTab = arrayOfTabs[0];
 	pageTitle = activeTab.title;
-	$("#bottomNav p").text(pageTitle.trimToLength(40));
+	$("#bottomNav h1").text(pageTitle.trimToLength(40));
 });
 
 //Scroll to bottom of chat page each time popup is opened
@@ -49,17 +49,52 @@ $(".input-group-btn").on("hide.bs.dropdown", function(){
 $(document).on("click", "#friendListCheckboxes input", function(){
 	$("#checkFriends").removeAttr("checked");
 });
-//When friends checkbox is checked, disable other checkboxes (or enable when unchecked)
-$(document).on("click", "#checkFriends", function(){
-	if ($('#checkFriends').is(':checked')) {
-		$("#friendListCheckboxes input").attr("disabled", true);
-		$("#friendListCheckboxes .dropdown-item").addClass("disabled");
+
+//Toggle display of privacy settings when clicking button
+$(document).on("click", "#privacyBtn", function(){
+	if ($("#privacySettings").is(":visible")) {
+		$("#privacyCaret").removeClass("fa-caret-up");
+		$("#privacyCaret").addClass("fa-caret-down");
 	}
 	else {
-		$("#friendListCheckboxes input").attr("disabled", false);
-		$("#friendListCheckboxes .dropdown-item").removeClass("disabled");
+		$("#privacyCaret").removeClass("fa-caret-down");
+		$("#privacyCaret").addClass("fa-caret-up");
+	}
+	$("#privacySettings").slideToggle();
+});
+
+
+//When user selects "all friends" in privacy options
+$(document).on("change", "#publicMessage", function(){
+	if ($('#publicMessage').is(':checked')) {
+		$("#privacyIcon").removeClass("fa-user-secret");
+		$("#privacyIcon").addClass("fa-users");
+		$("#tagFriendsNav").css("background-color", "#2196F3");
+		$("#btnTags").removeClass("btnTagsPrivate");
 	}
 });
+
+//When user selects "only tagged friends" in privacy options
+$(document).on("change", "#privateMessage", function(){
+	if ($('#privateMessage').is(':checked')) {
+		$("#privacyIcon").removeClass("fa-users");
+		$("#privacyIcon").addClass("fa-user-secret");
+		$("#tagFriendsNav").css("background-color","#424242");
+		$("#btnTags").addClass("btnTagsPrivate");
+	}
+});
+
+//When friends checkbox is checked, disable other checkboxes (or enable when unchecked)
+// $(document).on("click", "#checkFriends", function(){
+// 	if ($('#checkFriends').is(':checked')) {
+// 		$("#friendListCheckboxes input").attr("disabled", true);
+// 		$("#friendListCheckboxes .dropdown-item").addClass("disabled");
+// 	}
+// 	else {
+// 		$("#friendListCheckboxes input").attr("disabled", false);
+// 		$("#friendListCheckboxes .dropdown-item").removeClass("disabled");
+// 	}
+// });
 
 //Hide irrelevant comments when reply button is clicked
 $(document).on("click", ".replyBtn", function(){

@@ -40,7 +40,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
     
     session = data['accessToken'];
-    console.log(session);
   
     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data){
       json = JSON.parse(data);
@@ -56,7 +55,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
           userID = json.id;
           picture = json.picture;
           notifications = json.notifications;
-          console.log(notifications);
           notifications = notifications + 1;
           
           chrome.browserAction.setBadgeText({text: notifications.toString()});
@@ -91,9 +89,6 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
      var activeTab = arrayOfTabs[0];
      url = activeTab.url;
  });
-
-  console.log(payload.data);
-  console.log(userID);
   
   var profilePic = payload.data.pic;
   var user = payload.data.first;
@@ -114,7 +109,6 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
     }, function (notif) {
       dict = {};
       dict[notif] = commentUrl;
-      console.log(notif);
       chrome.storage.local.set(dict);
     });
 
@@ -158,13 +152,10 @@ function getUserData() {
     
     $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data) {
       json = JSON.parse(data);
-      console.log(session);
       if (json.status == false) {
-        console.log("logged out");
         chrome.browserAction.setPopup({popup : "register.html"});
     
       } else {
-          console.log("logged in");
           chrome.browserAction.setPopup({popup : "popup.html"});
           userName = json.name;
           userEmail = json.email;
@@ -191,8 +182,6 @@ function getUserData() {
 
           var activeTab = arrayOfTabs[0];
 
-          console.log(activeTab.url);
-
           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
             url = data;
             // console.log(url);
@@ -201,7 +190,6 @@ function getUserData() {
             
             $("body").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
               commentsHTML = $("#comments").html();
-              console.log(commentsHTML);
               d1.resolve();
             });  
             // $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
@@ -295,6 +283,7 @@ chrome.runtime.onMessage.addListener(
 
     else if (request.handshake == "first") {
         // chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
+        
       getUserData();
       sendResponse({done : done});
 
@@ -309,7 +298,7 @@ chrome.runtime.onMessage.addListener(
 
 function onFacebookLogin(){
 
-  console.log("run");
+  
 
 chrome.storage.local.get(['accessToken'], function(result) {
 
@@ -332,7 +321,6 @@ chrome.storage.local.get(['accessToken'], function(result) {
                 userEmail = api.email;
                 friendsArray = api.friends.data;
                 picture = api.picture.data.url;
-                console.log(api);
                 $.post('https://pickle-server-183401.appspot.com/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray, "picture" : picture, "authToken" : accessToken})}, function() {
                   chrome.extension.sendMessage({handshake:"login"});
                   $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
@@ -349,14 +337,12 @@ chrome.storage.local.get(['accessToken'], function(result) {
                 });
               });
           });
-          console.log("access Token: " + accessToken);
           chrome.tabs.remove(tabs[i].id);
           chrome.browserAction.setPopup({popup : "popup.html"});
         }
       }
     });
   } else {
-    console.log(token);
     chrome.browserAction.setPopup({popup : "popup.html"});
 
   }
@@ -371,11 +357,10 @@ chrome.storage.local.get(['accessToken'], function(result) {
 function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, checked) {
 
   $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
-      console.log(data);
+      
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
       
-        console.log(data);
         //If comment is for all friends, then notification should say that user left a comment on a page title
         if (checked) {
           var array = data.slice();
@@ -389,7 +374,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
         //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
         else {
           var array = data.slice();
-          console.log(JSON.stringify(data));
+          
           json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids}, 
             "registration_ids": data });
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
@@ -452,8 +437,6 @@ function logData() {
 
        var activeTab = arrayOfTabs[0];
        url = activeTab.url;
-       console.log(activeTab.title);
-       console.log(typeof(activeTab.title))
        $.post("https://pickle-server-183401.appspot.com/history/", {"url" : url, "user" : id});
    });
   }

@@ -90,7 +90,7 @@ function comment(e) {
       $('.form-check-input:checkbox:checked').get().forEach(function(element) {
         ids.push(element.id);
         names.push($(element).parent().text().trim()); 
-        console.log(ids);
+    
       });
       chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : ""})
@@ -108,8 +108,7 @@ function comment(e) {
     names.push(userName);
     names.sort();
     var namesString = names.join(', ');
-    console.log(namesString);
-    console.log(idsString);
+    
 
     //Send all comment data to background page
     chrome.storage.local.get(['tags', 'public'], function (result) {
@@ -201,7 +200,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
     //Append incoming notification when user is in notification tab
   } else if (window.location.href == chrome.extension.getURL('notifications.html')) {
-    console.log(commentUrl);
+    
     $("#notifications").prepend('<a href="'+commentUrl+'" class="notificationTab"><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+' '+pageTitle+'</p></div></a>');
   } 
 
@@ -222,7 +221,7 @@ $(document).on("click", ".notificationTab", function(event){
 function connect(message) {
 //Ask background if loading is done
 chrome.extension.sendMessage({"handshake" : message},function(response){
-  console.log(response.done);
+  
   //Get data from storage if background is done loading
   if (response.done) {
     chrome.storage.local.get(['commentsHTML', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
@@ -242,7 +241,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
     if (commentsHTML != null) {
       $("#commentsBody").html(commentsHTML);
     } else {
-      console.log("null");
+      
       $("#commentsBody").html(' ');
     }
     $(function () {
@@ -338,9 +337,10 @@ if (window.location.href == chrome.extension.getURL('account.html')) {
 // message listener for background communication
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log(request.handshake);
     if (request.handshake == "login") {
       window.location.replace("popup.html");
+    } else if (request.handshake == "retry") {
+      connect("first");
     }
   });
 

@@ -125,8 +125,10 @@ $(document).on("click", ".replyBtn", function(){
 	$(".commentGroup").not("."+commentIds).animate({ opacity: 0 });
 	$("#closeFriends").show();
 	$("#bottomNav p").text("");
-	$(".replyBtn").fadeOut();
-	$(".replyBtn").siblings().fadeOut();
+	$(".replyBtn").animate({ opacity: 0 });
+	$(".replyBtn").siblings().animate({ opacity: 0 });
+	$(".replyBtn").slideToggle();
+	$(".replyBtn").siblings().slideToggle();
 	
 	//Add names selected to title of bottomNav
 	var bottomNavTitle = "";  
@@ -138,7 +140,7 @@ $(document).on("click", ".replyBtn", function(){
 		 	bottomNavTitle = bottomNavTitle + commentNames[i].split(' ')[0] + ", ";
 		}
 	}
-	$("#bottomNav p").append(bottomNavTitle.trimToLength(40));
+	$("#bottomNav h1").text(bottomNavTitle.trimToLength(40));
 	//Change colors of bottomNav
 	$("#bottomNav").addClass("replying");
 
@@ -175,8 +177,10 @@ $(document).on("click", "#closeFriends", function(){
 	});
 	$(".replyBtn").show();
 	$(".replyBtn").siblings().show();
+	$(".replyBtn").animate({ opacity: 100 });
+	$(".replyBtn").siblings().animate({ opacity: 100 });
 	$("#closeFriends").hide();
-	$("#bottomNav p").text(pageTitle.trimToLength(40));
+	$("#bottomNav h1").text(pageTitle.trimToLength(40));
 	$(".form-check-input").removeAttr("checked");
 
 	//Enable checkboxes

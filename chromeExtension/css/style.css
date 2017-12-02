@@ -27,8 +27,8 @@ body .containerComments {
 }
 
 h1 {
-	font-size: 1em;
-	font-weight: 300;
+	font-size: 1.1em;
+	font-weight: 500;
 }
 
 textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {   
@@ -37,13 +37,18 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     box-shadow:none !important;
 }
 
+#account {
+	position: absolute;
+	top: 8px;
+	right: 12px;
+}
 
 #bottomNav {
 	height: 50px;
 	padding-right: 1rem;
 	padding-left: 1rem;
 	padding-bottom: 10px;
-	color: #757575;
+	color: #424242;
 }
 
 #bottomNav a {
@@ -97,6 +102,26 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	max-height: 350px; 
 	overflow-y:auto; 
 	overflow-x:hidden;
+	padding: 0;
+}
+
+#friendListCheckboxes .dropdown-item {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+#friendListCheckboxes .dropdown-item:hover {
+	background-color: #FFFFFF;
+	color: #2196F3;
+}
+
+#friendListCheckboxes .dropdown-item:active {
+	color: #424242;
+	background-color: #FFFFFF;
+}
+
+#friendListCheckboxes .dropdown-item .disabled{
+	color: #BDBDBD!important;
 }
 
 #loginSpinner {
@@ -128,6 +153,37 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	bottom: 18px;
 	left: 216px;
 	z-index: -1;
+}
+
+#privacyBtn {
+	color: #FFFFFF;
+	background-color: transparent;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #FFFFFF;
+	padding-top: 0;
+	padding-bottom: 0;
+	width:59px;
+}
+
+#privacySettings {
+	color: #424242;
+	background-color: #EEEEEE;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	padding-bottom: 0.5rem;
+}
+
+#privacySettings .form-check {
+	margin-bottom: 0;
+	color:#424242;
+}
+
+#tagFriendsNav {
+	padding-top: 0.5rem;
+	padding-bottom: 0rem;
+	background-color: #2196F3;
+	color: #FFFFFF;
 }
 
 #topNav .active {
@@ -187,6 +243,20 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	border-color: #CECECE;
 }
 
+.btnTagsPublic {
+	background-color: #2196F3;
+	color: #FFFFFF;
+}
+
+.btnTagsPrivate {
+	background-color: #424242;
+	color: #FFFFFF;
+}
+
+.btn.dropdown-toggle {
+	box-shadow:none;
+}
+
 .commentsNoScroll {
 	position: absolute;
 	bottom: 0px;
@@ -208,7 +278,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	border-right-style: solid;
 	border-color: #EEEEEE;
 	border-width: 1px;
-	border-radius: 2px;
+	border-radius: 8px;
 }
 
 .card {
@@ -240,6 +310,20 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	background-color: #EEEEEE;
 }
 
+.cardNewsfeed {
+	padding: 0;
+}
+
+.cardNewsfeed a {
+	color: #212121;
+}
+
+.cardNewsfeed .message {
+	padding: 0.75rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
 .chatBubble {
 	background-color: #EEEEEE;
 	border-radius: 16px;
@@ -258,16 +342,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .dropdown-item:hover {
 	background-color: #FFFFFF;
-	color: #E91E63;
-}
-
-.dropdown-item:active {
-	color: #424242;
-	background-color: #FFFFFF;
-}
-
-.dropdown-item .disabled{
-	color: #BDBDBD!important;
 }
 
 .likeButton {
@@ -305,6 +379,27 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	margin-bottom: 0;
 }
 
+.pageDescription {
+	font-size: 0.8em;
+	color: #424242;
+	margin-bottom: 8px;
+}
+
+.pageDomain, .commentPreview {
+	font-size: 0.8em;
+	color: #757575;
+	margin-bottom: 0;
+}
+
+.pageImg {
+	height: 150px;
+	overflow: hidden;
+}
+
+.pageImg img {
+	width: 100%;
+}
+
 .profilePic {
 	width: 100px;
     height: 100px;
@@ -338,8 +433,8 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     width: auto;
 }
 
-.z-depth-1, #bottomNav, #topNav, .card, .cardList {
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
+.z-depth-1, #bottomNav, #topNav, .card, .cardList , #tagFriendsNav {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.06); }
 
 .z-depth-1-half {
   box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15); }

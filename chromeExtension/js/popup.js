@@ -125,10 +125,10 @@ $(document).on("click", ".replyBtn", function(){
 	$(".commentGroup").not("."+commentIds).animate({ opacity: 0 });
 	$("#closeFriends").show();
 	$("#bottomNav p").text("");
-	$(".replyBtn").animate({ opacity: 0 });
-	$(".replyBtn").siblings().animate({ opacity: 0 });
-	$(".replyBtn").slideToggle();
-	$(".replyBtn").siblings().slideToggle();
+	$(".replyBtn").animate({ opacity: 0 }, 200);
+	$(".replyBtn").siblings().animate({ opacity: 0 }, 200);
+	$(".replyBtn").slideToggle(200);
+	$(".replyBtn").siblings().slideToggle(200);
 	
 	//Add names selected to title of bottomNav
 	var bottomNavTitle = "";  
@@ -177,8 +177,8 @@ $(document).on("click", "#closeFriends", function(){
 	});
 	$(".replyBtn").show();
 	$(".replyBtn").siblings().show();
-	$(".replyBtn").animate({ opacity: 100 });
-	$(".replyBtn").siblings().animate({ opacity: 100 });
+	$(".replyBtn").animate({ opacity: 100 }, 200);
+	$(".replyBtn").siblings().animate({ opacity: 100 }, 200);
 	$("#closeFriends").hide();
 	$("#bottomNav h1").text(pageTitle.trimToLength(40));
 	$(".form-check-input").removeAttr("checked");

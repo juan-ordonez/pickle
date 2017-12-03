@@ -195,9 +195,30 @@ def comment():
     db.session.add(user)
     db.session.add(comment)
     tags = ast.literal_eval(str(request.form['tags']))
-    for tag in tags:
-        taggedUser = User.query.filter_by(id=tag).first()
-        taggedUser.commentsTaggedIn.append(comment)
+    if not comment.public:
+        for tag in tags:
+            taggedUser = User.query.filter_by(id=tag).first()
+            taggedUser.commentsTaggedIn.append(comment)
+    else:
+        publicFriends = set([])
+        for tag in tags:
+            taggedUser = User.query.filter_by(id=tag).first()
+            if taggedUser.id not in publicFriends:
+                taggedUser.commentsTaggedIn.append(comment)
+                publicFriends.add(taggedUser.id)
+            for session in taggedUser.friendSession:
+                if session.id not in publicFriends:
+                    friend = User.query.filter_by(id=session.id).first()
+                    friend.commentsTaggedIn.append(comment)
+                    publicFriends.add(session.id)
+        for session in user.friendSession:
+            friendUser = User.query.filter_by(id=session.id).first()
+            if friendUser.id not in publicFriends:
+                friendUser.commentsTaggedIn.append(comment)
+                publicFriends.add(taggedUser.id)
+
+
+
     user.commentsTaggedIn.append(comment)
     db.session.commit()
 

@@ -78,13 +78,15 @@ function comment(e) {
     var all; // Boolean for whether the comment is for all friends or not
 
     //If the user is tagging all friends in comment
-    if (document.getElementById('checkFriends').checked) {
-
-      ids = friendsArray;
+    if (document.getElementById('publicMessage').checked) {
+      
       $('#friendListCheckboxes .form-check-input').get().forEach(function(element) {
         names.push($(element).parent().text().trim());
       });
-      chrome.storage.local.set({'tags': JSON.stringify(friendsArray)});
+      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+        ids.push(element.id);
+      });
+      chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : true});
 
     } 
@@ -118,7 +120,7 @@ function comment(e) {
       tags = result['tags'];
       all = result['public'];
       chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
-        picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, checked : document.getElementById('checkFriends').checked});
+        picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, checked : document.getElementById('publicMessage').checked});
     });
 
     //Append new comment to html using javascript

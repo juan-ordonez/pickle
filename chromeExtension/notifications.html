@@ -27,21 +27,27 @@
   <body>
 
     <!-- Top navigation bar -->
-    <nav id="topNav" class="navbar fixed-top navbar-light flex-column align-items-center">
+    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-start align-items-center pl-3 pr-3">
       <!-- dummy anchor to prevent autofocus-->
       <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
-      <h1 class="navbar-brand mb-0">Yipp</h1>
-      <a id="account" class="nav-link" href="account.html"><i class="fa fa-user-circle fa-lg"></i></a>
-      <div class="d-flex justify-content-between" style="width: 375px;">
-        <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
-        <a class="nav-link" href="newsfeed.html"><i class="fa fa-home fa-lg"></i></a>
-        <a class="nav-link active" href="#"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
-      </div> 
+      <h1 class="navbar-brand">Notifications</h1>
     </nav>
+
+    <!-- Bottom navigation bar -->
+    <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
+      <div class="d-flex justify-content-between" style="width: 375px;">
+        <a class="nav-link" href="newsfeed.html"><i class="fa fa-home fa-lg"></i></a>
+        <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
+        <a class="nav-link active" href="#"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
+        <a class="nav-link" href="account.html"><i class="fa fa-user-circle fa-lg"></i></a>
+        <div id="notificationBadge">
+          <span class="badge badge-primary" id="numNotifications"></span>
+        </div>
+      </div> 
+    </nav> 
 
     <div id="notificationsContainer" class="container">
       
-        <h1>Notifications</h1>
         <i class="loadingSpinner fa fa-circle-o-notch fa-2x fa-spin mt-5"></i>
         <!-- Example notifications -->
         <div class="cardList" style="display:none">

@@ -45,14 +45,6 @@ $(document).on('click', '#formNewComments .dropdown-menu', function (e) {
 	e.stopPropagation();
 });
 
-//Disable/enable scrolling on comments when friends dropup is opened/closed
-$(".input-group-btn").on("shown.bs.dropdown", function(){
-	$(".containerComments").attr("style", "overflow:hidden!important;");
-});
-$(".input-group-btn").on("hide.bs.dropdown", function(){
-	$(".containerComments").attr("style", "");
-});
-
 $(document).on("click", "#friendListCheckboxes input", function(){
 	$("#checkFriends").removeAttr("checked");
 });

@@ -254,6 +254,13 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
     $("body").linkify({
       target: "_blank"
     });
+    //Disable/enable scrolling on comments when friends dropup is opened/closed
+    $(".input-group-btn, .tagsDropdown").on("shown.bs.dropdown", function(){
+      $(".containerComments").attr("style", "overflow:hidden!important;");
+    });
+    $(".input-group-btn, .tagsDropdown").on("hide.bs.dropdown", function(){
+      $(".containerComments").attr("style", "");
+    });
 
       if (notificationsHTML != null) { 
         $("#notifications").html(notificationsHTML);

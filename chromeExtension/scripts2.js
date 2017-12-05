@@ -185,7 +185,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
       appendComment(user, comment, profilePic, namesString, idsString);
       //Hide the new comment if the user is in inside another group conversation
-      if ($("#closeFriends").attr("style") !== "display: none;") {
+      if ($("#replyGroup").attr("style") !== "display: none;") {
         if ($(".temporaryComment").last().attr("class").split(' ')[1] !== $(".commentGroup").not(".hiddenComment").attr("class").split(' ')[1]) {
           $(".temporaryComment").last().hide();
           $(".temporaryComment").last().addClass("hiddenComment");
@@ -243,8 +243,8 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
                     })
-    $("#formNewComments .loadingSpinner").hide();
-    scrollable($("#formNewComments"));
+    $(".containerComments .loadingSpinner").hide();
+    scrollable($("#commentsBody"));
     //Convert all urls into links
     $('p').linkify();
     $("body").linkify({
@@ -351,7 +351,7 @@ function appendComment(user, value, picture, names, ids) {
   $("#newComment").val(""); //Clear textarea
   autosize.update($("#newComment")); //Set height of comment input back to 1
   $('[data-toggle="tooltip"]').tooltip(); //Enable tooltip
-  scrollable($("#formNewComments")); //Make container scrollable if enough comments are posted
+  scrollable($("#commentsBody")); //Make container scrollable if enough comments are posted
   //Convert all urls into links
   $('p').linkify();
   $("body").linkify({

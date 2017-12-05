@@ -8,7 +8,7 @@
 
   <head>
 
-    <title>Yipp Comments</title>
+    <title>Yipp Home</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -27,24 +27,24 @@
   <body>
 
     <!-- Top navigation bar -->
-    <nav id="topNav" class="navbar fixed-top navbar-light flex-column align-items-center">
+    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-center align-items-center">
       <!-- dummy anchor to prevent autofocus-->
       <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
-      <h1 class="navbar-brand mb-0">Yipp</h1>
-      <a id="account" class="nav-link" href="account.html"><i class="fa fa-user-circle fa-lg"></i></a>
+      <h1 class="navbar-brand">Yipp</h1>
+    </nav>
+
+    <!-- Bottom navigation bar -->
+    <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
       <div class="d-flex justify-content-between" style="width: 375px;">
-        <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
         <a class="nav-link active" href="#"><i class="fa fa-home fa-lg"></i></a>
+        <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
         <a class="nav-link" href="notifications.html"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
+        <a class="nav-link" href="account.html"><i class="fa fa-user-circle fa-lg"></i></a>
         <div id="notificationBadge">
           <span class="badge badge-primary" id="numNotifications"></span>
         </div>
       </div> 
-    </nav>
-
-    <!-- Bottom navigation bar -->
-    <!-- <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
-    </nav> -->
+    </nav> 
 
     <div class="container">
 

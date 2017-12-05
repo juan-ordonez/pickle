@@ -8,7 +8,7 @@ $('.btn').mouseup(function() { this.blur() });
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 	var activeTab = arrayOfTabs[0];
 	pageTitle = activeTab.title;
-	$("#bottomNav h1").text(pageTitle.trimToLength(40));
+	$("#topNav > h1").text(pageTitle.trimToLength(38));
 });
 
 //Scroll to bottom of chat page each time popup is opened
@@ -16,12 +16,19 @@ $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 
 //Autosize textarea for new comments
 autosize($('#newComment'));
-//Scroll to bottom of page after each textarea resize
-$('#newComment').each(function(){
-  autosize(this);
-}).on('autosize:resized', function(){
-  $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+$('#newComment').on('autosize:resized', function(){
+	console.log($(".containerComments").scrollTop());
+	console.log($("#commentsBody").height());
+	//If comments are scrolled all the way down
+	if($(".containerComments")[0].scrollHeight - $(".containerComments").scrollTop() == $(".containerComments").outerHeight()) {
+		//Move comments up after each textarea resize
+		var newContainerMargin = $("#formNewComments").height() + 32;
+		$("#commentsBody").css("margin-bottom", newContainerMargin+"px");
+		//Scroll to bottom of page after each textarea resize
+		$(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
+	}
 });
+
 
 //Press enter to submit textarea, Shift+enter for new line
 $("#newComment").keypress(function (e) {
@@ -105,16 +112,16 @@ $(document).on("click", ".replyBtn", function(){
 	//Get tagged names from html
 	var commentNames = $(this).parent().siblings("p").text().split(', ');
 	//Scroll down with animation
-	$(".containerComments").animate({ scrollTop: $("#formNewComments").height() }, 200, function(){
+	$(".containerComments").animate({ scrollTop: $("#commentsBody").height() }, 200, function(){
 		//Adapt scrolling settings
-		$("#formNewComments").removeClass("commentsScroll");
-		$("#formNewComments").addClass("commentsNoScroll");
+		$("#commentsBody").removeClass("commentsScroll");
+		$("#commentsBody").addClass("commentsNoScroll");
 		//Hide comments that don't match tagged ids
 		$(".commentGroup").not("."+commentIds).slideToggle(200, function(){
 			//Fix scrolling settings if necessary
-			if ($("#formNewComments").height() > 425) {
-			$("#formNewComments").removeClass("commentsNoScroll");
-			$("#formNewComments").addClass("commentsScroll");
+			if ($("#commentsBody").height() > 425) {
+			$("#commentsBody").removeClass("commentsNoScroll");
+			$("#commentsBody").addClass("commentsScroll");
 			$(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 			}
 		});
@@ -130,19 +137,22 @@ $(document).on("click", ".replyBtn", function(){
 	$(".replyBtn").slideToggle(200);
 	$(".replyBtn").siblings().slideToggle(200);
 	
-	//Add names selected to title of bottomNav
-	var bottomNavTitle = "";  
+	//Add names selected to replyGroup
+	var taggedGroup = "";  
 	for(i=0; i < commentNames.length; i++) {
 		if (i == commentNames.length - 1) {
-		 	bottomNavTitle = bottomNavTitle + commentNames[i].split(' ')[0];
+		 	taggedGroup = taggedGroup + commentNames[i].split(' ')[0];
 		}
 		else {
-		 	bottomNavTitle = bottomNavTitle + commentNames[i].split(' ')[0] + ", ";
+		 	taggedGroup = taggedGroup + commentNames[i].split(' ')[0] + ", ";
 		}
 	}
-	$("#bottomNav h1").text(bottomNavTitle.trimToLength(40));
+	$("#topNav h1").text(taggedGroup.trimToLength(70));
+	$("#closeFriends").show();
+	$("#topNav").addClass("replying");
 	//Change colors of bottomNav
-	$("#bottomNav").addClass("replying");
+	//$("#replyGroup").slideToggle(200);
+	//$(".containerComments").animate({height: 450}, 200);
 
 	//Check checkboxes of users tagged
 	arrayIds = commentIds.split('-');
@@ -164,14 +174,14 @@ $(document).on("click", "#closeFriends", function(){
 	//Fade in hidden comments
 	$(".hiddenComment").css({ opacity: 100 });
 	//Fix scrolling settings
-	$("#formNewComments").removeClass("commentsScroll");
-	$("#formNewComments").addClass("commentsNoScroll");
+	$("#commentsBody").removeClass("commentsScroll");
+	$("#commentsBody").addClass("commentsNoScroll");
 	//Show hidden comments
 	$(".hiddenComment").slideToggle(200, function(){
 		//Fix scrolling settings
-		if ($("#formNewComments").height() > 425) {
-			$("#formNewComments").removeClass("commentsNoScroll");
-			$("#formNewComments").addClass("commentsScroll");
+		if ($("#commentsBody").height() > 425) {
+			$("#commentsBody").removeClass("commentsNoScroll");
+			$("#commentsBody").addClass("commentsScroll");
 			$(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 		}
 	});
@@ -180,8 +190,10 @@ $(document).on("click", "#closeFriends", function(){
 	$(".replyBtn").animate({ opacity: 100 }, 200);
 	$(".replyBtn").siblings().animate({ opacity: 100 }, 200);
 	$("#closeFriends").hide();
-	$("#bottomNav h1").text(pageTitle.trimToLength(40));
+	$("#topNav h1").text(pageTitle.trimToLength(40));
 	$(".form-check-input").removeAttr("checked");
+	$("#topNav").removeClass("replying");
+	$(".containerComments").animate({height: 500}, 200);
 
 	//Enable checkboxes
 	$("#friendsListDropdown input").attr("disabled", false);

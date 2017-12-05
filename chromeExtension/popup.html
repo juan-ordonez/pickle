@@ -27,50 +27,43 @@
   <body>
 
     <!-- Top navigation bar -->
-    <nav id="topNav" class="navbar fixed-top navbar-light flex-column align-items-center">
+    <nav id="topNav" class="navbar fixed-top justify-content-start align-items-center">
       <!-- dummy anchor to prevent autofocus-->
       <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
-      <h1 class="navbar-brand mb-0">Yipp</h1>
-      <a id="account" class="nav-link" href="account.html"><i class="fa fa-user-circle fa-lg"></i></a>
-      <div class="d-flex justify-content-between" style="width: 375px;">
-        <a class="nav-link active" href="#"><i class="fa fa-comment fa-lg"></i></a>
-        <a class="nav-link" href="newsfeed.html"><i class="fa fa-home fa-lg"></i></a>
-        <a class="nav-link" href="notifications.html"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
-        <div id="notificationBadge">
-          <span class="badge badge-primary" id="numNotifications"></span>
+      <a id="closeFriends" class="ml-3 mb-2" href="#" style="display:none;"><i class="fa fa-times fa-lg"></i></a>
+      <h1 class="navbar-brand ml-3 mr-3">Comments</h1>
+      <!-- <div id="replyGroup" style="display:none;">
+        <div class="d-flex justify-content-start align-items-center pr-3 pl-3" style="height: 50px;">
+          <a id="closeFriends" class="mr-3" href="#"><i class="fa fa-times fa-lg"></i></a>
+          <h1 class="mb-0">Juan, Alex</h1>
         </div>
-      </div> 
+      </div> -->
     </nav>
 
     <!-- Bottom navigation bar -->
     <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
-
-      <!-- <div class="d-flex justify-content-start"> -->
-        <a id="closeFriends" class="mr-3" href="#" style="display: none;"><i class="fa fa-times fa-lg"></i></a>
-        <h1 class="mb-0"></h1>
-        <!-- <ul class="nav nav-pills" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#comments" role="tab">This page</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#otherPages" role="tab">Discover</a>
-          </li>
-        </ul> -->
-      <!-- </div> -->
+        <div class="d-flex justify-content-between" style="width: 375px;">
+          <a class="nav-link" href="newsfeed.html"><i class="fa fa-home fa-lg"></i></a>
+          <a class="nav-link active" href="#"><i class="fa fa-comment fa-lg"></i></a>
+          <a class="nav-link" href="notifications.html"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
+          <a class="nav-link" href="account.html"><i class="fa fa-user-circle fa-lg"></i></a>
+          <div id="notificationBadge">
+            <span class="badge badge-primary" id="numNotifications"></span>
+          </div>
+        </div> 
     </nav>
 
     <!-- <div class="tab-content">
 
       <div class="tab-pane active" id="comments" role="tabpanel"> -->
         <div class="containerComments">
-
-          <!-- Form for adding new comments -->
-          <form id="formNewComments" class="commentsNoScroll">
-            <i class="loadingSpinner fa fa-circle-o-notch fa-2x fa-spin mb-5"></i>
-            <div id="commentsBody">
+          <div id="commentsBody" class="commentsNoScroll">
             <!-- Comments go here -->
-            </div>
-            <div class="form-group mt-3">
+          </div>
+          <i class="loadingSpinner fa fa-circle-o-notch fa-2x fa-spin mb-5"></i>
+          <!-- Form for adding new comments -->
+          <form id="formNewComments">
+            <div class="form-group mb-0">
               <div class="input-group">
 
                 <div class="input-group-btn dropup">
@@ -90,6 +83,12 @@
                         <small>Who can see this?</small>
 
                         <div class="form-check">
+                          <!--Remove this first input after scripts2 is updated-->
+                          <label class="form-check-label" style="display:none;">
+                            <input class="form-check-input" type="radio" name="privacyRadios" id="checkFriends" value="option1" style="display:none;">
+                            All friends
+                          </label>
+                          <!--Remove this first input (above) after scripts2 is updated-->
                           <label class="form-check-label">
                             <input class="form-check-input" type="radio" name="privacyRadios" id="publicMessage" value="option1" checked>
                             All friends
@@ -112,7 +111,7 @@
                 </div>
 
                 <label class="sr-only" for="newComment">Add a comment for your friends</label>
-                <textarea class="form-control" id="newComment" rows="1" placeholder="Add a comment for your friends" maxlength="256"></textarea>
+                <textarea class="form-control" id="newComment" rows='1' placeholder="Add a comment for your friends" maxlength="256"></textarea>
                 <span class="input-group-btn">
                   <button type="submit" class="btn btn-primary" id="submitComment"><i class="fa fa-paper-plane"></i></button>
                 </span>

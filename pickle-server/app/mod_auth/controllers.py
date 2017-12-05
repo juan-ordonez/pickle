@@ -255,7 +255,7 @@ def loadComment():
             #Get names and IDs of all user's friends also tagged in the comment
             tagNames = []
             tagIds = []
-            if comment.mentions:
+            if comment.mentions.count() > 0:
                 for tag in comment.mentions:
                     tagNames.append(tag.name)
                     tagIds.append(tag.id)

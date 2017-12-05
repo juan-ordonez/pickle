@@ -113,10 +113,14 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 #friendsListDropdown {
 	max-height: 350px; 
-	overflow-y:auto; 
+}
+
+.dropdown-menu {
+	overflow-y:scroll; 
 	overflow-x:hidden;
 	padding: 0;
 	border-style:none;
+	max-height: 200px;
 }
 
 .dropdown-item {

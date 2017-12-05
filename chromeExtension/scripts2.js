@@ -78,26 +78,17 @@ function comment(e) {
     var all; // Boolean for whether the comment is for all friends or not
 
     //If the user is tagging all friends in comment
-    if (document.getElementById('publicMessage').checked) {
-      
-      $('#friendListCheckboxes .form-check-input').get().forEach(function(element) {
+    $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+        ids.push(element.id);
         names.push($(element).parent().text().trim());
       });
-      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-        ids.push(element.id);
-      });
       chrome.storage.local.set({'tags': JSON.stringify(ids)});
+    if (document.getElementById('publicMessage').checked) {
       chrome.storage.local.set({'public' : true});
 
     } 
     //Else if user only tagging selected friends
     else {
-      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-        ids.push(element.id);
-        names.push($(element).parent().text().trim()); 
-    
-      });
-      chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : ""})
 
     }

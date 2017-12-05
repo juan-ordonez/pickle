@@ -355,6 +355,7 @@ chrome.storage.local.get(['accessToken'], function(result) {
 
 
 function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, checked) {
+  console.log(tags);
 
   $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
       
@@ -364,8 +365,9 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
         //If comment is for all friends, then notification should say that user left a comment on a page title
         if (checked) {
           var array = data.slice();
+          console.log("PUBLIC");
 
-          json = JSON.stringify({ "data": {"status" : "left a comment on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids}, 
+          json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids}, 
             "registration_ids": data });
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
             notify(data, json);
@@ -373,9 +375,10 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
         }
         //Else if comment is for specific friends, notification should say that the user tagged those users on a page pageTitle                   
         else {
+          console.log("SECRET");
           var array = data.slice();
           
-          json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids}, 
+          json = JSON.stringify({ "data": {"status" : "left you a secret message on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids}, 
             "registration_ids": data });
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
                 notify(data, json);

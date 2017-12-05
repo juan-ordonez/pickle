@@ -195,6 +195,7 @@ def comment():
     db.session.add(user)
     db.session.add(comment)
     tags = ast.literal_eval(str(request.form['tags']))
+    comment.mentions.append(user)
     if not comment.public:
         for tag in tags:
             taggedUser = User.query.filter_by(id=tag).first()
@@ -260,8 +261,9 @@ def loadComment():
                 for tag in comment.mentions:
                     tagNames.append(tag.name)
                     tagIds.append(tag.id)
-                tagNames.append(user.name)
-                tagIds.append(user.id)
+                if user.id not in tagIds:
+                    tagNames.append(user.name)
+                    tagIds.append(user.id)
             else:
                 for tag in comment.usersTagged:
                     if tag.id in friends or tag.id == user.id:
@@ -500,9 +502,9 @@ def history():
     return "browsing data added"
 
 
-@mod_auth.route('/addfeed/', methods=['POST'])
-@crossdomain(origin='*')
-def addFeed():
+# @mod_auth.route('/addfeed/', methods=['POST'])
+# @crossdomain(origin='*')
+# def addFeed():
     
 
 

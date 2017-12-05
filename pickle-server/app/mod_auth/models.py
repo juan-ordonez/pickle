@@ -52,6 +52,7 @@ class User(UserMixin, db.Model):
 	friendSession = db.relationship("Session", secondary=session_table, backref=db.backref('friends', lazy='dynamic'))
 	likes = db.relationship("Comment", secondary=likes_table, backref=db.backref('likers', lazy='dynamic'))
 	commentsMentionedIn = db.relationship("Comment", secondary=mentions_table, backref=db.backref('mentions', lazy='dynamic'))
+	feed = db.relationship("Feed", backref="user", lazy='dynamic')
 
 
 	
@@ -150,6 +151,34 @@ class URL(db.Model):
 		unique = str(string) + str(time)
 		hashed.update(unique.encode('utf-8'))
 		self.id = str(hashed)
+
+
+class Feed(db.Model):
+	__tablename__ = 'auth_feed'
+
+	id = db.Column(db.String(2048), primary_key=True)
+	tagString = db.Column(db.String(1024))
+	time = db.Column(db.String(512))
+	title = db.Column(db.String(512))
+	img = db.Column(db.String(1024))
+	domain = db.Column(db.String(1024))
+	description = db.Column(db.String(512))
+	user_id = db.Column(db.String(128), db.ForeignKey('auth_user.id'))
+
+
+	
+	def __init__(self, time, title, tagString, img, domain, description):
+		self.time = title
+		self.time = time
+		self.tagString = tagString
+		self.img = img
+		self.domain = domain
+		self.description = description
+		hashed = hashlib.sha1()
+		unique = str(title) + str(time) + str(tagString) + str(img) + str(domain)+ str(description)
+		hashed.update(unique.encode('utf-8'))
+		self.id = str(hashed)
+
 
 
 

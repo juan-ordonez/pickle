@@ -257,7 +257,9 @@ def loadComment():
             tagNames = []
             tagIds = []
 
+
             if comment.mentions.count() > 0:
+
                 for tag in comment.mentions:
                     tagNames.append(tag.name)
                     tagIds.append(tag.id)
@@ -269,12 +271,16 @@ def loadComment():
                     if tag.id in friends or tag.id == user.id:
                         tagNames.append(tag.name)
                         tagIds.append(tag.id)
-            #Convert list of friends tagged into string
-            tagNamesString = ', '.join(sorted(tagNames))
-            tagIdsString = '-'.join(sorted(tagIds))
 
+            #Convert list of friends tagged into string
+            tagNamesString = '@' + ', @'.join(sorted(tagNames))
+            tagIdsString = '-'.join(sorted(tagIds))
+            if not comment.public:
+                css = "private"
+            else:
+                css="";
             #Append data of comment to comments array
-            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), user in comment.likers))
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, tagNames, user in comment.likers))
 
     comments = sorted(comments, reverse=False, key=lambda c : c[2])
 
@@ -500,13 +506,6 @@ def history():
         db.session.commit()
 
     return "browsing data added"
-
-
-# @mod_auth.route('/addfeed/', methods=['POST'])
-# @crossdomain(origin='*')
-# def addFeed():
-    
-
 
 
 

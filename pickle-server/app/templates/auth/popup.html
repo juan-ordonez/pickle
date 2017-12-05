@@ -24,20 +24,36 @@
                 <div class="thumbnail align-self-start">
                     <img src={{i[4]}}>
                 </div>
-                <div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: {{i[7]}}">
+                <div class="chatBubble {{i[9]}}">
                     <strong>{{i[3]}}</strong> {{i[0]}} 
                 </div>
                 <div class="likeButton">
-                    {% if i[9] %}
+                    {% if i[11] %}
                     <a href="#" class="active"><i class="fa fa-heart"></i> {{i[1]}}</a>
                     {% else %}
                     <a href="#"><i class="fa fa-heart"></i> {{i[1]}}</a>
                     {% endif %}
                 </div>
             </div>
-            <div class="d-flex justify-content-start align-items-start">
+            <div class="commentDetails d-flex justify-content-start align-items-center">
                 <a class="replyBtn mb-0" href="#"><small>Reply</small></a>
-                <p class="ml-1 mb-0" style="color:#9E9E9E"><small>• {{i[8]}}</small></p>
+                <small class="ml-1 mr-1 mb-0">•</small>
+
+                <div class="tagsDropdown dropdown show">    
+                    {% if i[9] %}
+                    <a href="#" class="btn mb-0 tagsToggle" role="button" id="tags-{{i[5]}}"" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false""><small><i class="fa fa-user-secret"></i></small></a>
+                    {% else %}
+                    <a href="#" class="btn mb-0 tagsToggle" role="button" id="tags-{{i[5]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><small><i class="fa fa-tag"></i></small></a>
+                    {% endif %}
+                    <div class="dropdown-menu" aria-labelledby="tagsToggle-{{i[5]}}">
+                        <p class="mr-3 ml-3 mb-0"><small><strong>Tags</strong></small></p>
+                        {% for j in i[10] %}
+                        <a class="dropdown-item" href="#">{{j}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <p class="ml-1 mb-0"><small>• {{i[8]}}</small></p>
             </div>
             <p style="display: none;">{{i[7]}}</p>
         </div>

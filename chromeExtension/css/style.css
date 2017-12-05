@@ -119,22 +119,22 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	border-style:none;
 }
 
-#friendListCheckboxes .dropdown-item {
+.dropdown-item {
 	padding-left: 1rem;
 	padding-right: 1rem;
 }
 
-#friendListCheckboxes .dropdown-item:hover {
+.dropdown-item:hover {
 	background-color: #FFFFFF;
 	color: #2196F3;
 }
 
-#friendListCheckboxes .dropdown-item:active {
+.dropdown-item:active {
 	color: #424242;
 	background-color: #FFFFFF;
 }
 
-#friendListCheckboxes .dropdown-item .disabled{
+.dropdown-item .disabled{
 	color: #BDBDBD!important;
 }
 
@@ -284,6 +284,14 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	box-shadow:none;
 }
 
+.commentDetails {
+	color:#9E9E9E;
+}
+
+.commentDetails i {
+	color:#424242;
+}
+
 .commentsNoScroll {
 	position: absolute;
 	bottom: 0px;
@@ -429,6 +437,11 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	width: 100%;
 }
 
+.private {
+	background-color: #BDBDBD;
+	/*color: #FFFFFF;*/
+}
+
 .profilePic {
 	width: 100px;
     height: 100px;
@@ -447,12 +460,22 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	color: #FFFFFF !important;
 }
 
-.replying a {
+.replyingPrivate {
+	background-color: #424242 !important;
+	color: #FFFFFF !important;
+}
+
+.replying a, .replyingPrivate a {
 	color: #FFFFFF !important
 }
 
-.replying h1 {
+.replying h1, .replyingPrivate h1 {
 	color: #FFFFFF !important
+}
+
+.tagsToggle {
+	padding: 0;
+	box-shadow: none!important;
 }
 
 .thumbnail {
@@ -470,7 +493,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     width: auto;
 }
 
-.z-depth-1, #bottomNav, #topNav, #tagFriendsNav, #formNewComments {
+.z-depth-1, #bottomNav, #topNav, #tagFriendsNav, #formNewComments, .dropdown-menu {
   box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 7px 0 rgba(0, 0, 0, 0.08); }
 
 .z-depth-1-half, #friendsListDropdown {

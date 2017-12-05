@@ -27,6 +27,13 @@ browsing_table = db.Table('browsing_table', db.Model.metadata,
     db.Column('url_id', db.String(1024), db.ForeignKey('auth_url.id'))
 )
 
+mentions_table = db.Table('mentions_table', db.Model.metadata,
+    db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
+    db.Column('comment_id', db.String(128), db.ForeignKey('auth_comment.id')),
+    mysql_charset='utf8',
+)
+
+
 
 
 class User(UserMixin, db.Model):
@@ -44,6 +51,7 @@ class User(UserMixin, db.Model):
 	browsingData = db.relationship("URL", secondary=browsing_table, backref=db.backref('users', lazy='dynamic'))
 	friendSession = db.relationship("Session", secondary=session_table, backref=db.backref('friends', lazy='dynamic'))
 	likes = db.relationship("Comment", secondary=likes_table, backref=db.backref('likers', lazy='dynamic'))
+	commentsMentionedIn = db.relationship("Comment", secondary=mentions_table, backref=db.backref('mentions', lazy='dynamic'))
 
 
 	

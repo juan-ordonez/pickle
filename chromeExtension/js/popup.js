@@ -147,9 +147,18 @@ $(document).on("click", ".replyBtn", function(){
 		 	taggedGroup = taggedGroup + commentNames[i].split(' ')[0] + ", ";
 		}
 	}
-	$("#topNav h1").text(taggedGroup.trimToLength(70));
+	$("#topNav h1").text(taggedGroup.trimToLength(35));
 	$("#closeFriends").show();
-	$("#topNav").addClass("replying");
+	if ($(this).parent().siblings().children(".chatBubble").hasClass("private")) {
+		$("#topNav").addClass("replyingPrivate");
+		$("#privateMessage").prop("checked", true);
+		$("#privateMessage").change();
+	}
+	else {
+		$("#topNav").addClass("replying");
+		$("#publicMessage").prop("checked", true);
+		$("#publicMessage").change();
+	}
 	//Change colors of bottomNav
 	//$("#replyGroup").slideToggle(200);
 	//$(".containerComments").animate({height: 450}, 200);
@@ -191,8 +200,11 @@ $(document).on("click", "#closeFriends", function(){
 	$(".replyBtn").siblings().animate({ opacity: 100 }, 200);
 	$("#closeFriends").hide();
 	$("#topNav h1").text(pageTitle.trimToLength(40));
-	$(".form-check-input").removeAttr("checked");
+	$("#publicMessage").prop("checked", true);
+	$("#publicMessage").change();
+	$("#friendListCheckboxes .form-check-input").removeAttr("checked");
 	$("#topNav").removeClass("replying");
+	$("#topNav").removeClass("replyingPrivate");
 	$(".containerComments").animate({height: 500}, 200);
 
 	//Enable checkboxes
@@ -201,9 +213,6 @@ $(document).on("click", "#closeFriends", function(){
 
 	//Change text on textarea
 	$("#newComment").attr("placeholder", "Comment on this web page");
-
-	//Change colors of bottomNav back
-	$("#bottomNav").removeClass("replying");
 });
 
 //This function allows for trimming of strings

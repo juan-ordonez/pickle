@@ -27,7 +27,7 @@
   <body>
 
     <!-- Top navigation bar -->
-    <nav id="topNav" class="navbar fixed-top justify-content-start align-items-center">
+    <nav id="topNav" class="navbar fixed-top justify-content-start flex-nowrap align-items-center">
       <!-- dummy anchor to prevent autofocus-->
       <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
       <a id="closeFriends" class="ml-3 mb-2" href="#" style="display:none;"><i class="fa fa-times fa-lg"></i></a>
@@ -83,12 +83,6 @@
                         <small>Who can see this?</small>
 
                         <div class="form-check">
-                          <!--Remove this first input after scripts2 is updated-->
-                          <label class="form-check-label" style="display:none;">
-                            <input class="form-check-input" type="radio" name="privacyRadios" id="checkFriends" value="option1" style="display:none;">
-                            All friends
-                          </label>
-                          <!--Remove this first input (above) after scripts2 is updated-->
                           <label class="form-check-label">
                             <input class="form-check-input" type="radio" name="privacyRadios" id="publicMessage" value="option1" checked>
                             All friends

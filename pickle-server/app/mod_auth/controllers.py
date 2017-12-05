@@ -199,10 +199,12 @@ def comment():
         for tag in tags:
             taggedUser = User.query.filter_by(id=tag).first()
             taggedUser.commentsTaggedIn.append(comment)
+            comment.mentions.append(taggedUser)
     else:
         publicFriends = set([])
         for tag in tags:
             taggedUser = User.query.filter_by(id=tag).first()
+            comment.mentions.append(taggedUser)
             if taggedUser.id not in publicFriends:
                 taggedUser.commentsTaggedIn.append(comment)
                 publicFriends.add(taggedUser.id)
@@ -253,10 +255,17 @@ def loadComment():
             #Get names and IDs of all user's friends also tagged in the comment
             tagNames = []
             tagIds = []
-            for tag in comment.usersTagged:
-                if tag.id in friends or tag.id == user.id:
+            if comment.mentions:
+                for tag in comment.mentions:
                     tagNames.append(tag.name)
                     tagIds.append(tag.id)
+                tagNames.append(user.name)
+                tagIds.append(user.id)
+            else:
+                for tag in comment.usersTagged:
+                    if tag.id in friends or tag.id == user.id:
+                        tagNames.append(tag.name)
+                        tagIds.append(tag.id)
             #Convert list of friends tagged into string
             tagNamesString = '@' + ', @'.join(sorted(tagNames))
             tagIdsString = '-'.join(sorted(tagIds))
@@ -265,7 +274,7 @@ def loadComment():
             else:
                 css="";
             #Append data of comment to comments array
-            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, user in comment.likers))
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, tagNames, user in comment.likers))
 
     comments = sorted(comments, reverse=False, key=lambda c : c[2])
 

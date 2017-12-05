@@ -86,23 +86,12 @@ function comment(e) {
 
     if (document.getElementById('publicMessage').checked) {
       
-      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-          ids.push(element.id);
-          names.push($(element).parent().text().trim());
-        });
-      chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : true});
       all = true;
 
     } 
     //Else if user only tagging selected friends
     else {
-      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-        ids.push(element.id);
-        names.push($(element).parent().text().trim()); 
-    
-        });
-      chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : ""})
       all = "";
 

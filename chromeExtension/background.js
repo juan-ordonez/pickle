@@ -188,7 +188,7 @@ function getUserData() {
             var d1 = $.Deferred(),
                 d2 = $.Deferred();
             
-            $("body").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
+            $("body").load("http://localhost:5000/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
               commentsHTML = $("#comments").html();
               d1.resolve();
             });  

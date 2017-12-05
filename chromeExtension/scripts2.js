@@ -77,28 +77,35 @@ function comment(e) {
     var tags; // String with ids tagged in comment
     var all; // Boolean for whether the comment is for all friends or not
 
+    $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+      ids.push(element.id);
+      names.push($(element).parent().text().trim());
+    });
+    chrome.storage.local.set({'tags': JSON.stringify(ids)});
     //If the user is tagging all friends in comment
     if (document.getElementById('publicMessage').checked) {
       
-      $('#friendListCheckboxes .form-check-input').get().forEach(function(element) {
-        names.push($(element).parent().text().trim());
-      });
-      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-        ids.push(element.id);
-      });
-      chrome.storage.local.set({'tags': JSON.stringify(ids)});
+      // $('#friendListCheckboxes .form-check-input').get().forEach(function(element) {
+      // });
+      // $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+      //   ids.push(element.id);
+      //   names.push($(element).parent().text().trim());
+      // });
+      // chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : true});
+      all = true;
 
     } 
     //Else if user only tagging selected friends
     else {
-      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-        ids.push(element.id);
-        names.push($(element).parent().text().trim()); 
+      // $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+      //   ids.push(element.id);
+      //   names.push($(element).parent().text().trim()); 
     
-      });
-      chrome.storage.local.set({'tags': JSON.stringify(ids)});
+      // });
+      // chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : ""})
+      all = "";
 
     }
 
@@ -125,7 +132,7 @@ function comment(e) {
 
     //Append new comment to html using javascript
     if (value !== "") {
-      appendComment(user, value, picture, namesString, idsString);
+      appendComment(user, value, picture, namesString, idsString, all);
     }
 
   }
@@ -350,8 +357,13 @@ chrome.runtime.onMessage.addListener(
   });
 
 //Append html of new comment to body of existing comments
-function appendComment(user, value, picture, names, ids) {
-  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble" data-toggle="tooltip" data-placement="top" title="Viewable to: '+names+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><div class="d-flex justify-content-start align-items-start"><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a></div><p style="display:none;">'+names+'</p></div>');
+function appendComment(user, value, picture, names, ids, all) {
+  //create css class for private comments
+  var css = "";
+  if (all !== true) {
+    css = "private";
+  }
+  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble '+css+'" data-toggle="tooltip" data-placement="top" title="Viewable to: '+names+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><div class="d-flex justify-content-start align-items-start"><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a></div><p style="display:none;">'+names+'</p></div>');
   //Show reply button if user is not in reply mode
   if ($("#closeFriends").attr("style") == "display: none;") {
     $(".replyBtn").show();

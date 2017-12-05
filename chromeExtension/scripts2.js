@@ -83,27 +83,26 @@ function comment(e) {
     });
     chrome.storage.local.set({'tags': JSON.stringify(ids)});
     //If the user is tagging all friends in comment
+
     if (document.getElementById('publicMessage').checked) {
       
-      // $('#friendListCheckboxes .form-check-input').get().forEach(function(element) {
-      // });
-      // $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-      //   ids.push(element.id);
-      //   names.push($(element).parent().text().trim());
-      // });
-      // chrome.storage.local.set({'tags': JSON.stringify(ids)});
+      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+          ids.push(element.id);
+          names.push($(element).parent().text().trim());
+        });
+      chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : true});
       all = true;
 
     } 
     //Else if user only tagging selected friends
     else {
-      // $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-      //   ids.push(element.id);
-      //   names.push($(element).parent().text().trim()); 
+      $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+        ids.push(element.id);
+        names.push($(element).parent().text().trim()); 
     
-      // });
-      // chrome.storage.local.set({'tags': JSON.stringify(ids)});
+        });
+      chrome.storage.local.set({'tags': JSON.stringify(ids)});
       chrome.storage.local.set({'public' : ""})
       all = "";
 

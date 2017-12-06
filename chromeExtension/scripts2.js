@@ -183,6 +183,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
   var namesString = payload.data.names;
   var pageTitle = payload.data.pageTitle;
   var all = payload.data.all;
+  var tagsHtml = payload.data.tagsHtml;
 
   //Append incoming comment when user is on same url with comment tab opened
   if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {

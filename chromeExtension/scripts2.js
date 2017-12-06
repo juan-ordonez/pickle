@@ -108,6 +108,11 @@ function comment(e) {
     names.push(userName);
     names.sort();
     var namesString = names.join(', ');
+    var htmlArray = [];
+    for (var i = 0; i < names.length; i++) {
+      htmlArray.push('<a class="dropdown-item" href="#">'+names[i]+'</a>');
+    }
+    var tagsHtml = htmlArray.join('');
     
 
     //Send all comment data to background page
@@ -115,12 +120,12 @@ function comment(e) {
       tags = result['tags'];
       all = result['public'];
       chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
-        picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, checked : document.getElementById('publicMessage').checked});
+        picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, tagsHtml : tagsHtml, checked : document.getElementById('publicMessage').checked});
     });
 
     //Append new comment to html using javascript
     if (value !== "") {
-      appendComment(user, value, picture, namesString, idsString, all);
+      appendComment(user, value, picture, namesString, idsString, all, tagsHtml);
     }
 
   }
@@ -169,8 +174,6 @@ $(document).on("click", "#notificationsBell", function(){
 //Listen for incoming new comments or notifications
 chrome.gcm.onMessage.addListener(function(payload) {
 
-  console.log("received a new message!");
-
   var profilePic = payload.data.pic;
   var user = payload.data.first;
   var comment = payload.data.comment;
@@ -179,6 +182,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
   var idsString = payload.data.ids;
   var namesString = payload.data.names;
   var pageTitle = payload.data.pageTitle;
+  var all = payload.data.all;
 
   //Append incoming comment when user is on same url with comment tab opened
   if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
@@ -187,9 +191,9 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
     if (commentUrl == url && comment != 'like') {
 
-      appendComment(user, comment, profilePic, namesString, idsString);
+      appendComment(user, comment, profilePic, namesString, idsString, all, tagsHtml);
       //Hide the new comment if the user is in inside another group conversation
-      if ($("#replyGroup").attr("style") !== "display: none;") {
+      if ($("#topNav").hasClass("replying") || $("#topNav").hasClass("replyingPrivate") ) {
         if ($(".temporaryComment").last().attr("class").split(' ')[1] !== $(".commentGroup").not(".hiddenComment").attr("class").split(' ')[1]) {
           $(".temporaryComment").last().hide();
           $(".temporaryComment").last().addClass("hiddenComment");
@@ -254,12 +258,11 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
     $("body").linkify({
       target: "_blank"
     });
-    //Disable/enable scrolling on comments when friends dropup is opened/closed
-    $(".input-group-btn, .tagsDropdown").on("shown.bs.dropdown", function(){
-      $(".containerComments").attr("style", "overflow:hidden!important;");
-    });
-    $(".input-group-btn, .tagsDropdown").on("hide.bs.dropdown", function(){
-      $(".containerComments").attr("style", "");
+    //Close tags dropdown when user scrolls
+    $(".containerComments").bind("scroll", function(){
+      if ($(".tagsDropdown .dropdown-menu").hasClass("show")) {
+        $(".tagsDropdown .dropdown-menu").removeClass("show");
+      }
     });
 
       if (notificationsHTML != null) { 
@@ -352,16 +355,18 @@ chrome.runtime.onMessage.addListener(
   });
 
 //Append html of new comment to body of existing comments
-function appendComment(user, value, picture, names, ids, all) {
+function appendComment(user, value, picture, names, ids, all, tagsHtml) {
   //create css class for private comments
   var css = "";
+  var tagsIcon = "fa-tag";
   if (all !== true) {
     css = "private";
+    tagsIcon = "fa-user-secret";
   }
-  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble '+css+'" data-toggle="tooltip" data-placement="top" title="Viewable to: '+names+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><div class="d-flex justify-content-start align-items-start"><a class="replyBtn mb-0" href="#" style="display:none;"><small>Reply</small></a></div><p style="display:none;">'+names+'</p></div>');
+  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble '+css+'" data-toggle="tooltip" data-placement="top" title="Viewable to: '+names+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><div class="commentDetails d-flex justify-content-start align-items-center"><a class="replyBtn mb-0" href="#"><small>Reply</small></a><small class="ml-1 mr-1 mb-0">•</small><div class="tagsDropdown dropdown show"><a href="#" class="btn mb-0 tagsToggle" role="button" id="tags-temporary" "="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><small><i class="fa '+tagsIcon+'"></i></small></a><div class="dropdown-menu" aria-labelledby="tagsToggle-temporary"><p class="mr-3 ml-3 mb-0"><small><strong>Tags</strong></small></p>'+tagsHtml+'</div></div><small class="ml-1 mr-1 mb-0">• Now</small></div><p style="display:none;">'+names+'</p></div>');
   //Show reply button if user is not in reply mode
-  if ($("#closeFriends").attr("style") == "display: none;") {
-    $(".replyBtn").show();
+  if ($("#topNav").hasClass("replying") || $("#topNav").hasClass("replyingPrivate")) {
+    $(".commentDetails").children().hide();
   }
   $(".containerComments").scrollTop($(".containerComments")[0].scrollHeight); //Scroll to bottom of window
   $("#newComment").val(""); //Clear textarea

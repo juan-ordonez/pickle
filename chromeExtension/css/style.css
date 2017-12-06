@@ -115,33 +115,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	max-height: 350px; 
 }
 
-.dropdown-menu {
-	overflow-y:scroll; 
-	overflow-x:hidden;
-	padding: 0;
-	border-style:none;
-	max-height: 200px;
-}
-
-.dropdown-item {
-	padding-left: 1rem;
-	padding-right: 1rem;
-}
-
-.dropdown-item:hover {
-	background-color: #FFFFFF;
-	color: #2196F3;
-}
-
-.dropdown-item:active {
-	color: #424242;
-	background-color: #FFFFFF;
-}
-
-.dropdown-item .disabled{
-	color: #BDBDBD!important;
-}
-
 #loginSpinner {
 	color: #E91E63; 
 	display:none;
@@ -381,8 +354,31 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     pointer-events: none;
 }
 
+.dropdown-menu {
+	overflow-y:scroll; 
+	overflow-x:hidden;
+	padding: 0;
+	border-style:none;
+	max-height: 200px;
+}
+
+.dropdown-item {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
 .dropdown-item:hover {
 	background-color: #FFFFFF;
+	color: #2196F3;
+}
+
+.dropdown-item:active {
+	color: #424242;
+	background-color: #FFFFFF;
+}
+
+.dropdown-item .disabled{
+	color: #BDBDBD!important;
 }
 
 .likeButton {

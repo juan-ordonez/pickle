@@ -358,8 +358,8 @@ chrome.storage.local.get(['accessToken'], function(result) {
 
 function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, checked, tagsHtml) {
 
-
-  chrome.storage.local.get(['accessToken'], function(data) {
+  var d1 = $.Deferred();
+  var storage = chrome.storage.local.get(['accessToken'], function(data) {
     
   if (data['accessToken'] != null) { 
 
@@ -383,17 +383,22 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
           }
 
             chrome.storage.local.set({"pageTitle" : api.title, "pageImage" : image, "pageDescription" : description});
+            console.log("RESOLVED");
+            d1.resolve();
           });
 
-          fbPost.fail(
-            function(jqXHR, textStatus, errorThrown) {
-                  chrome.storage.local.set({"pageTitle" : pageTitle, "pageImage" : "", "pageDescription" : ""});
+      fbPost.fail(
+        function(jqXHR, textStatus, errorThrown) {
+          chrome.storage.local.set({"pageTitle" : pageTitle, "pageImage" : "", "pageDescription" : ""});
+          console.log("FAILED")
+          d1.resolve();
              }
          );
 
     }
-  }, function() {
+  });
 
+  $.when(d1).done(function () {
     chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription'], function(store) {
 
   $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
@@ -432,7 +437,6 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
     });
 
 });
-
 
 
   });

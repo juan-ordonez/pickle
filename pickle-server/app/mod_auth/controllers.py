@@ -204,27 +204,33 @@ def comment():
             comment.mentions.append(taggedUser)
     else:
         publicFriends = set([])
-        feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
-                        request.form['pageDescription'], request.form['string'], url)
-        db.session.add(feed)
+        if request.form['pageDescription'] and request.form['pageTitle'] and request.form['pageImage']):
+            feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
+                            request.form['pageDescription'], request.form['string'], url)
+            db.session.add(feed)
+        else:
+            feed = None
         for tag in tags:
             taggedUser = User.query.filter_by(id=tag).first()
             comment.mentions.append(taggedUser)
             if taggedUser.id not in publicFriends:
                 taggedUser.commentsTaggedIn.append(comment)
-                taggedUser.newsfeed.append(feed)
+                if feed:
+                    taggedUser.newsfeed.append(feed)
                 publicFriends.add(taggedUser.id)
             for session in taggedUser.friendSession:
                 if session.id not in publicFriends:
                     friend = User.query.filter_by(id=session.id).first()
                     friend.commentsTaggedIn.append(comment)
-                    friend.newsfeed.append(feed)
+                    if feed:
+                        friend.newsfeed.append(feed)
                     publicFriends.add(session.id)
         for session in user.friendSession:
             friendUser = User.query.filter_by(id=session.id).first()
             if friendUser.id not in publicFriends:
                 friendUser.commentsTaggedIn.append(comment)
-                friendUser.newsfeed.append(feed)
+                if feed:
+                    friendUser.newsfeed.append(feed)
                 publicFriends.add(taggedUser.id)
 
 

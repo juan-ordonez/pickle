@@ -16,7 +16,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     <!-- Font Awesome -->
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://use.fontawesome.com/releases/v5.0.0/css/all.css" rel="stylesheet">
     <!-- Waves CSS -->
     <link href="css/waves.min.css" rel="stylesheet">
     <!-- Custome Styles CSS -->
@@ -49,6 +49,13 @@
     <div class="container">
 
       <div class="card cardNewsfeed mb-3">
+
+        <div class="dropdown show dropdownOptions">    
+            <a href="#" class="btn mb-0 optionsBtn" role="button" id="post-[POSTID]"" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false""><i class="fas fa-ellipsis-h"></i></a>
+            <div class="dropdown-menu" aria-labelledby="post-[POSTID]">
+                <a class="dropdown-item" href="#"><small>Delete post</small></a>
+            </div>
+        </div>
 
         <div class="message d-flex flex-nowrap align-items-center">
           <div class="thumbnail">

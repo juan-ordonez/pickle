@@ -354,6 +354,11 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     pointer-events: none;
 }
 
+.dropdownOptions .dropdown-menu {
+	border-style: solid;
+	border-color: #EEEEEE;
+}
+
 .dropdown-menu {
 	overflow-y:scroll; 
 	overflow-x:hidden;
@@ -473,6 +478,15 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	color: #FFFFFF !important
 }
 
+.optionsBtn {
+	position: absolute;
+	padding:0;
+	top: 0.5rem;
+	right: 1rem;
+	color: #757575 !important;
+	box-shadow:none !important;
+}
+
 .tagsToggle {
 	padding: 0;
 	box-shadow: none!important;
@@ -496,7 +510,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 .z-depth-1, #bottomNav, #topNav, #tagFriendsNav, #formNewComments, .dropdown-menu {
   box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 7px 0 rgba(0, 0, 0, 0.08); }
 
-.z-depth-1-half, #friendsListDropdown {
+.z-depth-1-half, #friendsListDropdown, .dropdownOptions {
   box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15); }
 
 .z-depth-2 {

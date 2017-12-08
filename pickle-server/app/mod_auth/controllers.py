@@ -204,7 +204,7 @@ def comment():
             comment.mentions.append(taggedUser)
     else:
         publicFriends = set([])
-        if request.form['pageDescription'] and request.form['pageTitle'] and request.form['pageImage']):
+        if request.form['pageDescription'] and request.form['pageTitle'] and request.form['pageImage']:
             feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
                             request.form['pageDescription'], request.form['string'], url)
             db.session.add(feed)

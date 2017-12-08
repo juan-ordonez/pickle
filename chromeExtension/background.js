@@ -188,7 +188,9 @@ function getUserData() {
             var d1 = $.Deferred(),
                 d2 = $.Deferred();
             
+
             $("body").load("https://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
+
               commentsHTML = $("#comments").html();
               d1.resolve();
             });  
@@ -269,7 +271,7 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) { 
 
     if (request.type == "comment") {
-      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.names, request.ids, request.checked);
+      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.names, request.ids, request.checked, request.tagsHtml);
       done = false;
 
     } 
@@ -358,7 +360,7 @@ $.post("https://graph.facebook.com/v2.11/?id=http://burymewithmymoney.com/?scrap
 
 
 
-function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, checked) {
+function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, checked, tagsHtml) {
   console.log(tags);
 
   $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
@@ -371,7 +373,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
           var array = data.slice();
           console.log("PUBLIC");
 
-          json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids}, 
+          json = JSON.stringify({ "data": {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids, "tagsHtml" : tagsHtml}, 
             "registration_ids": data });
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "left a comment on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
             notify(data, json);
@@ -383,7 +385,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
           var array = data.slice();
           
 
-          json = JSON.stringify({ "data": {"status" : "sent you a secret message on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids}, "registration_ids": data });
+          json = JSON.stringify({ "data": {"status" : "sent you a secret message on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids, "tagsHtml" : tagsHtml}, "registration_ids": data });
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
                 notify(data, json);
           });

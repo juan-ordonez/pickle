@@ -1,21 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Influencers - LikeWallet</title>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
-    <!-- Bootstrap core CSS -->
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <!-- Material Design Bootstrap -->
-    <link href="{{ url_for('static', filename='css/mdb.min.css') }}" rel="stylesheet">
-    <!-- Your custom styles (optional) -->
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-</head>
-
 <body>
     <div id="comments">
     {% for i in comments %}
@@ -43,7 +28,7 @@
                     {% if i[9] %}
                     <a href="#" class="btn mb-0 tagsToggle" role="button" id="tags-{{i[5]}}"" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false""><small><i class="fa fa-user-secret"></i></small></a>
                     {% else %}
-                    <a href="#" class="btn mb-0 tagsToggle" role="button" id="tags-{{i[5]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><small><i class="fa fa-tag"></i></small></a>
+                    <a href="#" class="btn mb-0 tagsToggle" role="button" id="tagsToggle-{{i[5]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><small><i class="fa fa-tag"></i></small></a>
                     {% endif %}
                     <div class="dropdown-menu" aria-labelledby="tagsToggle-{{i[5]}}">
                         <p class="mr-3 ml-3 mb-0"><small><strong>Tags</strong></small></p>

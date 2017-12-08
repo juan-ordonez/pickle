@@ -20,7 +20,7 @@ import operator
 from app.mod_auth.forms import LoginForm, RegistrationForm, RemoveForm
 
 # Import module models (i.e. User)
-from app.mod_auth.models import User, Comment, Session, tags_table, Notification, URL
+from app.mod_auth.models import User, Comment, Session, tags_table, Notification, URL, Feed
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, user_logged_in, current_user
 
@@ -188,7 +188,8 @@ def logout(cookie):
 @mod_auth.route('/comment/', methods=['POST'])
 @crossdomain(origin='*')
 def comment():
-    comment = Comment(request.form['string'], canonical(request.form['url']), str(datetime.now()))
+    url = canonical(request.form['url'])
+    comment = Comment(request.form['string'], url, str(datetime.now()))
     comment.public = request.form['public']
     user = User.query.filter_by(id=request.form['userId']).first()
     user.commentsWritten.append(comment)
@@ -203,21 +204,27 @@ def comment():
             comment.mentions.append(taggedUser)
     else:
         publicFriends = set([])
+        feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
+                        request.form['pageDescription'], request.form['string'], url)
+        db.session.add(feed)
         for tag in tags:
             taggedUser = User.query.filter_by(id=tag).first()
             comment.mentions.append(taggedUser)
             if taggedUser.id not in publicFriends:
                 taggedUser.commentsTaggedIn.append(comment)
+                taggedUser.newsfeed.append(feed)
                 publicFriends.add(taggedUser.id)
             for session in taggedUser.friendSession:
                 if session.id not in publicFriends:
                     friend = User.query.filter_by(id=session.id).first()
                     friend.commentsTaggedIn.append(comment)
+                    friend.newsfeed.append(feed)
                     publicFriends.add(session.id)
         for session in user.friendSession:
             friendUser = User.query.filter_by(id=session.id).first()
             if friendUser.id not in publicFriends:
                 friendUser.commentsTaggedIn.append(comment)
+                friendUser.newsfeed.append(feed)
                 publicFriends.add(taggedUser.id)
 
 
@@ -239,7 +246,7 @@ def comment():
 @crossdomain(origin='*')
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
-    url = canonical(request.form['url'])
+    url = request.form['url']
     
     #Get IDs of friends of user
     friends = set([])
@@ -250,37 +257,37 @@ def loadComment():
 
     comments = []
     #For each comment that the user has been tagged on
-    for comment in user.commentsTaggedIn:
+    for comment in user.commentsTaggedIn.filter_by(url=url):
         # If the url of the comment matches the current url that the user is on
-        if comment.url == url:
+        # if comment.url == url:
             #Get names and IDs of all user's friends also tagged in the comment
-            tagNames = []
-            tagIds = []
+        tagNames = []
+        tagIds = []
 
 
-            if comment.mentions.count() > 0:
+        if comment.mentions.count() > 0:
 
-                for tag in comment.mentions:
+            for tag in comment.mentions:
+                tagNames.append(tag.name)
+                tagIds.append(tag.id)
+            if user.id not in tagIds:
+                tagNames.append(user.name)
+                tagIds.append(user.id)
+        else:
+            for tag in comment.usersTagged:
+                if tag.id in friends or tag.id == user.id:
                     tagNames.append(tag.name)
                     tagIds.append(tag.id)
-                if user.id not in tagIds:
-                    tagNames.append(user.name)
-                    tagIds.append(user.id)
-            else:
-                for tag in comment.usersTagged:
-                    if tag.id in friends or tag.id == user.id:
-                        tagNames.append(tag.name)
-                        tagIds.append(tag.id)
 
-            #Convert list of friends tagged into string
-            tagNamesString = '@' + ', @'.join(sorted(tagNames))
-            tagIdsString = '-'.join(sorted(tagIds))
-            if not comment.public:
-                css = "private"
-            else:
-                css="";
-            #Append data of comment to comments array
-            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, tagNames, user in comment.likers))
+        #Convert list of friends tagged into string
+        tagNamesString = '@' + ', @'.join(sorted(tagNames))
+        tagIdsString = '-'.join(sorted(tagIds))
+        if not comment.public:
+            css = "private"
+        else:
+            css="";
+        #Append data of comment to comments array
+        comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, tagNames, user in comment.likers))
 
     comments = sorted(comments, reverse=False, key=lambda c : c[2])
 

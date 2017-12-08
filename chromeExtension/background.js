@@ -337,11 +337,7 @@ chrome.storage.local.get(['accessToken'], function(result) {
           });
 
                 });
-              });
-$.post("https://graph.facebook.com/v2.11/?id=http://burymewithmymoney.com/?scrape=true&access_token=" + accessToken, function(api) {
-    console.log(api);
-});
-          
+              });     
           });
           chrome.tabs.remove(tabs[i].id);
           chrome.browserAction.setPopup({popup : "popup.html"});
@@ -361,9 +357,47 @@ $.post("https://graph.facebook.com/v2.11/?id=http://burymewithmymoney.com/?scrap
 
 
 function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, checked, tagsHtml) {
-  console.log(tags);
 
-  $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all}, function(data) {
+
+  chrome.storage.local.get(['accessToken'], function(data) {
+    
+  if (data['accessToken'] != null) { 
+
+    
+    session = data['accessToken'];
+
+
+
+  var fbPost = $.post("https://graph.facebook.com/v2.11/?id=" + encodeURIComponent(url) + "?scrape=true&access_token=" + session, function(api) {
+            
+          if (api.image != null) {
+            var image = api.image[0].url;
+          } else {
+            var image = ""
+          }
+
+          if (api.description != null) {
+            var description = api.description;
+          } else {
+            var description = ""
+          }
+
+            chrome.storage.local.set({"pageTitle" : api.title, "pageImage" : image, "pageDescription" : description});
+          });
+
+          fbPost.fail(
+            function(jqXHR, textStatus, errorThrown) {
+                  chrome.storage.local.set({"pageTitle" : pageTitle, "pageImage" : "", "pageDescription" : ""});
+             }
+         );
+
+    }
+  }, function() {
+
+    chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription'], function(store) {
+
+  $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+    "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription']}, function(data) {
       
       data = JSON.parse(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
@@ -396,6 +430,13 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
         
   
     });
+
+});
+
+
+
+  });
+
 }
 
 function like(userName, userID, id, liked, picture, pageTitle){

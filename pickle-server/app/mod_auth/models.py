@@ -47,11 +47,12 @@ class User(UserMixin, db.Model):
 	notifications = db.relationship("Notification", backref="user", lazy='dynamic')
 	numNotifications = db.Column(db.Integer)
 	commentsWritten = db.relationship("Comment", backref="user", lazy='dynamic')
-	commentsTaggedIn = db.relationship("Comment", secondary=tags_table, backref=db.backref('usersTagged', lazy='dynamic'))
+	commentsTaggedIn = db.relationship("Comment", secondary=tags_table, lazy='dynamic', backref=db.backref('usersTagged', lazy='dynamic'))
 	browsingData = db.relationship("URL", secondary=browsing_table, backref=db.backref('users', lazy='dynamic'))
 	friendSession = db.relationship("Session", secondary=session_table, backref=db.backref('friends', lazy='dynamic'))
 	likes = db.relationship("Comment", secondary=likes_table, backref=db.backref('likers', lazy='dynamic'))
 	commentsMentionedIn = db.relationship("Comment", secondary=mentions_table, backref=db.backref('mentions', lazy='dynamic'))
+	newsfeed = db.relationship("Feed", backref="user", lazy='dynamic')
 
 
 	
@@ -151,6 +152,37 @@ class URL(db.Model):
 		hashed.update(unique.encode('utf-8'))
 		self.id = str(hashed)
 
+
+
+class Feed(db.Model):
+	__tablename__ = 'auth_feed'
+	__table_args__ = {'mysql_charset': 'utf8'}
+
+	id = db.Column(db.String(128), primary_key=True)
+	tagType = db.Column(db.String(128))
+	time = db.Column(db.String(128))
+	title = db.Column(db.String(512))
+	image = db.Column(db.String(256))
+	description = db.Column(db.String(256))
+	message = db.Column(db.String(256))
+	url = db.Column(db.String(512))
+	user_id = db.Column(db.String(128), db.ForeignKey('auth_user.id'))
+
+
+
+	
+	def __init__(self, tagType, time, title, image, description, message, url):
+		self.tagType = tagType
+		self.time = time
+		self.title = title
+		self.image = image
+		self.description = description
+		self.message = message
+		self.url = url
+		hashed = hashlib.sha1()
+		unique = str(tagType) + str(time) + str(title) + str(image) + str(description) + str(message) + str(url)
+		hashed.update(unique.encode('utf-8'))
+		self.id = str(hashed)
 
 
 

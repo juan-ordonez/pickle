@@ -16,7 +16,88 @@ def canonical(url):
 	except:
 		return url
 
-# Converts a datetime object (YYYY-MM-DD 00:00:00.000000) 
+def getPostDescription(userID, posterID, tagsArray, friendsArray):
+
+    userName = ""
+    friendNames = ""
+    strangerNames = ""
+
+    #Sort tagsArray, friends first then strangers
+    taggedFriends = []
+    taggedStrangers = []
+    for tag in tagsArray:
+        if tag in friendsArray:
+            #taggedFriends.append(tag.name)
+            taggedFriends.append(tag)
+        elif tag != userID:
+            #taggedStrangers.append(tag.name)
+            taggedStrangers.append(tag)
+    taggedNames = taggedFriends + taggedStrangers
+
+    tagCount = len(taggedNames)
+    tagsLeft = tagCount - len(taggedNames[:4])
+
+    #If user is poster
+    if userID == posterID: 
+        if tagCount < 5:
+            if tagCount == 1:
+                postDescription = "You tagged " + taggedNames[0]
+            elif tagCount == 2:
+                postDescription = "You tagged " + (" and ").join(taggedNames)
+            else:
+                postDescription = "You tagged " + (', ').join(taggedNames[:-1]) + ' and ' + taggedNames[-1]
+        else:
+            postDescription = "You tagged " + (', ').join(taggedNames[:4]) + " and " +str(tagsLeft)+ " other people"
+
+    #If poster is user's friend
+    elif posterID in friendsArray:
+        if userID in tagsArray:
+            taggedNames.insert(0, "you")
+            tagsLeft += 1
+        if tagCount < 5:
+            if tagCount == 1:
+                postDescription = posterID +" tagged "+ taggedNames[0]
+            elif tagCount == 2:
+                postDescription = posterID + " tagged " + (" and ").join(taggedNames)
+            else:
+                postDescription = posterID + " tagged " + (', ').join(taggedNames[:-1]) + ' and ' + taggedNames[-1]
+        else:
+            postDescription = posterID + " tagged " + (', ').join(taggedNames[:4]) + ' and ' + str(tagsLeft) + " other people"
+    #If poster is stranger to user
+    else:
+        if userID in tagsArray:
+            taggedNames.insert(0, "You")
+            tagsLeft += 1
+        if tagCount < 5:
+            if taggedNames[0] == "You" and tagCount == 1:
+                postDescription = "You were tagged by "+posterID  
+            elif tagCount == 1:
+                postDescription = taggedNames[0] +" was tagged by "+posterID
+            elif tagCount == 2:
+                postDescription = (" and ").join(taggedNames) + " were tagged by " + posterID 
+            else:
+                postDescription = (', ').join(taggedNames[:-1]) + ' and ' + taggedNames[-1]+ " were tagged by " + posterID
+        else:
+            postDescription = (', ').join(taggedNames[:4]) + ' and ' + str(tagsLeft)+ " other people were tagged by " + posterID
+
+    otherPeople = taggedNames[4:]
+    return [postDescription, otherPeople]
+
+# juan = "Juan Ordonez"
+# josh = "Josh Goldman"
+# alex = "Alex Zekoff"
+# clay = "Clay Anthony"
+# gagan = "Gagan Mac"
+# michael = "Michael Chai"
+# hannah = "Hannah Chi"
+# tucker = "Tucker Smith"
+# anne = "Anne Flan"
+# brad = "Brad Pitt"
+
+# getPostDescription(juan, hannah, [alex, tucker, anne, brad, clay, gagan], [josh, alex, clay, gagan, michael])
+
+
+# Converts a string in datetime object format (YYYY-MM-DD 00:00:00.000000) 
 # into a string with proper timestamp label
 def getTimeLabel(commentDatetime):
     #Convert comment datetime from utc to user's local timezone

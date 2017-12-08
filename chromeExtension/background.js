@@ -188,7 +188,7 @@ function getUserData() {
             var d1 = $.Deferred(),
                 d2 = $.Deferred();
             
-            $("body").load("http://localhost:5000/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
+            $("body").load("https://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
               commentsHTML = $("#comments").html();
               d1.resolve();
             });  
@@ -336,6 +336,10 @@ chrome.storage.local.get(['accessToken'], function(result) {
 
                 });
               });
+$.post("https://graph.facebook.com/v2.11/?id=http://burymewithmymoney.com/?scrape=true&access_token=" + accessToken, function(api) {
+    console.log(api);
+});
+          
           });
           chrome.tabs.remove(tabs[i].id);
           chrome.browserAction.setPopup({popup : "popup.html"});

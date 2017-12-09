@@ -382,7 +382,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
             var description = ""
           }
 
-            chrome.storage.local.set({"pageTitle" : api.title, "pageImage" : image, "pageDescription" : description});
+            chrome.storage.local.set({"pageTitle" : api.title, "pageImage" : image, "pageDescription" : description.trimToLength(80)});
             console.log("RESOLVED");
             d1.resolve();
           });
@@ -516,6 +516,13 @@ function notify(data, json) {
 
       }
 }
+
+//This function allows for trimming of strings
+String.prototype.trimToLength = function(m) {
+  return (this.length > m) 
+    ? jQuery.trim(this).substring(0, m).split(" ").slice(0, -1).join(" ") + "..."
+    : this;
+};
 
 
 

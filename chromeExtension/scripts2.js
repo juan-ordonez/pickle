@@ -10,6 +10,7 @@ var pageTitle;
 var commentsHTML;
 var notificationsHTML;
 var commentsHTML;
+var postsHTML;
 
 if (document.getElementById("logoutButton")) {
   document.getElementById("logoutButton").addEventListener("click", logout);
@@ -230,7 +231,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
   //Get data from storage if background is done loading
   if (response.done) {
     chrome.storage.local.get(['commentsHTML', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
-      'notificationsHTML', 'friendsHTML', 'userID'], function (result) {
+      'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML'], function (result) {
 
       commentsHTML = result['commentsHTML'];
       userName = result['userName'];
@@ -243,6 +244,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
       notificationsHTML = result['notificationsHTML'];
       friendsHTML = result['friendsHTML'];
       userID = result['userID'];
+      postsHTML = result['postsHTML'];
     if (commentsHTML != null) {
       $("#commentsBody").html(commentsHTML);
     } else {
@@ -273,6 +275,11 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
       }
       $("#notificationsContainer .loadingSpinner").hide();
       $("#notificationsContainer .cardList").show();
+      if (postsHTML != null) { 
+        $("#posts").html(postsHTML);
+      } else {
+        $("#posts").html(' ');
+      }
       if (friendsHTML != null) {
         $("#friendListCheckboxes").html(friendsHTML);
       } else {
@@ -304,6 +311,10 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
 // if loading the popup page, load data via the background page
 if (window.location.href == chrome.extension.getURL('popup.html')) {
   $("#numNotifications").hide();
+  connect("first");
+}
+
+if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
   connect("first");
 }
 

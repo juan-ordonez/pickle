@@ -39,6 +39,13 @@ feed_table = db.Table('feed_table', db.Model.metadata,
     mysql_charset='utf8',
 )
 
+feed_tags_table = db.Table('feed_tags_table', db.Model.metadata,
+    db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
+    db.Column('feed_id', db.String(128), db.ForeignKey('auth_feed.id')),
+    mysql_charset='utf8',
+)
+
+
 
 
 
@@ -172,6 +179,7 @@ class Feed(db.Model):
 	description = db.Column(db.String(256))
 	message = db.Column(db.String(256))
 	url = db.Column(db.String(512))
+	tags = db.relationship("User", secondary=feed_tags_table, lazy='dynamic', backref=db.backref('tagPosts', lazy='dynamic'))
 	
 
 

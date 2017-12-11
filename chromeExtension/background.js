@@ -12,6 +12,7 @@ var friendsHTML;
 var done = false;
 var successURL = 'www.facebook.com/connect/login_success.html';
 var permissions = [];
+var postsHTML;
 
 
 chrome.storage.local.get(['accessToken'], function(result) {
@@ -70,6 +71,16 @@ chrome.gcm.onMessage.addListener(function(payload) {
               
 
             });
+
+
+              $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
+               postsHTML = $("#posts").html();
+               console.log(postsHTML);
+               chrome.storage.local.set({"postsHTML" : postsHTML});
+               // getUserData();
+               
+ 
+              });
          
           }
 

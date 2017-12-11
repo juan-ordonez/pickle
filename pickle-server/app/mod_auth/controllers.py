@@ -206,7 +206,7 @@ def comment():
         publicFriends = set([])
         if request.form['pageDescription'] and request.form['pageTitle'] and request.form['pageImage']:
             feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
-                            request.form['pageDescription'], request.form['string'], url)
+                            request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
             db.session.add(feed)
         else:
             feed = None
@@ -217,6 +217,7 @@ def comment():
                 taggedUser.commentsTaggedIn.append(comment)
                 if feed:
                     taggedUser.newsfeed.append(feed)
+                    feed.tags.append(taggedUser)
                 publicFriends.add(taggedUser.id)
             for session in taggedUser.friendSession:
                 if session.id not in publicFriends:
@@ -522,7 +523,24 @@ def history():
 
 
 
+@mod_auth.route('/loadPosts/', methods=['GET','POST'])
+@crossdomain(origin='*')
+def loadPosts():
+    posts = []
+    user = User.query.filter_by(id=request.form['id']).first()
+    
+    for post in user.newsfeed:
+        parsed_uri = urlparse(post.url)
+        domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+        posts.append((urllib.quote(post.id), post.tagType, post.time, post.title, post.image, post.description, post.message, post.url, domain))
+    
 
+    posts = sorted(posts, reverse=True, key=lambda c : c[2])
+    templateData = {
+        'posts' : posts
+        
+    }
+    return render_template('auth/newsfeed.html', **templateData)
 
 
 

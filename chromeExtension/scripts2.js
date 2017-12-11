@@ -315,6 +315,18 @@ if (window.location.href == chrome.extension.getURL('popup.html')) {
 }
 
 if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
+  chrome.storage.local.get(['postsHTML'], function(result) {
+  postsHTML = result['postsHTML'];
+  console.log(postsHTML);
+  if (postsHTML != null) { 
+        $("#posts").html(postsHTML);
+      } else {
+        $("#posts").html(' ');
+      }
+      // $("#notificationsContainer .loadingSpinner").hide();
+      // $("#notificationsContainer .cardList").show();
+
+  });
   connect("first");
 }
 
@@ -360,7 +372,7 @@ if (window.location.href == chrome.extension.getURL('account.html')) {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.handshake == "login") {
-      window.location.replace("popup.html");
+      window.location.replace("newsfeed.html");
     } else if (request.handshake == "retry") {
       connect("first");
     }

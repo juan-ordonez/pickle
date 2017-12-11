@@ -20,7 +20,7 @@ chrome.storage.local.get(['accessToken'], function(result) {
   var token = result['accessToken'];
 
   if (token) {
-    chrome.browserAction.setPopup({popup : "popup.html"});
+    chrome.browserAction.setPopup({popup : "newsfeed.html"});
 
   }
 
@@ -167,7 +167,7 @@ function getUserData() {
         chrome.browserAction.setPopup({popup : "register.html"});
     
       } else {
-          chrome.browserAction.setPopup({popup : "popup.html"});
+          chrome.browserAction.setPopup({popup : "newsfeed.html"});
           userName = json.name;
           userEmail = json.email;
           friendsArray = json.friends;
@@ -227,7 +227,8 @@ function getUserData() {
                 "notifications" : notifications,
                 "notificationsHTML" : notificationsHTML,
                 "commentsHTML" : commentsHTML,
-                "friendsHTML" : friendsHTML});
+                "friendsHTML" : friendsHTML,
+                "postsHTML" : postsHTML});
 
 
 
@@ -342,6 +343,12 @@ chrome.storage.local.get(['accessToken'], function(result) {
               
             });
 
+                  $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
+                   postsHTML = $("#posts").html();
+                  chrome.storage.local.set({"postsHTML" : postsHTML});
+              
+            });
+
                   var senderIds = ["511642730215"];
                   chrome.gcm.register(senderIds, function (registrationID) {
                   $.post("https://pickle-server-183401.appspot.com/token/", {"session" : accessToken, "token" : registrationID});
@@ -351,12 +358,12 @@ chrome.storage.local.get(['accessToken'], function(result) {
               });     
           });
           chrome.tabs.remove(tabs[i].id);
-          chrome.browserAction.setPopup({popup : "popup.html"});
+          chrome.browserAction.setPopup({popup : "newsfeed.html"});
         }
       }
     });
   } else {
-    chrome.browserAction.setPopup({popup : "popup.html"});
+    chrome.browserAction.setPopup({popup : "newsfeed.html"});
 
   }
 

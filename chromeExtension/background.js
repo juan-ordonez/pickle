@@ -379,20 +379,31 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
 
 
   var fbPost = $.post("https://graph.facebook.com/v2.11/?id=" + encodeURIComponent(url) + "?scrape=true&access_token=" + session, function(api) {
-            
+            console.log(api);
           if (api.image != null) {
             var image = api.image[0].url;
+            console.log(api.image);
           } else {
-            var image = ""
+            var image = "";
           }
 
           if (api.description != null) {
             var description = api.description;
+            console.log(api.description);
           } else {
-            var description = ""
+            var description = "";
           }
 
-            chrome.storage.local.set({"pageTitle" : api.title, "pageImage" : image, "pageDescription" : description.trimToLength(80)});
+          if (api.title != null) {
+            console.log(api.title);
+            var title = api.title;
+          } else {
+            var title = "";
+          }
+
+            var length = 80;
+            var trimmedString = description.length > length ? description.substring(0, length - 3) + "..." : description;
+            chrome.storage.local.set({"pageTitle" : title, "pageImage" : image, "pageDescription" : trimmedString});
             console.log("RESOLVED");
             d1.resolve();
           });
@@ -411,7 +422,9 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
   $.when(d1).done(function () {
     chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription'], function(store) {
 
-  $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+      console.log(store['pageDescription']);
+
+  var comPost = $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
     "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription']}, function(data) {
       
       data = JSON.parse(data);
@@ -445,6 +458,11 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
         
   
     });
+
+  comPost.fail(function(jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR.responseText);
+             }
+         );
 
 });
 

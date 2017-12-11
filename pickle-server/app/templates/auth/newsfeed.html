@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <div id="posts">
+    {% for i in posts %}
+    <div class="card cardNewsfeed mb-3">
+
+        <div class="message d-flex flex-nowrap align-items-center">
+          <div class="thumbnail">
+              <img src=https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/21192038_10210868925387448_6155210953248920757_n.jpg?oh=65da23dc5da3aece357bfb5529b8dda4&oe=5A6E9D3B>
+          </div>
+          <div>
+            <p class="mb-0 ml-3">{{i[1]}}</p>
+            <p class="commentPreview mb-0 ml-3">Hannah: {{i[6]}}</p>
+          </div>
+        </div>
+        <div class="pageImg d-flex align-items-center">
+          <a href={{i[7]}} class="notificationTab"><img src={{i[4]}}></a>
+        </div>
+        <div style="padding: 1rem;">
+          <a href={{i[7]}} class="notificationTab"><h1>{{i[3]}}</h1></a>
+          <p class="pageDescription">{{i[5]}}</p>
+          <p class="pageDomain">{{i[8]}}</p>
+        </div>
+
+      </div>
+    {% endfor %}
+</div>
+</body>
+
+<!-- <strong>Josh</strong> got tagged by Hannah Chi -->
+</html>

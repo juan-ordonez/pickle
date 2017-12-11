@@ -9,6 +9,7 @@ var notifications;
 var notificationsHTML;
 var commentsHTML;
 var friendsHTML;
+var postsHTML;
 var done = false;
 var successURL = 'www.facebook.com/connect/login_success.html';
 var permissions = [];
@@ -66,6 +67,15 @@ chrome.gcm.onMessage.addListener(function(payload) {
               notificationsHTML = $("#notifications").html();
 
               chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
+              // getUserData();
+              
+
+            });
+
+          $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
+              postsHTML = $("#posts").html();
+              console.log(postsHTML);
+              chrome.storage.local.set({"postsHTML" : postsHTML});
               // getUserData();
               
 

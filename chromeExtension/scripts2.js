@@ -9,6 +9,7 @@ var notifications;
 var pageTitle;
 var commentsHTML;
 var notificationsHTML;
+var postsHTML;
 var commentsHTML;
 
 if (document.getElementById("logoutButton")) {
@@ -230,8 +231,8 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
   //Get data from storage if background is done loading
   if (response.done) {
     chrome.storage.local.get(['commentsHTML', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
-      'notificationsHTML', 'friendsHTML', 'userID'], function (result) {
-
+      'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML'], function (result) {
+      postsHTML = result['postsHTML']
       commentsHTML = result['commentsHTML'];
       userName = result['userName'];
       userEmail = result['userEmail'];
@@ -271,6 +272,12 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
       } else {
         $("#notifications").html(' ');
       }
+
+      if (postsHTML != null) { 
+        $("#posts").html(postsHTML);
+      } else {
+        $("#posts").html(' ');
+      }
       $("#notificationsContainer .loadingSpinner").hide();
       $("#notificationsContainer .cardList").show();
       if (friendsHTML != null) {
@@ -307,6 +314,9 @@ if (window.location.href == chrome.extension.getURL('popup.html')) {
   connect("first");
 }
 
+if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
+  connect("first");
+}
 // login facebook authentication
 $(document).on("click", "#loginButton", function(event){ 
   url = "https://www.facebook.com/dialog/oauth?client_id=1430922756976623&response_type=token&scope=public_profile,email,user_friends&redirect_uri=http://www.facebook.com/connect/login_success.html";

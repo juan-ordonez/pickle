@@ -172,7 +172,7 @@ class Feed(db.Model):
 	__table_args__ = {'mysql_charset': 'utf8'}
 
 	id = db.Column(db.String(128), primary_key=True)
-	tagType = db.Column(db.String(128))
+	poster_id = db.Column(db.String(128))
 	time = db.Column(db.String(128))
 	title = db.Column(db.String(512))
 	image = db.Column(db.String(256))

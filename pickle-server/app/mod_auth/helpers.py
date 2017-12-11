@@ -40,7 +40,7 @@ def getPostDescription(userID, posterID, tagsArray, friendsArray):
 
         #If user is poster
         if userID == posterID: 
-        stranger = False
+            stranger = False
             if tagCount < 5:
                 if tagCount == 1:
                     postDescription = "You tagged " + taggedNames[0]
@@ -53,7 +53,7 @@ def getPostDescription(userID, posterID, tagsArray, friendsArray):
 
         #If poster is user's friend
         elif posterID in friendsArray:
-        stranger = False
+            stranger = False
             if userID in tagsArray:
                 taggedNames.insert(0, "you")
                 tagsLeft += 1
@@ -68,7 +68,7 @@ def getPostDescription(userID, posterID, tagsArray, friendsArray):
                 postDescription = posterID + " tagged " + (', ').join(taggedNames[:4]) + ' and ' + str(tagsLeft) + " other people"
         #If poster is stranger to user
         else:
-        stranger = True
+            stranger = True
             if userID in tagsArray:
                 taggedNames.insert(0, "You")
                 tagsLeft += 1

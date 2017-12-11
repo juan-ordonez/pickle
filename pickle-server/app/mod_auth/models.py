@@ -185,8 +185,8 @@ class Feed(db.Model):
 
 
 	
-	def __init__(self, tagType, time, title, image, description, message, url):
-		self.tagType = tagType
+	def __init__(self, poster_id, time, title, image, description, message, url):
+		self.poster_id = poster_id
 		self.time = time
 		self.title = title
 		self.image = image

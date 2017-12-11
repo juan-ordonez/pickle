@@ -546,12 +546,15 @@ def loadPosts():
         for tag in post.tags:
             tags.append(tag.name)
  
-        postDescription = getPostDescription(user.name, post.tagType, tags, friends)
+        poster = User.query.filter_by(id=post.posterID).first()
 
+        postDescription = getPostDescription(user.name, poster.name, tags, friends)
+
+        #Get picture of friend if poster is a stranger. Else get posters picture
         if postDescription[2]:
-            thumbnail = "https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/21192038_10210868925387448_6155210953248920757_n.jpg?oh=65da23dc5da3aece357bfb5529b8dda4&oe=5A6E9D3B"
+            thumbnail = post.tags[0].picture
         else:
-            thumbnail = ""
+            thumbnail = poster.picture
 
         posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain))
     

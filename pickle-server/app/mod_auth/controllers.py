@@ -46,7 +46,7 @@ from oauth2client.client import GoogleCredentials
 from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
 import ast
 from selenium import webdriver
-from helpers import canonical, getTimeLabel
+from helpers import canonical, getTimeLabel, getPostDescription
 
 credentials = GoogleCredentials.get_application_default()
 
@@ -205,7 +205,9 @@ def comment():
     else:
         publicFriends = set([])
         if request.form['pageDescription'] and request.form['pageTitle'] and request.form['pageImage']:
-            feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
+            # feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
+            #                 request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
+            feed = Feed(user.name, str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
                             request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
             db.session.add(feed)
         else:
@@ -532,7 +534,26 @@ def loadPosts():
     for post in user.newsfeed:
         parsed_uri = urlparse(post.url)
         domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
-        posts.append((urllib.quote(post.id), post.tagType, post.time, post.title, post.image, post.description, post.message, post.url, domain))
+        
+        #Get names of friends of user
+        friends = []
+        for session in user.friendSession:
+            if session.authToken:
+                friends.append(session.name)
+
+        #Get names of users tagged in post
+        tags = []
+        for tag in post.tags:
+            tags.append(tag.name)
+ 
+        postDescription = getPostDescription(user.name, post.tagType, tags, friends)
+
+        if postDescription[2]:
+            thumbnail = "https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/21192038_10210868925387448_6155210953248920757_n.jpg?oh=65da23dc5da3aece357bfb5529b8dda4&oe=5A6E9D3B"
+        else:
+            thumbnail = ""
+
+        posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain))
     
 
     posts = sorted(posts, reverse=True, key=lambda c : c[2])

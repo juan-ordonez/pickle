@@ -194,7 +194,7 @@ class Feed(db.Model):
 		self.message = message
 		self.url = url
 		hashed = hashlib.sha1()
-		unique = str(tagType) + str(time) + str(title) + str(image) + str(description) + str(message) + str(url)
+		unique = str(poster_id) + str(time) + str(title) + str(image) + str(description) + str(message) + str(url)
 		hashed.update(unique.encode('utf-8'))
 		self.id = str(hashed)
 

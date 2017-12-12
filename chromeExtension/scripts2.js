@@ -378,7 +378,7 @@ if (window.location.href == chrome.extension.getURL('account.html')) {
   chrome.storage.local.get(['picture', 'userName'], function(result) {
   userName = result['userName'];
   picture = result['picture'];
-  $("#accountName").append(userName);
+  $(".accountName").append(userName);
   $("#accountProfilePicture").attr("src", picture);
 });
 }

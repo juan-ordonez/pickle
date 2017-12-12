@@ -175,6 +175,8 @@ $(document).on("click", "#notificationsBell", function(){
 //Listen for incoming new comments or notifications
 chrome.gcm.onMessage.addListener(function(payload) {
 
+  if (payload.data.type == "notification") {
+
   var profilePic = payload.data.pic;
   var user = payload.data.first;
   var comment = payload.data.comment;
@@ -209,7 +211,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
     
     $("#notifications").prepend('<a href="'+commentUrl+'" class="notificationTab"><div class="d-flex align-items-center"><div class="thumbnail mr-3"><img src='+profilePic+'></div><p class="notification"><strong>'+user+'</strong> '+notification+' '+pageTitle+'</p></div></a>');
   } 
-
+}
 });
 
 
@@ -293,7 +295,9 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
         if (document.getElementById("numNotifications")) {
           document.getElementById("numNotifications").innerHTML = notifications;
           $("#numNotifications").show();
+          if (notifications != 0) {
           chrome.browserAction.setBadgeText({text: notifications.toString()});
+        }
         }
       }
 
@@ -354,7 +358,9 @@ if (window.location.href == chrome.extension.getURL('notifications.html')) {
       $("#notificationsContainer .loadingSpinner").hide();
       $("#notificationsContainer .cardList").show();
 
-  })
+  });
+  chrome.browserAction.setBadgeText({text: ""});
+  chrome.storage.local.set({"notifications" : 0});
 }
 
 // populate account tab

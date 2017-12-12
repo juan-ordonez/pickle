@@ -116,7 +116,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 #loginSpinner {
-	color: #E91E63; 
+	color: #BDBDBD; 
 	display:none;
 	position: absolute;
 	top: 220px;

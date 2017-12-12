@@ -255,7 +255,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
                     })
-    $(".containerComments .loadingSpinner").hide();
+    $(".loadingSpinner").hide();
     scrollable($("#commentsBody"));
     //Convert all urls into links
     $('p').linkify();

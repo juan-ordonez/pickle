@@ -26,6 +26,18 @@ if (window.location.href == chrome.extension.getURL('userprofile.html')){
 
 // }
 
+$(document).on("click", ".deletePost", function(){
+	$(this).parent().parent().parent().animate({ opacity: 0 }, function(){
+		$(this).slideToggle();
+	});
+});
+
+$(document).on("click", ".hidePost", function(){
+	$(this).parent().parent().parent().animate({ opacity: 0 }, function(){
+		$(this).slideToggle();
+	});
+});
+
 if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 
 	//Get title of current page and set it on the bottom navigation

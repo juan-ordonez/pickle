@@ -30,7 +30,7 @@
     <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center pr-3 pl-3">
       <!-- dummy anchor to prevent autofocus-->
       <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
-      <h1 class="navbar-brand">Juan Ordonez</h1>
+      <h1 class="navbar-brand" id=accountName></h1>
       <a href="settings.html"><i class="fa fa-sliders-h"></i></a>
     </nav>
 
@@ -54,33 +54,9 @@
           <img id="accountProfilePicture">
         </div>
         <strong id="accountName"></strong>
-        <!-- <div class="card mt-3 mb-3" style="width: 368px">
-          <h5>Invite friends to Yipp!</h5>
-          Super Secret URL:
-          <a href="https://chrome.google.com/webstore/detail/yipp/lephjajphneoinokolflebmffpfmpplo" target="_blank" style="color:#E91E63; width:160px;"><span>https://bit.ly/joinyipp</span></a>
-        </div>
-        <a class="btn btn-outline-secondary btn-block" id="logoutButton" role="button">Logout</a> -->
       </div>
 
-      <div class="card cardNewsfeed mb-3">
-
-        <div class="message d-flex flex-nowrap align-items-center">
-          <div class="thumbnail">
-              <img src=https://scontent.xx.fbcdn.net/v/t1.0-1/c4.0.50.50/p50x50/16113996_10154442269603655_2333710094948453706_n.jpg?oh=3c802da5d71f76cf2f30238ec24ea967&oe=5A64A3C0>
-          </div>
-          <div>
-            <p class="mb-0 ml-3"><strong>Juan</strong> tagged <strong>Alex</strong></p>
-            <p class="commentPreview mb-0 ml-3">Juan: Can't wait for season 3 dude</p>
-          </div>
-        </div>
-        <div class="pageImg d-flex align-items-center">
-          <a href="#"><img src="https://img.buzzfeed.com/buzzfeed-static/static/2017-11/28/15/campaign_images/buzzfeed-prod-fastlane-02/17-cool-things-about-stranger-things-you-probably-2-10216-1511902333-0_dblbig.jpg">
-        </div></a>
-        <div style="padding: 1rem;">
-          <a href="#"><h1>17 Cool Things About "Stranger Things" You Probably Didn't Notice Until Just Now</h1></a>
-          <p class="pageDescription">My mind (flayer) is blown.</p>
-          <p class="pageDomain">BUZZFEED.COM</p>
-        </div>
+      <div id="posts">
 
       </div>
 

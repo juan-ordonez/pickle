@@ -231,7 +231,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
   //Get data from storage if background is done loading
   if (response.done) {
     chrome.storage.local.get(['commentsHTML', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
-      'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML'], function (result) {
+      'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML', 'profilePostsHTML'], function (result) {
 
       commentsHTML = result['commentsHTML'];
       userName = result['userName'];
@@ -245,6 +245,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
       friendsHTML = result['friendsHTML'];
       userID = result['userID'];
       postsHTML = result['postsHTML'];
+      profilePostsHTML = result['profilePostsHTML'];
     if (commentsHTML != null) {
       $("#commentsBody").html(commentsHTML);
     } else {
@@ -320,6 +321,21 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
   console.log(postsHTML);
   if (postsHTML != null) { 
         $("#posts").html(postsHTML);
+      } else {
+        $("#posts").html(' ');
+      }
+      // $("#notificationsContainer .loadingSpinner").hide();
+      // $("#notificationsContainer .cardList").show();
+
+  });
+  connect("first");
+}
+
+if (window.location.href == chrome.extension.getURL('account.html')) {
+  chrome.storage.local.get(['profilePostsHTML'], function(result) {
+  profilePostsHTML = result['profilePostsHTML'];
+  if (profilePostsHTML != null) { 
+        $("#posts").html(profilePostsHTML);
       } else {
         $("#posts").html(' ');
       }

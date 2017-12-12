@@ -58,6 +58,7 @@ def getPostDescription(userID, posterID, tagsArray, friendsArray):
             author = False
             if userID in tagsArray:
                 taggedNames.insert(0, "you")
+                tagCount += 1
                 tagsLeft += 1
             if tagCount < 5:
                 if tagCount == 1:
@@ -74,6 +75,7 @@ def getPostDescription(userID, posterID, tagsArray, friendsArray):
             author = False
             if userID in tagsArray:
                 taggedNames.insert(0, "You")
+                tagCount += 1
                 tagsLeft += 1
             if tagCount < 5:
                 if taggedNames[0] == "You" and tagCount == 1:

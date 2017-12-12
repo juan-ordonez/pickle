@@ -550,8 +550,6 @@ def loadPosts():
             if tag.id != poster.id:
                 tags.append(tag.name)
 
-        print(tags)
-
         postDescription = getPostDescription(user.name, poster.name, tags, friends)
 
         #Get picture of friend if poster is a stranger. Else get posters picture
@@ -569,6 +567,52 @@ def loadPosts():
         
     }
     return render_template('auth/newsfeed.html', **templateData)
+
+
+
+@mod_auth.route('/loadPostsProfile/', methods=['GET','POST'])
+@crossdomain(origin='*')
+def loadPostsProfile():
+    posts = []
+    user = User.query.filter_by(id=request.form['id']).first()
+    
+    for post in user.newsfeed:
+        poster = User.query.filter_by(id=post.poster_id).first()
+        if user in post.tags or user==poster:
+            parsed_uri = urlparse(post.url)
+            domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+            
+            #Get names of friends of user
+            friends = []
+            for session in user.friendSession:
+                if session.authToken:
+                    friends.append(session.name)
+
+            #Get names of users tagged in post
+            tags = []
+
+            for tag in post.tags:
+                if tag.id != poster.id:
+                    tags.append(tag.name)
+
+            postDescription = getPostDescription(user.name, poster.name, tags, friends)
+
+            #Get picture of friend if poster is a stranger. Else get posters picture
+            if postDescription[2]:
+                thumbnail = post.tags[0].picture
+            else:
+                thumbnail = poster.picture
+
+            posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, thumbnail, post.id, postDescription[3]))
+        
+
+    posts = sorted(posts, reverse=True, key=lambda c : c[2])
+    templateData = {
+        'posts' : posts
+        
+    }
+    return render_template('auth/profile.html', **templateData)
+
 
 
 

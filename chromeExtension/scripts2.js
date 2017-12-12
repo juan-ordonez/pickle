@@ -233,7 +233,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
   //Get data from storage if background is done loading
   if (response.done) {
     chrome.storage.local.get(['commentsHTML', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
-      'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML'], function (result) {
+      'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML', 'profilePostsHTML'], function (result) {
 
       commentsHTML = result['commentsHTML'];
       userName = result['userName'];
@@ -247,6 +247,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
       friendsHTML = result['friendsHTML'];
       userID = result['userID'];
       postsHTML = result['postsHTML'];
+      profilePostsHTML = result['profilePostsHTML'];
     if (commentsHTML != null) {
       $("#commentsBody").html(commentsHTML);
     } else {
@@ -256,7 +257,7 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
                     })
-    $(".containerComments .loadingSpinner").hide();
+    $(".loadingSpinner").hide();
     scrollable($("#commentsBody"));
     //Convert all urls into links
     $('p').linkify();
@@ -334,6 +335,21 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
   connect("first");
 }
 
+if (window.location.href == chrome.extension.getURL('account.html')) {
+  chrome.storage.local.get(['profilePostsHTML'], function(result) {
+  profilePostsHTML = result['profilePostsHTML'];
+  if (profilePostsHTML != null) { 
+        $("#posts").html(profilePostsHTML);
+      } else {
+        $("#posts").html(' ');
+      }
+      // $("#notificationsContainer .loadingSpinner").hide();
+      // $("#notificationsContainer .cardList").show();
+
+  });
+  connect("first");
+}
+
 // login facebook authentication
 $(document).on("click", "#loginButton", function(event){ 
   url = "https://www.facebook.com/dialog/oauth?client_id=1430922756976623&response_type=token&scope=public_profile,email,user_friends&redirect_uri=http://www.facebook.com/connect/login_success.html";
@@ -368,7 +384,7 @@ if (window.location.href == chrome.extension.getURL('account.html')) {
   chrome.storage.local.get(['picture', 'userName'], function(result) {
   userName = result['userName'];
   picture = result['picture'];
-  $("#accountName").append(userName);
+  $(".accountName").append(userName);
   $("#accountProfilePicture").attr("src", picture);
 });
 }

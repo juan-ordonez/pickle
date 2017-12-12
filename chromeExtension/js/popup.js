@@ -11,6 +11,33 @@ if (window.location.href == chrome.extension.getURL('userprofile.html')){
 	});
 }
 
+// if (window.location.href == chrome.extension.getURL('newsfeed.html') || window.location.href == chrome.extension.getURL('account.html')) {
+// 	// if(".deletePost") {
+// 		$(document).on("click", ".deletePost", function(){
+// 			$(this).hide();
+// 			alert("test");
+// 		});
+// 	// }
+// 	// if(".hidePost") {
+// 		$(document).on("click", ".hidePost", function(){
+// 			$(this).hide();
+// 		});
+// 	// }
+
+// }
+
+$(document).on("click", ".deletePost", function(){
+	$(this).parent().parent().parent().animate({ opacity: 0 }, function(){
+		$(this).slideToggle();
+	});
+});
+
+$(document).on("click", ".hidePost", function(){
+	$(this).parent().parent().parent().animate({ opacity: 0 }, function(){
+		$(this).slideToggle();
+	});
+});
+
 if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 
 	//Get title of current page and set it on the bottom navigation

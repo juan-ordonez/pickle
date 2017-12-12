@@ -543,10 +543,14 @@ def loadPosts():
 
         #Get names of users tagged in post
         tags = []
+        
         for tag in post.tags:
-            tags.append(tag.name)
+            if tag.id != user.id:
+                tags.append(tag.name)
  
         poster = User.query.filter_by(id=post.poster_id).first()
+
+        print(tags)
 
         postDescription = getPostDescription(user.name, poster.name, tags, friends)
 
@@ -556,7 +560,7 @@ def loadPosts():
         else:
             thumbnail = poster.picture
 
-        posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, thumbnail))
+        posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, thumbnail, post.id, postDescription[3]))
     
 
     posts = sorted(posts, reverse=True, key=lambda c : c[2])

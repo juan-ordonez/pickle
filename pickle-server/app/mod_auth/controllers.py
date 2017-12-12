@@ -544,11 +544,11 @@ def loadPosts():
         #Get names of users tagged in post
         tags = []
         
-        for tag in post.tags:
-            if tag.id != user.id:
-                tags.append(tag.name)
- 
         poster = User.query.filter_by(id=post.poster_id).first()
+
+        for tag in post.tags:
+            if tag.id != poster.id:
+                tags.append(tag.name)
 
         print(tags)
 

@@ -197,6 +197,7 @@ def comment():
     db.session.add(comment)
     tags = ast.literal_eval(str(request.form['tags']))
     comment.mentions.append(user)
+    posts = set([])
     if not comment.public:
         for tag in tags:
             taggedUser = User.query.filter_by(id=tag).first()
@@ -222,6 +223,8 @@ def comment():
                     feed.tags.append(taggedUser)
                 publicFriends.add(taggedUser.id)
             for session in taggedUser.friendSession:
+                if session.authToken:
+                    posts.add(session.authToken)
                 if session.id not in publicFriends:
                     friend = User.query.filter_by(id=session.id).first()
                     friend.commentsTaggedIn.append(comment)
@@ -247,8 +250,9 @@ def comment():
     for session in user.friendSession:
         if session.authToken and session.id in tags:
             friends.add(session.authToken)
+
     
-    return json.dumps(list(friends))
+    return json.dumps([json.dumps(list(friends)), json.dumps(list(posts))])
 
 
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
@@ -543,12 +547,13 @@ def loadPosts():
 
         #Get names of users tagged in post
         tags = []
+
+        poster = User.query.filter_by(id=post.poster_id).first()
         
         for tag in post.tags:
-            if tag.id != user.id:
+            if tag.id != poster.id:
                 tags.append(tag.name)
- 
-        poster = User.query.filter_by(id=post.poster_id).first()
+
 
         print(tags)
 

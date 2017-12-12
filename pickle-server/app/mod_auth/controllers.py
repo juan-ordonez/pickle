@@ -225,7 +225,7 @@ def comment():
             for session in taggedUser.friendSession:
                 if session.authToken:
                     posts.add(session.authToken)
-                if session.id not in publicFriends:
+                if session.id not in publicFriends and session.id not in tags:
                     friend = User.query.filter_by(id=session.id).first()
                     friend.commentsTaggedIn.append(comment)
                     if feed:
@@ -233,11 +233,11 @@ def comment():
                     publicFriends.add(session.id)
         for session in user.friendSession:
             friendUser = User.query.filter_by(id=session.id).first()
-            if friendUser.id not in publicFriends:
+            if friendUser.id not in publicFriends and friendUser.id not in tags:
                 friendUser.commentsTaggedIn.append(comment)
                 if feed:
                     friendUser.newsfeed.append(feed)
-                publicFriends.add(taggedUser.id)
+                publicFriends.add(friendUser.id)
 
 
 
@@ -251,7 +251,6 @@ def comment():
         if session.authToken and session.id in tags:
             friends.add(session.authToken)
 
-    
     return json.dumps([json.dumps(list(friends)), json.dumps(list(posts))])
 
 
@@ -549,6 +548,7 @@ def loadPosts():
         tags = []
 
         poster = User.query.filter_by(id=post.poster_id).first()
+        
         for tag in post.tags:
             if tag.id != poster.id:
                 tags.append(tag.name)

@@ -37,7 +37,7 @@ def getPostDescription(userID, posterID, tagsArray, friendsArray):
 
         tagCount = len(taggedNames)
         tagsLeft = tagCount - len(taggedNames[:4])
-        print tagCount
+
         #If user is poster
         if userID == posterID: 
             stranger = False

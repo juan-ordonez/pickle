@@ -15,20 +15,18 @@
         </div>
         {% endif %}
 
-        <div class="message d-flex flex-nowrap align-items-center">
+        <p class="postDescription">{{i[1]}}</p>
+        <div class="message d-flex flex-nowrap align-items-start">
           <div class="thumbnail">
               <img src="{{i[9]}}">
           </div>
-          <div>
-            <p class="mb-0 ml-3">{{i[1]}}</p>
-            <p class="commentPreview mb-0 ml-3">{{i[6]}}</p>
-          </div>
+          <p class="chatBubble mb-0">{{i[6]}}</p>
         </div>
         <div class="pageImg d-flex align-items-center">
           <a href={{i[7]}} class="notificationTab"><img src={{i[4]}}></a>
         </div>
         <div style="padding: 1rem;">
-          <a href={{i[7]}} class="notificationTab"><h1>{{i[3]}}</h1></a>
+          <a href={{i[7]}} class="notificationTab pageTitle"><h1>{{i[3]}}</h1></a>
           <p class="pageDescription">{{i[5]}}</p>
           <p class="pageDomain">{{i[8]}}</p>
         </div>

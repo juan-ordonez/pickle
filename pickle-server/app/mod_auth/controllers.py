@@ -555,13 +555,7 @@ def loadPosts():
 
         postDescription = getPostDescription(user.name, poster.name, tags, friends)
 
-        #Get picture of friend if poster is a stranger. Else get posters picture
-        if postDescription[2]:
-            thumbnail = post.tags[0].picture
-        else:
-            thumbnail = poster.picture
-
-        posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, thumbnail, post.id, postDescription[3]))
+        posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
     
 
     posts = sorted(posts, reverse=True, key=lambda c : c[2])
@@ -600,13 +594,7 @@ def loadPostsProfile():
 
             postDescription = getPostDescription(user.name, poster.name, tags, friends)
 
-            #Get picture of friend if poster is a stranger. Else get posters picture
-            if postDescription[2]:
-                thumbnail = post.tags[0].picture
-            else:
-                thumbnail = poster.picture
-
-            posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, thumbnail, post.id, postDescription[3]))
+            posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
         
 
     posts = sorted(posts, reverse=True, key=lambda c : c[2])

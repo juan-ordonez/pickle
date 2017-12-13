@@ -225,7 +225,7 @@ def comment():
             for session in taggedUser.friendSession:
                 if session.authToken:
                     posts.add(session.authToken)
-                if session.id not in publicFriends:
+                if session.id not in publicFriends and session.id not in tags:
                     friend = User.query.filter_by(id=session.id).first()
                     friend.commentsTaggedIn.append(comment)
                     if feed:

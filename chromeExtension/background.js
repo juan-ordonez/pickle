@@ -13,6 +13,7 @@ var done = false;
 var successURL = 'www.facebook.com/connect/login_success.html';
 var permissions = [];
 var postsHTML;
+var popup = "newsfeed.html";
 
 
 chrome.storage.local.get(['accessToken'], function(result) {
@@ -20,7 +21,7 @@ chrome.storage.local.get(['accessToken'], function(result) {
   var token = result['accessToken'];
 
   if (token) {
-    chrome.browserAction.setPopup({popup : "newsfeed.html"});
+    chrome.browserAction.setPopup({popup : popup});
 
   }
 
@@ -164,7 +165,7 @@ chrome.notifications.onClicked.addListener(function (id) {
   done = false;
   getUserData();
 
-
+  chrome.browserAction.setPopup({popup : "popup.html"});
 
 });
 
@@ -185,7 +186,7 @@ function getUserData() {
         chrome.browserAction.setPopup({popup : "register.html"});
     
       } else {
-          chrome.browserAction.setPopup({popup : "newsfeed.html"});
+          chrome.browserAction.setPopup({popup : popup});
           userName = json.name;
           userEmail = json.email;
           friendsArray = json.friends;
@@ -313,6 +314,22 @@ chrome.runtime.onMessage.addListener(
       done = false;
     }
 
+    else if (request.type == "popupNewsfeed") {
+      popup = "newsfeed.html";
+    }
+
+    else if (request.type == "popupComments") {
+      popup = "popup.html";
+    }
+
+    else if (request.type == "popupNotifications") {
+      popup = "notifications.html";
+    }
+
+    else if (request.type == "popupAccount") {
+      popup = "account.html";
+    }
+
     else if (request.handshake == "first") {
         // chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
         
@@ -382,12 +399,12 @@ chrome.storage.local.get(['accessToken'], function(result) {
               });     
           });
           chrome.tabs.remove(tabs[i].id);
-          chrome.browserAction.setPopup({popup : "newsfeed.html"});
+          chrome.browserAction.setPopup({popup : popup});
         }
       }
     });
   } else {
-    chrome.browserAction.setPopup({popup : "newsfeed.html"});
+    chrome.browserAction.setPopup({popup : popup});
 
   }
 

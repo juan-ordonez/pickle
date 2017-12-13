@@ -30,17 +30,20 @@
     <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center pr-3 pl-3">
       <!-- dummy anchor to prevent autofocus-->
       <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
-      <h1 class="navbar-brand">Settings</h1>
-      <a class="active" href="settings.html"><i class="fa fa-sliders-h"></i></a>
+      <div>
+        <a href="#" class="backBtn"><i class="fas fa-arrow-left mr-3"></i></a>
+        <h1 class="navbar-brand">Settings</h1>
+      </div>
+      <!-- <a class="active" href="settings.html"><i class="fa fa-sliders-h"></i></a> -->
     </nav>
 
     <!-- Bottom navigation bar -->
     <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
       <div class="d-flex justify-content-between" style="width: 375px;">
-        <a class="nav-link" href="popup.html"><i class="fa fa-comment fa-lg"></i></a>
-        <a class="nav-link" href="newsfeed.html"><i class="fa fa-home fa-lg"></i></a>
-        <a class="nav-link" href="notifications.html"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
-        <a class="nav-link" href="account.html"><i class="fa fa-user-circle fa-lg"></i></a>
+        <a class="nav-link" href="newsfeed.html" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
+        <a class="nav-link" href="popup.html" id="commentsNav"><i class="fa fa-comment fa-lg"></i></a>
+        <a class="nav-link" href="notifications.html" id="notificationsNav"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
+        <a class="nav-link active" href="#" id="accountNav"><i class="fa fa-user-circle fa-lg"></i></a>
         <div id="notificationBadge">
           <span class="badge badge-primary" id="numNotifications"></span>
         </div>
@@ -70,5 +73,6 @@
   <script type="text/javascript" src="js/waves.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="scripts2.js"></script>
+  <script src="js/popup.js"></script>
 
 </html>

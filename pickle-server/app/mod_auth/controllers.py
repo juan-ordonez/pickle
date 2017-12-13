@@ -233,11 +233,11 @@ def comment():
                     publicFriends.add(session.id)
         for session in user.friendSession:
             friendUser = User.query.filter_by(id=session.id).first()
-            if friendUser.id not in publicFriends:
+            if friendUser.id not in publicFriends and friendUser.id not in tags:
                 friendUser.commentsTaggedIn.append(comment)
                 if feed:
                     friendUser.newsfeed.append(feed)
-                publicFriends.add(taggedUser.id)
+                publicFriends.add(friendUser.id)
 
 
 
@@ -251,7 +251,6 @@ def comment():
         if session.authToken and session.id in tags:
             friends.add(session.authToken)
 
-    
     return json.dumps([json.dumps(list(friends)), json.dumps(list(posts))])
 
 
@@ -549,19 +548,14 @@ def loadPosts():
         tags = []
 
         poster = User.query.filter_by(id=post.poster_id).first()
+        
         for tag in post.tags:
             if tag.id != poster.id:
                 tags.append(tag.name)
 
         postDescription = getPostDescription(user.name, poster.name, tags, friends)
 
-        #Get picture of friend if poster is a stranger. Else get posters picture
-        if postDescription[2]:
-            thumbnail = post.tags[0].picture
-        else:
-            thumbnail = poster.picture
-
-        posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, thumbnail, post.id, postDescription[3]))
+        posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
     
 
     posts = sorted(posts, reverse=True, key=lambda c : c[2])
@@ -600,13 +594,7 @@ def loadPostsProfile():
 
             postDescription = getPostDescription(user.name, poster.name, tags, friends)
 
-            #Get picture of friend if poster is a stranger. Else get posters picture
-            if postDescription[2]:
-                thumbnail = post.tags[0].picture
-            else:
-                thumbnail = poster.picture
-
-            posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, thumbnail, post.id, postDescription[3]))
+            posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
         
 
     posts = sorted(posts, reverse=True, key=lambda c : c[2])

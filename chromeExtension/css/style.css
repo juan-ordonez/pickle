@@ -333,7 +333,8 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 .cardNewsfeed .message {
-	padding: 0.75rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.75rem;
 	padding-left: 1rem;
 	padding-right: 1rem;
 }
@@ -343,6 +344,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	border-radius: 16px;
 	padding: 0.5rem;
 	margin-left: 0.5rem;
+	width: auto !important;
 	max-width: 275px;
 }
 
@@ -427,10 +429,13 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	margin-bottom: 8px;
 }
 
-.pageDomain, .commentPreview {
-	font-size: 0.8em;
+.pageDomain, .postDescription {
 	color: #757575;
 	margin-bottom: 0;
+}
+
+.pageDomain, .postDescription {
+	font-size: 0.8em;
 }
 
 .pageImg {
@@ -440,6 +445,18 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .pageImg img {
 	width: 100%;
+}
+
+.pageTitle h1 {
+	font-weight: 500;
+}
+
+.postDescription {
+	margin-right: 2rem;
+	font-size: 0.8em;
+	margin-top: 0.5rem;
+	margin-left: 1rem;
+	margin-bottom: 0rem;
 }
 
 .private {
@@ -493,8 +510,8 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 .thumbnail {
-    width: 40px;
-    height: 40px;
+    width: 40px !important;
+    height: 40px !important;
     position: relative;
     overflow: hidden;
     border-radius: 50%;

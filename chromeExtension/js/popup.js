@@ -4,27 +4,12 @@ Waves.init();
 
 $('.btn').mouseup(function() { this.blur() });
 
-if (window.location.href == chrome.extension.getURL('userprofile.html') || window.location.href == chrome.extension.getURL('settings.html')){
+if (window.location.href == chrome.extension.getURL('settings.html')){
 	$(document).on("click", ".backBtn", function(){
 		//chrome.browserAction.setPopup({popup : "popup.html"});
 		window.location.href = chrome.extension.getURL(history.back());
 	});
 }
-
-// if (window.location.href == chrome.extension.getURL('newsfeed.html') || window.location.href == chrome.extension.getURL('account.html')) {
-// 	// if(".deletePost") {
-// 		$(document).on("click", ".deletePost", function(){
-// 			$(this).hide();
-// 			alert("test");
-// 		});
-// 	// }
-// 	// if(".hidePost") {
-// 		$(document).on("click", ".hidePost", function(){
-// 			$(this).hide();
-// 		});
-// 	// }
-
-// }
 
 $(document).on("click", ".deletePost", function(){
 	$(this).parent().parent().parent().animate({ opacity: 0 }, function(){
@@ -37,6 +22,16 @@ $(document).on("click", ".hidePost", function(){
 		$(this).slideToggle();
 	});
 });
+
+if (window.location.href == chrome.extension.getURL("userProfile.html")) {
+	 chrome.storage.local.get(["previousPage", "previousUrl", "profileName"], function(result){
+	 	$("#"+result.previousPage).addClass("active");
+	 	console.log(result.previousUrl);
+	 	$(".backBtn").prop("href", result.previousUrl);
+	 	$("#topNav h1").text(result.profileName);
+	 });
+	 
+}
 
 if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 

@@ -219,7 +219,7 @@ function getUserData() {
                 d2 = $.Deferred();
             
 
-            $("body").load("https://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
+            $("body").load("http://localhost:5000/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
 
               commentsHTML = $("#comments").html();
               d1.resolve();
@@ -314,7 +314,22 @@ chrome.runtime.onMessage.addListener(
       done = false;
     }
 
-    else if (request.type == "popupNewsfeed") {
+    else if (request.handshake == "first") {
+        // chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
+        
+      getUserData();
+      sendResponse({done : done});
+
+  } else {
+      sendResponse({done : done});
+    }
+
+
+});
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) { 
+    if (request.type == "popupNewsfeed") {
       popup = "newsfeed.html";
     }
 
@@ -330,17 +345,22 @@ chrome.runtime.onMessage.addListener(
       popup = "account.html";
     }
 
-    else if (request.handshake == "first") {
-        // chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
-        
-      getUserData();
-      sendResponse({done : done});
-
-  } else {
-      sendResponse({done : done});
+    else if (request.type == "loadUser") {
+      // chrome.extension.sendMessage({type : "userLoading", profileName : request.profileName});
+      chrome.storage.local.set({"profileName" : request.profileName});
+      // chrome.extension.sendMessage({type : "userLoading"});
+      $("body").load("http://localhost:5000/loadPostsUser/ #posts", {"id" : userID.toString(), "profileID" : request.profileID}, function () {
+        userPostsHTML = $("#posts").html();
+        chrome.storage.local.set({"userPostsHTML" : userPostsHTML});
+        chrome.extension.sendMessage({type : "userLoaded"});
+      });
     }
 
+    // else if (request.type == "profileClick") {
+    //   var previousPage = request.previousPage;
+    //   chrome.storage.local.set({"previousPage" : previousPage});
 
+    // }
 });
 
 
@@ -379,14 +399,14 @@ chrome.storage.local.get(['accessToken'], function(result) {
             });
 
                   $("body").load("http://localhost:5000/loadPosts/ #posts", {"id" : userID.toString()}, function () {
-                   postsHTML = $("#posts").html();
-                  chrome.storage.local.set({"postsHTML" : postsHTML});
+                    postsHTML = $("#posts").html();
+                    chrome.storage.local.set({"postsHTML" : postsHTML});
               
             });
 
                   $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
-                   profilePostsHTML = $("#posts").html();
-                  chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
+                    profilePostsHTML = $("#posts").html();
+                    chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
               
             });
 
@@ -473,7 +493,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
 
       console.log(store['pageDescription']);
 
-  var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+  var comPost = $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
     "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription']}, function(data) {
       var feeds = JSON.parse(JSON.parse(data)[1]);
       data = JSON.parse(JSON.parse(data)[0]);

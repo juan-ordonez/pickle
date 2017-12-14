@@ -291,6 +291,10 @@ def loadComment():
                     tagNames.append(tag.name)
                     tagIds.append(tag.id)
 
+        tags =[]
+        for i in range(0, len(tagNames)):
+            tags.append([tagIds[i], tagNames[i]])
+
         #Convert list of friends tagged into string
         tagNamesString = '@' + ', @'.join(sorted(tagNames))
         tagIdsString = '-'.join(sorted(tagIds))
@@ -299,7 +303,7 @@ def loadComment():
         else:
             css="";
         #Append data of comment to comments array
-        comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, tagNames, user in comment.likers))
+        comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, tags, user in comment.likers, comment.user.id, tagIds))
 
     comments = sorted(comments, reverse=False, key=lambda c : c[2])
 
@@ -537,23 +541,26 @@ def loadPosts():
     for post in user.newsfeed:
         parsed_uri = urlparse(post.url)
         domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+        poster = User.query.filter_by(id=post.poster_id).first()
         
+        #format usernames of user and poster
+        userName = "<a class='userProfile' href=# id="+user.id+">"+user.name+"</a>"
+        posterName = "<a class='userProfile' href=# id="+poster.id+">"+poster.name+"</a>"
+
         #Get names of friends of user
         friends = []
         for session in user.friendSession:
             if session.authToken:
-                friends.append(session.name)
+                friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
 
         #Get names of users tagged in post
         tags = []
-
-        poster = User.query.filter_by(id=post.poster_id).first()
         
         for tag in post.tags:
             if tag.id != poster.id:
-                tags.append(tag.name)
+                tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
 
-        postDescription = getPostDescription(user.name, poster.name, tags, friends)
+        postDescription = getPostDescription(userName, posterName, tags, friends)
 
         posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
     
@@ -579,20 +586,24 @@ def loadPostsProfile():
             parsed_uri = urlparse(post.url)
             domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
             
+            #format usernames of user and poster
+            userName = "<a class='userProfile' href=# id="+user.id+">"+user.name+"</a>"
+            posterName = "<a class='userProfile' href=# id="+poster.id+">"+poster.name+"</a>"
+
             #Get names of friends of user
             friends = []
             for session in user.friendSession:
                 if session.authToken:
-                    friends.append(session.name)
+                    friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
 
             #Get names of users tagged in post
             tags = []
 
             for tag in post.tags:
                 if tag.id != poster.id:
-                    tags.append(tag.name)
+                    tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
 
-            postDescription = getPostDescription(user.name, poster.name, tags, friends)
+            postDescription = getPostDescription(userName, posterName, tags, friends)
 
             posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
         
@@ -604,6 +615,50 @@ def loadPostsProfile():
     }
     return render_template('auth/profile.html', **templateData)
 
+
+@mod_auth.route('/loadPostsUser/', methods=['GET','POST'])
+@crossdomain(origin='*')
+def loadPostsUser():
+    profile = User.query.filter_by(id=request.form['profileID']).first()
+    posts = []
+    user = User.query.filter_by(id=request.form['id']).first()
+    
+    for post in user.newsfeed:
+        poster = User.query.filter_by(id=post.poster_id).first()
+        if profile in post.tags or profile==poster:
+            parsed_uri = urlparse(post.url)
+            domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+            
+            #format usernames of user and poster
+            userName = "<a class='userProfile' href=# id="+user.id+">"+user.name+"</a>"
+            posterName = "<a class='userProfile' href=# id="+poster.id+">"+poster.name+"</a>"
+
+            #Get names of friends of user
+            friends = []
+            for session in user.friendSession:
+                if session.authToken:
+                    friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
+
+            #Get names of users tagged in post
+            tags = []
+
+            for tag in post.tags:
+                if tag.id != poster.id:
+                    tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
+
+            postDescription = getPostDescription(userName, posterName, tags, friends)
+
+            posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
+        
+
+    posts = sorted(posts, reverse=True, key=lambda c : c[2])
+    templateData = {
+        'posts' : posts,
+        'userName' : profile.name,
+        'userPic' : profile.picture
+        
+    }
+    return render_template('auth/userProfile.html', **templateData)
 
 
 

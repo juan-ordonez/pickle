@@ -282,9 +282,9 @@ def loadComment():
             for tag in comment.mentions:
                 tagNames.append(tag.name)
                 tagIds.append(tag.id)
-            if user.id not in tagIds:
-                tagNames.append(user.name)
-                tagIds.append(user.id)
+            # if user.id not in tagIds:
+            #     tagNames.append(user.name)
+            #     tagIds.append(user.id)
         else:
             for tag in comment.usersTagged:
                 if tag.id in friends or tag.id == user.id:

@@ -3,7 +3,7 @@
 
   "name": "Yipp",
   "description": "Show your friends the latest internet videos, news and cats",
-  "version": "1.40",
+  "version": "1.41",
   "browser_action": {
     "default_icon": "iconActive128.png",
     "default_popup": "register.html",

@@ -69,30 +69,32 @@ chrome.gcm.onMessage.addListener(function(payload) {
             
           
           if (type == "notification") {
-          $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
-              console.log("UPDATING HTML");
+            $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
               notificationsHTML = $("#notifications").html();
-
               chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
+              console.log("updating notifications");
               // getUserData()
-
             });
-
-          $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+            $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
                profilePostsHTML = $("#posts").html();
                chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
+               console.log("updating profile");
+            });
 
-             });
+            $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
+               postsHTML = $("#posts").html();
+               chrome.storage.local.set({"postsHTML" : postsHTML});
+               console.log("updating newsfeed");
+               // getUserData();
+            });
       }
 
           if (type == "post") {
-              $("body").load("http://localhost:5000/loadPosts/ #posts", {"id" : userID.toString()}, function () {
+              $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
                postsHTML = $("#posts").html();
-               console.log(postsHTML);
                chrome.storage.local.set({"postsHTML" : postsHTML});
+               console.log("updating newsfeed");
                // getUserData();
-               
- 
               });
 
           }
@@ -107,42 +109,42 @@ chrome.gcm.onMessage.addListener(function(payload) {
   });
 
 
-if (type == "notification") {
+  if (type == "notification") {
 
-if (views.length == 0) {
-//console.log("popup is shut");
+  if (views.length == 0) {
+  //console.log("popup is shut");
 
-chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+  chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
-     var activeTab = arrayOfTabs[0];
-     url = activeTab.url;
- });
-  
-  var profilePic = payload.data.pic;
-  var user = payload.data.first;
-  var comment = payload.data.comment;
-  //Added a variable for the page title to create the notification
-  var page = payload.data.pageTitle;
-  var commentUrl = payload.data.url;
-  var notification = payload.data.status;
+       var activeTab = arrayOfTabs[0];
+       url = activeTab.url;
+   });
+    
+    var profilePic = payload.data.pic;
+    var user = payload.data.first;
+    var comment = payload.data.comment;
+    //Added a variable for the page title to create the notification
+    var page = payload.data.pageTitle;
+    var commentUrl = payload.data.url;
+    var notification = payload.data.status;
 
-    chrome.notifications.create({   
-    type: 'basic', 
-    iconUrl: 'iconBig.png', 
-    //Added the page name to the notification (to be shown in the title of the notification) 
-    title: user+' '+notification+' '+page, 
-    //Show the actual comment in the message
-    message: comment
+      chrome.notifications.create({   
+      type: 'basic', 
+      iconUrl: 'iconBig.png', 
+      //Added the page name to the notification (to be shown in the title of the notification) 
+      title: user+' '+notification+' '+page, 
+      //Show the actual comment in the message
+      message: comment
 
-    }, function (notif) {
-      dict = {};
-      dict[notif] = commentUrl;
-      chrome.storage.local.set(dict);
-    });
+      }, function (notif) {
+        dict = {};
+        dict[notif] = commentUrl;
+        chrome.storage.local.set(dict);
+      });
+
+    }
 
   }
-
-}
     
   
   
@@ -219,7 +221,7 @@ function getUserData() {
                 d2 = $.Deferred();
             
 
-            $("body").load("http://localhost:5000/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
+            $("body").load("http://pickle-server-183401.appspot.com/loadComment/ #comments", {"userID" : userID.toString(), "url" : url.toString()}, function() {
 
               commentsHTML = $("#comments").html();
               d1.resolve();
@@ -228,6 +230,8 @@ function getUserData() {
             //   notificationsHTML = $("#notifications").html();
             //   d2.resolve();
             // });
+            console.log("test");
+            console.log(friendsArray);
             $("body").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)}, function () {
               friendsHTML = $("#friends").html();
               d2.resolve();
@@ -349,7 +353,7 @@ chrome.runtime.onMessage.addListener(
       // chrome.extension.sendMessage({type : "userLoading", profileName : request.profileName});
       chrome.storage.local.set({"profileName" : request.profileName});
       // chrome.extension.sendMessage({type : "userLoading"});
-      $("body").load("http://localhost:5000/loadPostsUser/ #posts", {"id" : userID.toString(), "profileID" : request.profileID}, function () {
+      $("body").load("http://pickle-server-183401.appspot.com/loadPostsUser/ #posts", {"id" : userID.toString(), "profileID" : request.profileID}, function () {
         userPostsHTML = $("#posts").html();
         chrome.storage.local.set({"userPostsHTML" : userPostsHTML});
         chrome.extension.sendMessage({type : "userLoaded"});
@@ -398,13 +402,13 @@ chrome.storage.local.get(['accessToken'], function(result) {
               
             });
 
-                  $("body").load("http://localhost:5000/loadPosts/ #posts", {"id" : userID.toString()}, function () {
+                  $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
                     postsHTML = $("#posts").html();
                     chrome.storage.local.set({"postsHTML" : postsHTML});
               
             });
 
-                  $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+                  $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
                     profilePostsHTML = $("#posts").html();
                     chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
               
@@ -524,11 +528,15 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
 
         }
 
-        //Update user's activity profile
-        $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+        //Update user's activity profile 
+        $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
                profilePostsHTML = $("#posts").html();
                chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
 
+        });
+        $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
+         postsHTML = $("#posts").html();
+         chrome.storage.local.set({"postsHTML" : postsHTML});
         });
 
         var feedJSON = JSON.stringify({ "data": {"type" : "post"}, "registration_ids": feeds});

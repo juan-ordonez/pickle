@@ -389,7 +389,6 @@ if (window.location.href == chrome.extension.getURL('account.html')) {
 });
 }
 
-
 // message listener for background communication
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -399,6 +398,26 @@ chrome.runtime.onMessage.addListener(
       connect("first");
     }
   });
+
+$(document).on("click", "#newsfeedNav", function(){
+  chrome.extension.sendMessage({type : "popupNewsfeed"});
+});
+
+$(document).on("click", "#commentsNav", function(){
+  chrome.extension.sendMessage({type : "popupComments"});
+});
+
+$(document).on("click", "#notificationsNav", function(){
+  chrome.extension.sendMessage({type : "popupNotifications"});
+});
+
+$(document).on("click", "#accountNav", function(){
+  chrome.extension.sendMessage({type : "popupAccount"});
+});
+
+$(document).on("click", "#notifications a, .cardNewsfeed a", function(){
+  chrome.extension.sendMessage({type : "popupComments"});
+});
 
 //Append html of new comment to body of existing comments
 function appendComment(user, value, picture, names, ids, all, tagsHtml) {

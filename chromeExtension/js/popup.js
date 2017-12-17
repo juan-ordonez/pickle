@@ -4,7 +4,7 @@ Waves.init();
 
 $('.btn').mouseup(function() { this.blur() });
 
-if (window.location.href == chrome.extension.getURL('userprofile.html')){
+if (window.location.href == chrome.extension.getURL('userprofile.html') || window.location.href == chrome.extension.getURL('settings.html')){
 	$(document).on("click", ".backBtn", function(){
 		//chrome.browserAction.setPopup({popup : "popup.html"});
 		window.location.href = chrome.extension.getURL(history.back());

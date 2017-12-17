@@ -7,10 +7,13 @@
         <div class="commentGroup {{i[6]}}" id={{i[5]}}>
             <div class="d-flex flex-nowrap align-items-center">
                 <div class="thumbnail align-self-start">
-                    <img src={{i[4]}}>
+                    <a class="userProfile" href="#" id="{{i[12]}}">
+                        <p style="display:none;">{{i[3]}}</p>
+                        <img src={{i[4]}}>
+                    </a>
                 </div>
                 <div class="chatBubble {{i[9]}}">
-                    <strong>{{i[3]}}</strong> {{i[0]}} 
+                    <a id="{{i[12]}}" class="userProfile" href="#"><strong>{{i[3]}}</strong></a> {{i[0]}} 
                 </div>
                 <div class="likeButton">
                     {% if i[11] %}
@@ -33,7 +36,7 @@
                     <div class="dropdown-menu" aria-labelledby="tagsToggle-{{i[5]}}">
                         <p class="mr-3 ml-3 mb-0"><small><strong>Tags</strong></small></p>
                         {% for j in i[10] %}
-                        <a class="dropdown-item" href="#">{{j}}</a>
+                        <a class="dropdown-item userProfile" href="#" id="{{j[0]}}">{{j[1]}}</a>
                         {% endfor %}
                     </div>
                 </div>

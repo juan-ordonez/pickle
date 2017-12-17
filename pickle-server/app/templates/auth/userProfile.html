@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+
+  <div id="posts">
+    <div class="d-flex flex-column align-items-center mt-3 mb-3">
+      <div class="thumbnail mb-3">
+        <img id="accountProfilePicture" src="{{userPic}}">
+      </div>
+      <strong class="accountName">{{userName}}</strong>
+    </div>
+    {% for i in posts %}
+    <div class="card cardNewsfeed mb-3">
+
+        <div class="dropdown show dropdownOptions">    
+          <a href="#" class="btn mb-0 optionsBtn" role="button" id="{{[i[10]]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false""><i class="fas fa-ellipsis-h"></i></a>
+          <div class="dropdown-menu" aria-labelledby="i[10]">
+              {% if i[11] %}
+              <a class="dropdown-item deletePost" href="#"><small>Delete post</small></a>
+              {% endif %}
+          </div>
+        </div>
+
+        <p class="postDescription">{{i[1]}}</p>
+        <div class="message d-flex flex-nowrap align-items-start">
+          <div class="thumbnail">
+              <img src="{{i[9]}}">
+          </div>
+          <p class="chatBubble mb-0">{{i[6]}}</p>
+        </div>
+        <div class="pageImg d-flex align-items-center">
+          <a href={{i[7]}} class="notificationTab"><img src={{i[4]}}></a>
+        </div>
+        <div style="padding: 1rem;">
+          <a href={{i[7]}} class="notificationTab pageTitle"><h1>{{i[3]}}</h1></a>
+          <p class="pageDescription">{{i[5]}}</p>
+          <p class="pageDomain">{{i[8]}}</p>
+        </div>
+
+      </div>
+    {% endfor %}
+  </div>
+</body>
+
+</html>

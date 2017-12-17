@@ -348,6 +348,10 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	max-width: 275px;
 }
 
+.chatBubble a {
+	color: #000000;
+}
+
 .commentGroup {
 	padding-top: 1rem;
 }

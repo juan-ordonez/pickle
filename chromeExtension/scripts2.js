@@ -172,6 +172,48 @@ $(document).on("click", "#notificationsBell", function(){
 
 });
 
+//Clicking on user names
+$(document).on("click", ".userProfile", function(){
+  var previousPage = $("#bottomNav .active").attr('id');
+  chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href});
+  var profileID = $(this).attr("id");
+  var profileName = $(this).text();
+  // var profilePic = $(this).attr("id");
+  chrome.extension.sendMessage({type : "loadUser", profileID : profileID, profileName : profileName});
+  window.location.href = chrome.extension.getURL('userProfile.html');
+});
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    // if (request.type == "userLoading") {
+    //   console.log("message reciev. userloading");
+    //   if (window.location.href == chrome.extension.getURL('userProfile.html')) {
+    //     $("#topNav h1").text(request.profileName);
+    //   }
+    // }
+    if (request.type == "userLoaded") {
+      if (window.location.href == chrome.extension.getURL('userProfile.html')) {
+
+        $("#posts").hide(); 
+        chrome.storage.local.get(['userPostsHTML'], function(result) {
+        userPostsHTML = result['userPostsHTML'];
+        if (userPostsHTML != null) {
+              $("#posts").html(userPostsHTML);
+              $("#posts .postDescription").each(function(){
+                var htmlDescriptionUser = $(this).text();
+                $(this).empty();
+                $(this).html(htmlDescriptionUser);
+              });
+              $("#posts").show();
+            } else {
+              $("#posts").html(' ');
+            }
+
+        });
+      }
+    }
+});
+
 //Listen for incoming new comments or notifications
 chrome.gcm.onMessage.addListener(function(payload) {
 
@@ -278,11 +320,20 @@ chrome.extension.sendMessage({"handshake" : message},function(response){
       }
       $("#notificationsContainer .loadingSpinner").hide();
       $("#notificationsContainer .cardList").show();
+      
+      $("#posts").hide();
       if (postsHTML != null) { 
         $("#posts").html(postsHTML);
+        $("#posts .postDescription").each(function(){
+          var htmlDescriptionNewsfeed = $(this).text();
+          $(this).empty();
+          $(this).html(htmlDescriptionNewsfeed);
+        });
+        $("#posts").show();
       } else {
         $("#posts").html(' ');
       }
+      
       if (friendsHTML != null) {
         $("#friendListCheckboxes").html(friendsHTML);
       } else {
@@ -320,11 +371,17 @@ if (window.location.href == chrome.extension.getURL('popup.html')) {
 }
 
 if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
+  $("#posts").hide();
   chrome.storage.local.get(['postsHTML'], function(result) {
   postsHTML = result['postsHTML'];
-  console.log(postsHTML);
   if (postsHTML != null) { 
         $("#posts").html(postsHTML);
+        $("#posts .postDescription").each(function(){
+          var htmlDescriptionNewsfeed = $(this).text();
+          $(this).empty();
+          $(this).html(htmlDescriptionNewsfeed);
+        });
+        $("#posts").show();
       } else {
         $("#posts").html(' ');
       }
@@ -336,13 +393,21 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
 }
 
 if (window.location.href == chrome.extension.getURL('account.html')) {
+  $("#postsProfile").hide(); 
   chrome.storage.local.get(['profilePostsHTML'], function(result) {
   profilePostsHTML = result['profilePostsHTML'];
-  if (profilePostsHTML != null) { 
-        $("#posts").html(profilePostsHTML);
+  if (profilePostsHTML != null) {
+        $("#postsProfile").html(profilePostsHTML);
+        $("#postsProfile .postDescription").each(function(){
+          var htmlDescriptionProfile = $(this).text();
+          $(this).empty();
+          $(this).html(htmlDescriptionProfile);
+        });
+        $("#postsProfile").show();
       } else {
-        $("#posts").html(' ');
+        $("#postsProfile").html(' ');
       }
+
       // $("#notificationsContainer .loadingSpinner").hide();
       // $("#notificationsContainer .cardList").show();
 

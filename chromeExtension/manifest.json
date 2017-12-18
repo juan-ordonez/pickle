@@ -2,13 +2,10 @@
   "manifest_version": 2,
 
   "name": "Yipp",
-<<<<<<< HEAD
+
   "description": "Leave messages for your friends on any website",
-  "version": "1.35",
-=======
-  "description": "Show your friends the latest internet videos, news and cats",
-  "version": "1.41",
->>>>>>> 279e18b888ef100179ef0fe35d857b3ab94cf26b
+  "version": "1.42",
+
   "browser_action": {
     "default_icon": "iconActive128.png",
     "default_popup": "register.html",

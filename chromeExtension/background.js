@@ -381,7 +381,9 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
   var token = result['accessToken'];
   var id = result['userID'];
+  console.log(!token);
   if (!token) {
+    console.log("LOGIN");
     chrome.tabs.query({}, function(tabs) { 
       for (var i = 0; i < tabs.length; i++) {
         if (tabs[i].url.indexOf(successURL) != -1) {
@@ -400,17 +402,14 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                 friendsArray = api.friends.data;
                 picture = api.picture.data.url;
                 $.post('https://pickle-server-183401.appspot.com/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray, "picture" : picture, "authToken" : accessToken})}, function() {
-                  chrome.extension.sendMessage({handshake:"login"});
-                  $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
-                   notificationsHTML = $("#notifications").html();
-                  chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
-              
-            });
 
                   $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
 
                    postsHTML = $("#posts").html();
-                  chrome.storage.local.set({"postsHTML" : postsHTML});
+                  chrome.storage.local.set({"postsHTML" : postsHTML}, function () {
+                      chrome.extension.sendMessage({handshake:"login"});
+
+                  });
 
               
             });
@@ -422,6 +421,13 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
               
             });
+              
+                  $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
+                   notificationsHTML = $("#notifications").html();
+                  chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
+              
+            });
+
 
                   var senderIds = ["511642730215"];
                   chrome.gcm.register(senderIds, function (registrationID) {
@@ -438,12 +444,15 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
     });
   } else {
 
-
-
+    console.log(id);
     $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : id}, function () {
                    postsHTML = $("#posts").html();
-                  chrome.storage.local.set({"postsHTML" : postsHTML});
-                  chrome.browserAction.setPopup({popup : "newsfeed.html"});
+                  chrome.storage.local.set({"postsHTML" : postsHTML}, function() {
+                    chrome.browserAction.setPopup({popup : "newsfeed.html"});
+                    
+
+
+                  });
               
             });
 

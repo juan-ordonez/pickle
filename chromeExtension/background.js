@@ -234,8 +234,6 @@ function getUserData() {
             //   notificationsHTML = $("#notifications").html();
             //   d2.resolve();
             // });
-            console.log("test");
-            console.log(friendsArray);
             $("body").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)}, function () {
               friendsHTML = $("#friends").html();
               d2.resolve();
@@ -381,7 +379,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
   var token = result['accessToken'];
   var id = result['userID'];
-  console.log(!token);
+  // console.log(!token);
   if (!token) {
     console.log("LOGIN");
     chrome.tabs.query({}, function(tabs) { 
@@ -491,7 +489,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
             var length = 80;
             var trimmedString = description.length > length ? description.substring(0, length - 3) + "..." : description;
             chrome.storage.local.set({"pageTitle" : title, "pageImage" : image, "pageDescription" : trimmedString});
-            console.log("RESOLVED");
+            // console.log("RESOLVED");
             d1.resolve();
           });
 
@@ -509,13 +507,13 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
   $.when(d1).done(function () {
     chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription'], function(store) {
 
-      console.log(store['pageDescription']);
+      // console.log(store['pageDescription']);
 
   var comPost = $.post('https://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
     "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription']}, function(data) {
       var feeds = JSON.parse(JSON.parse(data)[1]);
       data = JSON.parse(JSON.parse(data)[0]);
-      console.log(data);
+      // console.log(data);
       // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
       
         //If comment is public, then notification should say that user tagged the recipient
@@ -525,7 +523,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
           var json = JSON.stringify({"data" : {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids, "tagsHtml" : tagsHtml, "type" : "notification"}, "registration_ids": data });
         
           $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
-            console.log("notify", data, json);
+            // console.log("notify", data, json);
             notify(data, json);
           });
         }

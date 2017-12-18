@@ -377,9 +377,10 @@ function onFacebookLogin(){
 
   
 
-chrome.storage.local.get(['accessToken'], function(result) {
+chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
   var token = result['accessToken'];
+  var id = result['userID'];
   if (!token) {
     chrome.tabs.query({}, function(tabs) { 
       for (var i = 0; i < tabs.length; i++) {
@@ -439,7 +440,7 @@ chrome.storage.local.get(['accessToken'], function(result) {
 
 
 
-    $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
+    $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : id}, function () {
                    postsHTML = $("#posts").html();
                   chrome.storage.local.set({"postsHTML" : postsHTML});
                   chrome.browserAction.setPopup({popup : "newsfeed.html"});
@@ -657,12 +658,3 @@ String.prototype.trimToLength = function(m) {
     ? jQuery.trim(this).substring(0, m).split(" ").slice(0, -1).join(" ") + "..."
     : this;
 };
-
-
-
-
-
-
-   
-
-

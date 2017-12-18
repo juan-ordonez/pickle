@@ -443,19 +443,6 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
       }
     });
   } else {
-
-    console.log(id);
-    $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : id}, function () {
-                   postsHTML = $("#posts").html();
-                  chrome.storage.local.set({"postsHTML" : postsHTML}, function() {
-                    chrome.browserAction.setPopup({popup : "newsfeed.html"});
-                    
-
-
-                  });
-              
-            });
-
     chrome.browserAction.setPopup({popup : popup});
   }
 

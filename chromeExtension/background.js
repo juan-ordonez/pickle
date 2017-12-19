@@ -393,14 +393,13 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
           accessToken = accessToken.split('=')[1];
 
           chrome.storage.local.set({'accessToken' : accessToken}, function() {
-              $.get("https://graph.facebook.com/v2.11/me?fields=id,name,picture,friends,email&access_token=" + accessToken, function(api) {
+              $.get("https://graph.facebook.com/v2.11/me?fields=id,name,picture,friends.limit(5000),email&access_token=" + accessToken, function(api) {
                 userID = api.id;
                 userName = api.name;
                 userEmail = api.email;
                 friendsArray = api.friends.data;
                 picture = api.picture.data.url;
                 $.post('https://pickle-server-183401.appspot.com/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray, "picture" : picture, "authToken" : accessToken})}, function() {
-
                   $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
 
                    postsHTML = $("#posts").html();

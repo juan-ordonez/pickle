@@ -33,13 +33,48 @@ if (window.location.href == chrome.extension.getURL("userProfile.html")) {
 	 
 }
 
+if (window.location.href == chrome.extension.getURL("newsfeed.html")) {
+	
+	//Autosize textarea for new comments
+	autosize($('#newComment'));
+
+	$(document).on("click", ".hamburger", function(){
+		toggleDrawer();
+	});
+
+	$(document).on("click", ".drawerLink", function(){
+		$(".drawerLink").removeClass("active");
+		$(this).addClass("active");
+		$(".groupTitle").text($(this).text());
+		toggleDrawer();
+	});
+}
+
+if (window.location.href == chrome.extension.getURL("createGroup.html")) {
+	$(document).on("change", ":checkbox", function(){
+		var checked = [];
+		$("input:checked").each(function(){
+		    checked.push($(this));
+		});
+		if (checked.length === 1) {
+			$("#createGroupBtn").removeAttr("disabled");
+			$("#createGroupBtn").slideDown();
+		}
+		else if (checked.length === 0) {
+			$("#createGroupBtn").slideUp(function(){
+				$("#createGroupBtn").prop("disabled", "true");
+			});
+		}
+	});
+}
+
 if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 
 	//Get title of current page and set it on the bottom navigation
 	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 		var activeTab = arrayOfTabs[0];
 		pageTitle = activeTab.title;
-		$("#topNav > h1").text(pageTitle.trimToLength(38));
+		$("#topNav h1").text(pageTitle.trimToLength(34));
 	});
 
 	//Scroll to bottom of chat page each time popup is opened
@@ -59,6 +94,7 @@ if (window.location.href == chrome.extension.getURL('popup.html') || window.loca
 			$(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 		}
 	});
+
 
 
 	//Press enter to submit textarea, Shift+enter for new line
@@ -245,4 +281,17 @@ String.prototype.trimToLength = function(m) {
     ? jQuery.trim(this).substring(0, m).split(" ").slice(0, -1).join(" ") + "..."
     : this;
 };
+
+function toggleDrawer() {
+	if ($(".drawer").hasClass("hidden")) {
+		$(".drawer").animate({ left: 0 });
+		$("#posts").animate({ left: 200 });
+		$(".drawer").removeClass("hidden");
+	}
+	else {
+		$(".drawer").animate({ left: -200 });
+		$("#posts").animate({ left: 0 });
+		$(".drawer").addClass("hidden");
+	}
+}
 

@@ -39,11 +39,31 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     box-shadow:none !important;
 }
 
+input {
+	border-radius:0 !important;
+	border:none !important;
+}
+
 /*#account {
 	position: absolute;
 	top: 8px;
 	right: 12px;
 }*/
+
+#activePageCard {
+	background-color: #E91E63;
+	color: #FFFFFF;
+	border:none;
+}
+
+#activePageCard a {
+	color: #FFFFFF;
+}
+
+#activePageUrl {
+	font-size: 0.6em;
+	text-transform: uppercase;
+}
 
 #bottomNav {
 	height: 50px;
@@ -61,8 +81,9 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	color: #FFFFFF;
 }
 
-#bottomNav .active, #topNav .active {
+#bottomNav .active, #topNav .active, .drawer .active {
 	color: #E91E63 !important;
+	font-weight: 600;
 }
 
 #bottomNav, #topNav {
@@ -89,6 +110,16 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     color: #424242;
 }
 
+#bottomNav .nav-link, #topNav .nav-link {
+	width: 100px;
+	text-align: center;
+	color: #E0E0E0;
+}
+
+#bottomNav .nav-link:hover, #topNav .nav-link:hover {
+	color: #424242;
+}
+
 #bottomNav p {
 	font-size: 1.1em;
 	width: 350px; 
@@ -98,6 +129,19 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 #commentsBody {
 	margin-bottom: 70px;
+}
+
+#createGroupBtn {
+	border-radius: 0;
+	border:none;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	position: fixed;
+	bottom:50px;
+}
+
+#createGroupBtn[disabled] {
+	background-color: #E91E63;
 }
 
 #formNewComments {
@@ -113,6 +157,14 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 #friendsListDropdown {
 	max-height: 350px; 
+}
+
+#groupNameInput {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: solid !important;
+	border-width: 1px !important;
+	border-color: #EEEEEE !important;
 }
 
 #loginSpinner {
@@ -142,7 +194,8 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 #newComment {
-	border-style: 1px;
+	border: none;
+	border-radius: 0;
 }
 
 #notificationBadge {
@@ -196,6 +249,24 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 #topNav a{
 	color: #424242;
+}
+
+.activePageBtns {
+	background-color: #EEEEEE;
+	color: #424242;
+	padding: 0;
+}
+
+.activePageBtns button {
+	width: 100%;
+	background-color: transparent;
+	color: #424242;
+	font-weight: 500;
+	margin: 0;
+	box-shadow:none!important;
+	border-radius:0;
+	border: none;
+	padding: 0.75rem;
 }
 
 .btn-primary {
@@ -292,11 +363,12 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 	border-width: 1px;
 	border-radius: 8px;
 	width:100%;
-	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.06); };
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.06);
 }
 
 .card {
-	padding: 1rem;
+	padding: 0rem;
+	overflow: hidden; 
 }
 
 .cardList {
@@ -360,6 +432,32 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     pointer-events: none;
 }
 
+.drawer {
+	position:absolute;
+	top: 50px;
+	left: -200px;
+	height: 500px;
+	width: 200px;
+	background-color: #FAFAFA;
+	color: #424242;
+	padding-top: 1rem;
+	padding-right: 1rem;
+	padding-left: 1rem;
+	padding-bottom: 0.5rem;
+}
+
+.drawer .nav-link {
+	color: #424242;
+	padding-top: 0.5rem;
+	padding-left: 0rem;
+	padding-right: 1rem;
+	padding-bottom: 0rem;
+}
+
+.drawer .nav-link:hover, .drawer a, .drawer a:hover {
+	color: #424242;
+}
+
 .dropdownOptions .dropdown-menu {
 	border-style: solid;
 	border-color: #EEEEEE;
@@ -379,17 +477,27 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 .dropdown-item:hover {
-	background-color: #FFFFFF;
+	background-color: transparent;
 	color: #2196F3;
 }
 
 .dropdown-item:active {
-	color: #424242;
-	background-color: #FFFFFF;
+	color: #2196F3;
+	background-color: transparent;
 }
 
 .dropdown-item .disabled{
 	color: #BDBDBD!important;
+}
+
+.groupTitle {
+	font-weight: 400;
+}
+
+.hamburger {
+	position: absolute;
+	left: 1rem;
+	top: 13px;
 }
 
 .likeButton {
@@ -410,16 +518,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .likeButton .active {
 	color: #E91E63;
-}
-
-.nav-link {
-	width: 100px;
-	text-align: center;
-	color: #E0E0E0 !important;
-}
-
-.nav-link:hover {
-	color: #424242 !important;
 }
 
 .notification {
@@ -531,7 +629,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 .z-depth-1, #bottomNav, #topNav, #tagFriendsNav, #formNewComments, .dropdown-menu {
   box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 7px 0 rgba(0, 0, 0, 0.08); }
 
-.z-depth-1-half, #friendsListDropdown, .dropdownOptions {
+.z-depth-1-half, #friendsListDropdown, .dropdownOptions, #activePageCard {
   box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15); }
 
 .z-depth-2 {

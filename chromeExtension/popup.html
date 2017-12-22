@@ -27,11 +27,14 @@
   <body>
 
     <!-- Top navigation bar -->
-    <nav id="topNav" class="navbar fixed-top justify-content-start flex-nowrap align-items-center">
+    <nav id="topNav" class="navbar fixed-top justify-content-between flex-nowrap align-items-center pr-3 pl-3">
       <!-- dummy anchor to prevent autofocus-->
       <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
       <a id="closeFriends" class="ml-3 mb-2" href="#" style="display:none;"><i class="fa fa-times fa-lg"></i></a>
-      <h1 class="navbar-brand ml-3 mr-3">Comments</h1>
+      <div>
+        <a href="newsfeed.html" class="backBtn"><i class="fas fa-arrow-left mr-3"></i></a>
+        <h1 class="navbar-brand">Comments</h1>
+      </div>
       <!-- <div id="replyGroup" style="display:none;">
         <div class="d-flex justify-content-start align-items-center pr-3 pl-3" style="height: 50px;">
           <a id="closeFriends" class="mr-3" href="#"><i class="fa fa-times fa-lg"></i></a>
@@ -43,8 +46,8 @@
     <!-- Bottom navigation bar -->
     <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
         <div class="d-flex justify-content-between" style="width: 375px;">
-          <a class="nav-link" href="newsfeed.html" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
-          <a class="nav-link active" href="#" id="commentsNav"><i class="fa fa-comment fa-lg"></i></a>
+          <a class="nav-link active" href="newsfeed.html" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
+          <!-- <a class="nav-link active" href="#" id="commentsNav"><i class="fa fa-comment fa-lg"></i></a> -->
           <a class="nav-link" href="notifications.html" id="notificationsNav"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
           <a class="nav-link" href="account.html" id="accountNav"><i class="fa fa-user-circle fa-lg"></i></a>
           <div id="notificationBadge">

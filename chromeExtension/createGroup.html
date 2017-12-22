@@ -29,31 +29,12 @@
     <!-- dummy anchor to prevent autofocus-->
       <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
 
-    <!-- Drawer -->
-    <div class="drawer fixed-top hidden">
-        <div class="groupsDrawer">
-            <div class="d-flex flex-row flex-nowrap justify-content-between">
-                <small>GROUPS</small>
-                <a href="createGroup.html"><i class="far fa-plus-square"></i></a>
-            </div>
-            <a class="nav-link drawerLink active" href="#"># General</a>
-            <a class="nav-link drawerLink" href="#"># Family</a>
-            <a class="nav-link drawerLink" href="#"># BrosB4Hoes</a>
-        </div>
-        <div class="directDrawer mt-3">
-            <div class="d-flex flex-row flex-nowrap justify-content-between">
-                <small>DIRECT</small>
-            </div>
-            <a class="nav-link drawerLink" href="#">@ Alex Zekoff</a>
-            <a class="nav-link drawerLink" href="#">@ Josh Goldman</a>
-            <a class="nav-link drawerLink" href="#">@ Leo di Caprio</a>
-        </div>
-    </div> 
-
     <!-- Top navigation bar -->
-    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-center align-items-center">
-      <a href="#" class="hamburger"><i class="fas fa-bars"></i></a>
-      <h1 class="navbar-brand">Yipp</h1>
+    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center pr-3 pl-3">
+      <div>
+        <a href="newsfeed.html" class="backBtn"><i class="fas fa-arrow-left mr-3"></i></a>
+        <h1 class="navbar-brand">Create Group</h1>
+      </div>
     </nav>
 
     <!-- Bottom navigation bar -->
@@ -69,27 +50,18 @@
       </div> 
     </nav>
 
-    <i class="loadingSpinner fa fa-2x fa-spinner fa-spin mb-5"></i>
+    <!-- <i class="loadingSpinner fa fa-2x fa-spinner fa-spin mb-5"></i> -->
 
-    <div class="container" id="posts">
-
-        <div id="activePageCard" class="card mb-3" style="height:auto;">
-            <div class="pr-3 pl-3 pt-2 pb-2">
-                <small>Current Tab</small>
-                <h1 id="activePageTitle" class="mb-0">Example Page Title</h1>
-                <small id="activePageUrl"></small>
+    <div class="container pl-0 pr-0 pt-0">
+        <form>
+            <div class="form-group sticky-top">
+            <!-- <label for="exampleInputEmail1">Email address</label> -->
+            <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" placeholder="Enter group name">
             </div>
-            <div class="activePageInput">
-                <label class="sr-only" for="newComment">Write a comment</label>
-                <textarea class="form-control" id="newComment" rows='1' placeholder="Write a comment" maxlength="256"></textarea>
+            <div class="friendList" style="margin-bottom: 72px;">
             </div>
-            <div class="activePageBtns d-flex flex-row justify-content-center">
-                <button class="btn" id="submitYipp">YIPP TO GROUP</button>
-                <button id="viewComments" class="btn">VIEW COMMENTS</button>
-            </div>
-        </div>
-
-        <h1 class="groupTitle"># GENERAL</h1>
+            <button type="button" class="btn btn-primary btn-block" id="createGroupBtn" style="display:none;" disabled>Create</button>
+        </form>
 
     </div>
 

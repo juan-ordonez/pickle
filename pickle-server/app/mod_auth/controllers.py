@@ -198,6 +198,7 @@ def comment():
     tags = ast.literal_eval(str(request.form['tags']))
     comment.mentions.append(user)
     posts = set([])
+
     if not comment.public:
         for tag in tags:
             taggedUser = User.query.filter_by(id=tag).first()
@@ -213,24 +214,15 @@ def comment():
             db.session.add(feed)
         else:
             feed = None
-        for tag in tags:
-            taggedUser = User.query.filter_by(id=tag).first()
-            comment.mentions.append(taggedUser)
-            if taggedUser.id not in publicFriends:
-                taggedUser.commentsTaggedIn.append(comment)
-                if feed:
-                    taggedUser.newsfeed.append(feed)
-                    feed.tags.append(taggedUser)
-                publicFriends.add(taggedUser.id)
-            for session in taggedUser.friendSession:
-                if session.authToken:
-                    posts.add(session.authToken)
-                if session.id not in publicFriends and session.id not in tags:
-                    friend = User.query.filter_by(id=session.id).first()
-                    friend.commentsTaggedIn.append(comment)
-                    if feed:
-                        friend.newsfeed.append(feed)
-                    publicFriends.add(session.id)
+        
+        #Add post and comment to user
+        user.commentsTaggedIn.append(comment)
+        if feed:
+            user.newsfeed.append(feed)
+            feed.tags.append(user)
+        publicFriends.add(user.id)
+
+        #Add post and comment to friends of user (excluding those tagged in comment)
         for session in user.friendSession:
             friendUser = User.query.filter_by(id=session.id).first()
             if friendUser.id not in publicFriends and friendUser.id not in tags:
@@ -238,6 +230,30 @@ def comment():
                 if feed:
                     friendUser.newsfeed.append(feed)
                 publicFriends.add(friendUser.id)
+
+        #Add post and comment to users tagged in comment
+        if len(tags) > 0:
+            for tag in tags:
+                taggedUser = User.query.filter_by(id=tag).first()
+                comment.mentions.append(taggedUser)
+                if taggedUser.id not in publicFriends:
+                    taggedUser.commentsTaggedIn.append(comment)
+                    if feed:
+                        taggedUser.newsfeed.append(feed)
+                        feed.tags.append(taggedUser)
+                    publicFriends.add(taggedUser.id)
+
+                for session in taggedUser.friendSession:
+                    if session.authToken:
+                        posts.add(session.authToken)
+                    if session.id not in publicFriends and session.id not in tags:
+                        friend = User.query.filter_by(id=session.id).first()
+                        friend.commentsTaggedIn.append(comment)
+                        if feed:
+                            friend.newsfeed.append(feed)
+                        publicFriends.add(session.id)
+
+
 
 
 

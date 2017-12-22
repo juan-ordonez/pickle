@@ -22,78 +22,88 @@ def getPostDescription(userID, posterID, tagsArray, friendsArray):
     friendNames = ""
     strangerNames = ""
 
-    try:
-        #Sort tagsArray, friends first then strangers
-        taggedFriends = []
-        taggedStrangers = []
-        for tag in tagsArray:
-            if tag in friendsArray:
-                #taggedFriends.append(tag.name)
-                taggedFriends.append(tag)
-            elif tag != userID:
-                #taggedStrangers.append(tag.name)
-                taggedStrangers.append(tag)
-        taggedNames = taggedFriends + taggedStrangers
+    # try:
+    #Sort tagsArray, friends first then strangers
+    taggedFriends = []
+    taggedStrangers = []
+    for tag in tagsArray:
+        if tag in friendsArray:
+            #taggedFriends.append(tag.name)
+            taggedFriends.append(tag)
+        elif tag != userID:
+            #taggedStrangers.append(tag.name)
+            taggedStrangers.append(tag)
+    taggedNames = taggedFriends + taggedStrangers
 
-        tagCount = len(taggedNames)
-        tagsLeft = tagCount - len(taggedNames[:4])
+    tagCount = len(taggedNames)
+    tagsLeft = tagCount - len(taggedNames[:4])
 
-        #If user is poster
-        if userID == posterID: 
-            stranger = False
-            author = True
-            if tagCount < 5:
-                if tagCount == 1:
-                    postDescription = "You tagged " + taggedNames[0]
-                elif tagCount == 2:
-                    postDescription = "You tagged " + (" and ").join(taggedNames)
-                else:
-                    postDescription = "You tagged " + (', ').join(taggedNames[:-1]) + ' and ' + taggedNames[-1]
+    #If user is poster
+    if userID == posterID: 
+        stranger = False
+        author = True
+        if tagCount < 5:
+            if tagCount == 0:
+                postDescription = "You yipped this page"
+            elif tagCount == 1:
+                postDescription = "You tagged " + taggedNames[0]
+            elif tagCount == 2:
+                postDescription = "You tagged " + (" and ").join(taggedNames)
             else:
-                postDescription = "You tagged " + (', ').join(taggedNames[:4]) + " and " +str(tagsLeft)+ " other people"
-
-        #If poster is user's friend
-        elif posterID in friendsArray:
-            stranger = False
-            author = False
-            if userID in tagsArray:
-                taggedNames.insert(0, "you")
-                tagCount += 1
-                tagsLeft += 1
-            if tagCount < 5:
-                if tagCount == 1:
-                    postDescription = posterID +" tagged "+ taggedNames[0]
-                elif tagCount == 2:
-                    postDescription = posterID + " tagged " + (" and ").join(taggedNames)
-                else:
-                    postDescription = posterID + " tagged " + (', ').join(taggedNames[:-1]) + ' and ' + taggedNames[-1]
-            else:
-                postDescription = posterID + " tagged " + (', ').join(taggedNames[:4]) + ' and ' + str(tagsLeft) + " other people"
-        #If poster is stranger to user
+                postDescription = "You tagged " + (', ').join(taggedNames[:-1]) + ' and ' + taggedNames[-1]
         else:
-            stranger = True
-            author = False
-            if userID in tagsArray:
-                taggedNames.insert(0, "You")
-                tagCount += 1
-                tagsLeft += 1
-            if tagCount < 5:
-                if taggedNames[0] == "You" and tagCount == 1:
-                    postDescription = "You were tagged by "+posterID  
-                elif tagCount == 1:
-                    postDescription = taggedNames[0] +" was tagged by "+posterID
-                elif tagCount == 2:
-                    postDescription = (" and ").join(taggedNames) + " were tagged by " + posterID 
-                else:
-                    postDescription = (', ').join(taggedNames[:-1]) + ' and ' + taggedNames[-1]+ " were tagged by " + posterID
+            postDescription = "You tagged " + (', ').join(taggedNames[:4]) + " and " +str(tagsLeft)+ " other people"
+
+    #If poster is user's friend
+    elif posterID in friendsArray:
+        stranger = False
+        author = False
+        if userID in tagsArray:
+            taggedNames.insert(0, "you")
+            tagCount += 1
+            tagsLeft += 1
+        if tagCount < 5:
+            if tagCount == 0:
+                postDescription = posterID + " yipped this page"
+            elif tagCount == 1:
+                postDescription = posterID +" tagged "+ taggedNames[0]
+            elif tagCount == 2:
+                postDescription = posterID + " tagged " + (" and ").join(taggedNames)
             else:
-                postDescription = (', ').join(taggedNames[:4]) + ' and ' + str(tagsLeft)+ " other people were tagged by " + posterID
+                postDescription = posterID + " tagged " + (', ').join(taggedNames[:-1]) + ' and ' + taggedNames[-1]
+        else:
+            postDescription = posterID + " tagged " + (', ').join(taggedNames[:4]) + ' and ' + str(tagsLeft) + " other people"
+    #If poster is stranger to user
+    else:
+        stranger = True
+        author = False
+        if userID in tagsArray:
+            taggedNames.insert(0, "You")
+            tagCount += 1
+            tagsLeft += 1
+        if tagCount < 5:
+            if tagCount == 0:
+                postDescription = posterID + " yipped this page"
+            elif taggedNames[0] == "You" and tagCount == 1:
+                postDescription = "You were tagged by "+posterID  
+            elif tagCount == 1:
+                if taggedNames[0]:
+                    postDescription = "You were tagged by "+posterID  
+                postDescription = taggedNames[0] +" was tagged by "+posterID
+            elif tagCount == 2:
+                postDescription = (" and ").join(taggedNames) + " were tagged by " + posterID 
+            else:
+                postDescription = (', ').join(taggedNames[:-1]) + ' and ' + taggedNames[-1]+ " were tagged by " + posterID
+        else:
+            postDescription = (', ').join(taggedNames[:4]) + ' and ' + str(tagsLeft)+ " other people were tagged by " + posterID
 
-        otherPeople = taggedNames[4:]
-        return [postDescription, otherPeople, stranger, author]
+    otherPeople = taggedNames[4:]
 
-    except:
-        return [posterID +" commented on a page", "error"]
+    return [postDescription, otherPeople, stranger, author]
+
+    # except:
+    #     print(error)
+    #     return [posterID +" commented on a page", "error"]
 
 # juan = "Juan Ordonez"
 # josh = "Josh Goldman"
@@ -106,7 +116,7 @@ def getPostDescription(userID, posterID, tagsArray, friendsArray):
 # anne = "Anne Flan"
 # brad = "Brad Pitt"
 
-# getPostDescription(juan, hannah, [alex, tucker, anne, brad, clay, gagan], [josh, alex, clay, gagan, michael])
+# getPostDescription("<a class='userProfile' href=# id=10155273220258655>Juan Ordonez</a>", "<a class='userProfile' href=# id=107087570064503>Juan Yipp</a>", [], ["<a class='userProfile' href=# id=10156851155369899>Dhruv Madaan</a>", "<a class='userProfile' href=# id=167049900552950>Alexander Zapata</a>", "<a class='userProfile' href=# id=10214918996198053>Briana Advani</a>", "<a class='userProfile' href=# id=1749276548424629>Shannon Finley</a>", "<a class='userProfile' href=# id=10105729742621685>Clay Anthony</a>", "<a class='userProfile' href=# id=10159543159390072>Roman Gutierrez Correa</a>", "<a class='userProfile' href=# id=1348321891962814>Laila Zouaki</a>", "<a class='userProfile' href=# id=10155876843455842>Cody Alan Yanna</a>", "<a class='userProfile' href=# id=167049900552950>Alexander Zapata</a>", "<a class='userProfile' href=# id=167049900552950>Alexander Zapata</a>", "<a class='userProfile' href=# id=10105729742621685>Clay Anthony</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=10105729742621685>Clay Anthony</a>", "<a class='userProfile' href=# id=10156851155369899>Dhruv Madaan</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=10214316183321507>Patrick Taube</a>", "<a class='userProfile' href=# id=10155957240195555>Benoit Habfast</a>", "<a class='userProfile' href=# id=10214316183321507>Patrick Taube</a>", "<a class='userProfile' href=# id=10210546058836225>Juan Felipe Ordonez</a>", "<a class='userProfile' href=# id=10155957240195555>Benoit Habfast</a>", "<a class='userProfile' href=# id=10212016016289493>Paul Chatelain</a>", "<a class='userProfile' href=# id=10155957240195555>Benoit Habfast</a>", "<a class='userProfile' href=# id=10214316183321507>Patrick Taube</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=10105729742621685>Clay Anthony</a>", "<a class='userProfile' href=# id=10156851155369899>Dhruv Madaan</a>", "<a class='userProfile' href=# id=10212329316162489>Himanshu Sahay</a>", "<a class='userProfile' href=# id=10159543159390072>Roman Gutierrez Correa</a>", "<a class='userProfile' href=# id=10155862710817402>Tanner Barnes</a>", "<a class='userProfile' href=# id=10159543159390072>Roman Gutierrez Correa</a>", "<a class='userProfile' href=# id=10155049664248807>Ruxandra Duc\u0103</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=167049900552950>Alexander Zapata</a>", "<a class='userProfile' href=# id=10159543159390072>Roman Gutierrez Correa</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=10105729742621685>Clay Anthony</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=167049900552950>Alexander Zapata</a>", "<a class='userProfile' href=# id=10155862710817402>Tanner Barnes</a>", "<a class='userProfile' href=# id=10155049664248807>Ruxandra Duc\u0103</a>", "<a class='userProfile' href=# id=10154748823792315>Kliment Minchev</a>", "<a class='userProfile' href=# id=10105729742621685>Clay Anthony</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=167049900552950>Alexander Zapata</a>", "<a class='userProfile' href=# id=10105729742621685>Clay Anthony</a>", "<a class='userProfile' href=# id=1719382084762838>Trevor Voth</a>", "<a class='userProfile' href=# id=10156851155369899>Dhruv Madaan</a>", "<a class='userProfile' href=# id=10159543159390072>Roman Gutierrez Correa</a>", "<a class='userProfile' href=# id=10159543159390072>Roman Gutierrez Correa</a>", "<a class='userProfile' href=# id=167049900552950>Alexander Zapata</a>", "<a class='userProfile' href=# id=10155049664248807>Ruxandra Duc\u0103</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=1529209823828694>Ethan Wells</a>", "<a class='userProfile' href=# id=10156851155369899>Dhruv Madaan</a>", "<a class='userProfile' href=# id=10155862710817402>Tanner Barnes</a>", "<a class='userProfile' href=# id=10155049664248807>Ruxandra Duc\u0103</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=10105729742621685>Clay Anthony</a>", "<a class='userProfile' href=# id=1749276548424629>Shannon Finley</a>", "<a class='userProfile' href=# id=10159543159390072>Roman Gutierrez Correa</a>", "<a class='userProfile' href=# id=167049900552950>Alexander Zapata</a>", "<a class='userProfile' href=# id=10155876843455842>Cody Alan Yanna</a>", "<a class='userProfile' href=# id=10214918996198053>Briana Advani</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10214316183321507>Patrick Taube</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=1918399404842008>Elliott Wiegman</a>", "<a class='userProfile' href=# id=10155957240195555>Benoit Habfast</a>", "<a class='userProfile' href=# id=10104242717591808>Alex Zekoff</a>", "<a class='userProfile' href=# id=10155202473145922>Andrew Beaupre</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>", "<a class='userProfile' href=# id=10211224416434502>Josh Goldman</a>"])
 
 
 # Converts a string in datetime object format (YYYY-MM-DD 00:00:00.000000) 

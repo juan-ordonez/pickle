@@ -99,7 +99,6 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.type == "userLoaded") {
       if (window.location.href == chrome.extension.getURL('userProfile.html')) {
-
         $("#posts").hide(); 
         chrome.storage.local.get(['userPostsHTML'], function(result) {
         userPostsHTML = result['userPostsHTML'];
@@ -114,9 +113,30 @@ chrome.runtime.onMessage.addListener(
             } else {
               $("#posts").html(' ');
             }
-
         });
       }
+    }
+    else if(request.type == "cardInfoReady"){
+      console.log("cardInfoReady");
+      if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
+        chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription'], function(result) {
+          domain = request.url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
+          $("#posts").prepend('<div class="yippContainer" style="display:none; opacity:0;"></div>');
+          $(".yippContainer").first().prepend('<div class="card cardNewsfeed mb-3"><p class="postDescription">You yipped this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p><div class="fadedOverlay"></div><i class="loadingSpinner fa fa-2x fa-spinner fa-spin"></i></div>');
+          $(".yippContainer").first().slideToggle(function(){
+            $(".yippContainer").first().animate({opacity: 1});
+          });
+
+          //Change styling of activeTab card
+          $("#activePageCard").removeClass("inactive");
+          $("#submitYipp").removeAttr("disabled");
+        });
+      }
+    }
+    else if(request.type == "yippPosted") {
+      console.log("message received!");
+      $(".yippContainer .loadingSpinner").last().remove();
+      $(".yippContainer .fadedOverlay").last().remove();
     }
 });
 
@@ -435,6 +455,10 @@ function yippIt(e) {
     chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
       picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, tagsHtml : tagsHtml, checked : true});
   });
+
+  //Change styling of activeTab card
+  $("#activePageCard").addClass("inactive");
+  $("#submitYipp").prop("disabled", "true");
 
 }
 

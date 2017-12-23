@@ -486,7 +486,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
             var length = 80;
             var trimmedString = description.length > length ? description.substring(0, length - 3) + "..." : description;
             chrome.storage.local.set({"pageTitle" : title, "pageImage" : image, "pageDescription" : trimmedString});
-            // console.log("RESOLVED");
+            chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url});
             d1.resolve();
           });
 
@@ -519,6 +519,8 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
           $("body").load("http://pickle-server-183401.appspot.com/loadPosts/ #posts", {"id" : userID.toString()}, function () {
            postsHTML = $("#posts").html();
            chrome.storage.local.set({"postsHTML" : postsHTML});
+           chrome.extension.sendMessage({type : "yippPosted"});
+           console.log("yippPosted");
           });
 
           var feedJSON = JSON.stringify({ "data": {"type" : "post"}, "registration_ids": feeds});

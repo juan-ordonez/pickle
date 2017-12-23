@@ -42,6 +42,18 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html")) {
 		toggleDrawer();
 	});
 
+	$(document).on("click", ".groupTitle", function(){
+		if ($(".drawer").hasClass("hidden")) {
+			toggleDrawer();
+		}
+	});
+
+	$(document).on("click", ".closeDrawerArea", function(){
+		if (!$(".drawer").hasClass("hidden")) {
+			toggleDrawer();
+		}
+	});
+
 	$(document).on("click", ".drawerLink", function(){
 		$(".drawerLink").removeClass("active");
 		$(this).addClass("active");
@@ -285,12 +297,15 @@ String.prototype.trimToLength = function(m) {
 function toggleDrawer() {
 	if ($(".drawer").hasClass("hidden")) {
 		$(".drawer").animate({ left: 0 });
-		$("#posts").animate({ left: 200 });
+		$(".closeDrawerArea").show();
+		$(".closeDrawerArea").animate({opacity: 0.5});
 		$(".drawer").removeClass("hidden");
 	}
 	else {
 		$(".drawer").animate({ left: -200 });
-		$("#posts").animate({ left: 0 });
+		$(".closeDrawerArea").animate({opacity: 0}, function(){
+			$(".closeDrawerArea").hide();
+		});
 		$(".drawer").addClass("hidden");
 	}
 }

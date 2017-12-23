@@ -48,7 +48,9 @@
             <a class="nav-link drawerLink" href="#">@ Josh Goldman</a>
             <a class="nav-link drawerLink" href="#">@ Leo di Caprio</a>
         </div>
-    </div> 
+    </div>
+
+    <div class="closeDrawerArea" style="display:none;"></div> 
 
     <!-- Top navigation bar -->
     <nav id="topNav" class="navbar fixed-top navbar-light justify-content-center align-items-center">
@@ -69,15 +71,15 @@
       </div> 
     </nav>
 
-    <i class="loadingSpinner fa fa-2x fa-spinner fa-spin mb-5"></i>
+    <i class="loadingSpinner newsfeed fa fa-2x fa-spinner fa-spin"></i>
 
-    <div class="container" id="posts">
+    <div class="container">
 
         <div id="activePageCard" class="card mb-3" style="height:auto;">
             <div class="pr-3 pl-3 pt-2 pb-2">
                 <small>Current Tab</small>
-                <h1 id="activePageTitle" class="mb-0">Example Page Title</h1>
-                <small id="activePageUrl"></small>
+                <h1 id="activePageTitle" class="mb-0">Loading</h1>
+                <small id="activePageUrl">Loading</small>
             </div>
             <div class="activePageInput">
                 <label class="sr-only" for="newComment">Write a comment</label>
@@ -89,7 +91,10 @@
             </div>
         </div>
 
-        <h1 class="groupTitle"># GENERAL</h1>
+        <h1><a href="#" class="groupTitle"># GENERAL</a></h1>
+
+        <div id="posts">
+        </div>
 
     </div>
 

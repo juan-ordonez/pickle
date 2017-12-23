@@ -54,10 +54,22 @@ input {
 	background-color: #E91E63;
 	color: #FFFFFF;
 	border:none;
+	margin: -0.5rem;
+	margin-top: -1rem;
+	width: auto;
+	border-radius: 0;
+	border-bottom-style: solid;
+	border-bottom-color: #E0E0E0;
+	border-bottom-width: 1px;
+	box-shadow: none;
 }
 
 #activePageCard a {
 	color: #FFFFFF;
+}
+
+#activePageCard.inactive {
+	background-color: #757575!important;
 }
 
 #activePageUrl {
@@ -180,13 +192,6 @@ input {
 
 #logoutButton:hover {
 	color: #ffffff!important;
-}
-
-.loadingSpinner {
-	color: #BDBDBD;
-	position: absolute;
-	bottom: 200px;
-	left: 180px;
 }
 
 #loginPicture .invisible {
@@ -350,6 +355,18 @@ input {
 	bottom: 0px;
 }
 
+.container > .loadingSpinner {
+	position: absolute;
+	top: 230px;
+	left: 180px;
+}
+
+.containerComments > .loadingSpinner {
+	position: absolute;
+	top: 230px;
+	left: 180px;
+}
+
 .open > .dropdown-toggle.btn-outline-secondary:focus {
 	box-shadow: none!important;
 }
@@ -411,6 +428,13 @@ input {
 	padding-right: 1rem;
 }
 
+.cardNewsfeed .loadingSpinner {
+	position: absolute;
+	left: 180px;
+	top: 150px;
+	color: #424242;
+}
+
 .chatBubble {
 	background-color: #EEEEEE;
 	border-radius: 16px;
@@ -428,6 +452,17 @@ input {
 	padding-top: 1rem;
 }
 
+.closeDrawerArea {
+	position:absolute;
+	top: 50px;
+	left: 0px;
+	height: 500px;
+	width: 400px;
+	background-color: #000000;
+	z-index:1;
+	opacity: 0;
+}
+
 .disableClick{
     pointer-events: none;
 }
@@ -438,7 +473,7 @@ input {
 	left: -200px;
 	height: 500px;
 	width: 200px;
-	background-color: #FAFAFA;
+	background-color: #EEEEEE;
 	color: #424242;
 	padding-top: 1rem;
 	padding-right: 1rem;
@@ -490,8 +525,22 @@ input {
 	color: #BDBDBD!important;
 }
 
+.fadedOverlay {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	top:0;
+	left:0;
+	background-color: #FFFFFF;
+	opacity: 0.7;
+}
+
+.groupTitle, .groupTitle:hover {
+	color: #000000;
+}
+
 .groupTitle {
-	font-weight: 400;
+	font-weight: 450;
 }
 
 .hamburger {
@@ -518,6 +567,16 @@ input {
 
 .likeButton .active {
 	color: #E91E63;
+}
+
+.loadingSpinner {
+	color: #BDBDBD;
+}
+
+.loadingSpinner.newsfeed {
+	position: absolute;
+	top: 400px;
+	left: 180px;
 }
 
 .notification {
@@ -626,10 +685,10 @@ input {
     width: auto;
 }
 
-.z-depth-1, #bottomNav, #topNav, #tagFriendsNav, #formNewComments, .dropdown-menu {
+.z-depth-1, #bottomNav, #topNav, #tagFriendsNav, #formNewComments, .dropdown-menu, .drawer {
   box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 7px 0 rgba(0, 0, 0, 0.08); }
 
-.z-depth-1-half, #friendsListDropdown, .dropdownOptions, #activePageCard {
+.z-depth-1-half, #friendsListDropdown, .dropdownOptions {
   box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15); }
 
 .z-depth-2 {

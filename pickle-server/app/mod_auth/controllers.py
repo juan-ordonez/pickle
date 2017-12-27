@@ -170,7 +170,7 @@ def user(cookie):
 
     friends = []
     for friend in session.friends:
-        friends.append(friend.id)
+        friends.append((friend.id, friend.name, friend.picture))
     
     return json.dumps({"status" : True, "name" : session.name, "friends" : friends, "email" : session.email, "updated" : user.updated, "id" : session.id, "picture" : user.picture, "notifications" : user.numNotifications})
 

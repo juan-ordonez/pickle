@@ -33,33 +33,32 @@ if (window.location.href == chrome.extension.getURL("userProfile.html")) {
 	 
 }
 
-if (window.location.href == chrome.extension.getURL("newsfeed.html")) {
+if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.location.href == chrome.extension.getURL("popup.html")) {
 	
 	//Autosize textarea for new comments
 	autosize($('#newComment'));
 
+	//Drawer
 	$(document).on("click", ".hamburger", function(){
 		toggleDrawer();
 	});
-
 	$(document).on("click", ".groupTitle", function(){
 		if ($(".drawer").hasClass("hidden")) {
 			toggleDrawer();
 		}
 	});
-
 	$(document).on("click", ".closeDrawerArea", function(){
 		if (!$(".drawer").hasClass("hidden")) {
 			toggleDrawer();
 		}
 	});
-
 	$(document).on("click", ".drawerLink", function(){
 		$(".drawerLink").removeClass("active");
 		$(this).addClass("active");
 		$(".groupTitle").text($(this).text());
 		toggleDrawer();
 	});
+
 }
 
 if (window.location.href == chrome.extension.getURL("createGroup.html")) {
@@ -82,7 +81,7 @@ if (window.location.href == chrome.extension.getURL("createGroup.html")) {
 
 if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 
-	//Get title of current page and set it on the bottom navigation
+	//Get title of current page and set it on the top navigation
 	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 		var activeTab = arrayOfTabs[0];
 		pageTitle = activeTab.title;
@@ -100,14 +99,12 @@ if (window.location.href == chrome.extension.getURL('popup.html') || window.loca
 		//If comments are scrolled all the way down
 		if($(".containerComments")[0].scrollHeight - $(".containerComments").scrollTop() == $(".containerComments").outerHeight()) {
 			//Move comments up after each textarea resize
-			var newContainerMargin = $("#formNewComments").height() + 32;
+			var newContainerMargin = $("#formNewComments").height() - 18;
 			$("#commentsBody").css("margin-bottom", newContainerMargin+"px");
 			//Scroll to bottom of page after each textarea resize
 			$(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);
 		}
 	});
-
-
 
 	//Press enter to submit textarea, Shift+enter for new line
 	$("#newComment").keypress(function (e) {

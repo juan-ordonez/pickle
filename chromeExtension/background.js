@@ -167,7 +167,8 @@ chrome.notifications.onClicked.addListener(function (id) {
         
     });
 
-  chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
+  //chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
+  chrome.storage.local.remove(['commentsHTML', 'notifications', 'friendsHTML']);
   done = false;
   getUserData();
 
@@ -186,7 +187,7 @@ function getUserData() {
     
     session = data['accessToken'];
     
-    $.get("https://pickle-server-183401.appspot.com/user/" + session, function(data) {
+    $.get("http://localhost:5000/user/" + session, function(data) {
       var json = JSON.parse(data);
       if (json.status == false) {
         chrome.browserAction.setPopup({popup : "register.html"});
@@ -234,7 +235,8 @@ function getUserData() {
             //   notificationsHTML = $("#notifications").html();
             //   d2.resolve();
             // });
-            $("body").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendsArray)}, function () {
+            var friendIds = friendsArray.map(function(value,index) { return value[0]; });
+            $("body").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function () {
               friendsHTML = $("#friends").html();
               d2.resolve();
             });
@@ -287,7 +289,8 @@ function getUserData() {
 
 
 chrome.tabs.onActivated.addListener(function(activeInfo) {
-  chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
+  // chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
+  chrome.storage.local.remove(['commentsHTML', 'notifications', 'friendsHTML']);
   done = false;
 
 });

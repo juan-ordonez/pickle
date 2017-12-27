@@ -21,6 +21,8 @@
     <link href="css/waves.min.css" rel="stylesheet">
     <!-- Custome Styles CSS -->
     <link href="css/style.css" rel="stylesheet">
+    <!-- Mentions Input -->
+    <link href="js/jquery-mentions-input/jquery.mentionsInput.css" rel="stylesheet">
 
   </head>
 
@@ -74,7 +76,7 @@
     <i class="loadingSpinner newsfeed fa fa-2x fa-spinner fa-spin"></i>
 
     <div class="container">
-
+        <small class="groupTitleContainer"><a href="#" class="groupTitle"># General</a></small>
         <div id="activePageCard" class="card mb-3" style="height:auto;">
             <div class="pr-3 pl-3 pt-2 pb-2">
                 <small>Current Tab</small>
@@ -83,15 +85,13 @@
             </div>
             <div class="activePageInput">
                 <label class="sr-only" for="newComment">Write a comment</label>
-                <textarea class="form-control" id="newComment" rows='1' placeholder="Write a comment" maxlength="256"></textarea>
+                <textarea class="form-control mention" rows="1" id="newComment" placeholder="Write a comment" maxlength="256"></textarea>
             </div>
             <div class="activePageBtns d-flex flex-row justify-content-center">
                 <button class="btn" id="submitYipp">YIPP TO GROUP</button>
                 <button id="viewComments" class="btn">VIEW COMMENTS</button>
             </div>
         </div>
-
-        <h1><a href="#" class="groupTitle"># GENERAL</a></h1>
 
         <div id="posts">
         </div>
@@ -108,6 +108,9 @@
     <script type="text/javascript" src="js/tether.min.js"></script>
     <script src="js/linkify.min.js"></script>
     <script src="js/linkify-jquery.min.js"></script>
+    <script src="js/underscore.min.js"></script>
+    <script src="js/jquery.elastic.source.js"></script>
+    <script src='js/jquery-mentions-input/jquery.mentionsInput.js' type='text/javascript'></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <!--Custom scripts-->
     <script type="text/javascript" src="scripts2.js"></script>

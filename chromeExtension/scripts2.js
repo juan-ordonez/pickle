@@ -326,90 +326,80 @@ function comment(e) {
 
   e.preventDefault();
 
-  // Open dropdown with friends checkboxes if user submits comment without choosing any friends
-  var checked = [];
-  $("#friendListCheckboxes input:checked").each(function(){
-    checked.push($(this));
+  //Get string of comment submitted by user
+  var value = $("#newComment").val();
+
+  //Get the url and title of the page on which the comment is being posted
+  // chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+  //   var activeTab = arrayOfTabs[0];
+  //   url = activeTab.url;
+  //   pageTitle = activeTab.title;
+  // });   
+
+  //Get the following comment data
+  ids = []; //Array of ids tagged in comment
+  names = []; //Array of names tagged in comment
+  var tags; // String with ids tagged in comment
+  var all; // Boolean for whether the comment is for all friends or not
+
+  $('textarea.mention').mentionsInput('val', function(taggedIds) {
+    if(taggedIds){
+      tags = taggedIds;
+      ids = taggedIds;
+    }
   });
-  if (checked.length === 0) {
-      e.stopPropagation();
-      if ($("#friendsListDropdown").is(":hidden")){
-        $('.dropdown-toggle').dropdown('toggle');
-      }
-  } 
-  // Else proceed submitting the comment
-  else {
 
-    //Get string of comment submitted by user
-    var value = $("#newComment").val();
+  chrome.storage.local.set({'tags': JSON.stringify(ids)});
+  chrome.storage.local.set({'public' : true});
+  all = true;
 
-    //Get the url and title of the page on which the comment is being posted
-    // chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
-    //   var activeTab = arrayOfTabs[0];
-    //   url = activeTab.url;
-    //   pageTitle = activeTab.title;
-    // });   
-
-    //Get the following comment data
-    ids = []; //Array of ids tagged in comment
-    names = []; //Array of names tagged in comment
-    var tags; // String with ids tagged in comment
-    var all; // Boolean for whether the comment is for all friends or not
-
-    $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-      ids.push(element.id);
-      names.push($(element).parent().text().trim());
-    });
-    chrome.storage.local.set({'tags': JSON.stringify(ids)});
-    //If the user is tagging all friends in comment
-
-    if (document.getElementById('publicMessage').checked) {
-      
-      chrome.storage.local.set({'public' : true});
-      all = true;
-
-    } 
-    //Else if user only tagging selected friends
-    else {
-      chrome.storage.local.set({'public' : ""})
-      all = "";
-
-    }
-
-    //Get user name
-    var user = userName.split(" ")[0];
-    //Get string with tagged ids 
-    var idsString = ids.slice();
-    idsString.push(userID.toString());
-    idsString.sort();
-    var idsString = idsString.join('-');
-    //Get string with tagged names
-    names.push(userName);
-    names.sort();
-    var namesString = names.join(', ');
-    var htmlArray = [];
-    for (var i = 0; i < names.length; i++) {
-      htmlArray.push('<a class="dropdown-item" href="#">'+names[i]+'</a>');
-    }
-    var tagsHtml = htmlArray.join('');
+  // if (document.getElementById('publicMessage').checked) {
     
+  //   chrome.storage.local.set({'public' : true});
+  //   all = true;
 
-    //Send all comment data to background page
-    chrome.storage.local.get(['tags', 'public'], function (result) {
-      tags = result['tags'];
-      all = result['public'];
-      chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
-        picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, tagsHtml : tagsHtml, checked : document.getElementById('publicMessage').checked});
-    });
+  // } 
+  // //Else if user only tagging selected friends
+  // else {
+  //   chrome.storage.local.set({'public' : ""})
+  //   all = "";
 
-    //Append new comment to html using javascript
-    if (value !== "") {
-      appendComment(user, value, picture, namesString, idsString, all, tagsHtml);
-    }
+  // }
 
+  //Get user name
+  var user = userName.split(" ")[0];
+  //Get string with tagged ids 
+  var idsString = ids.slice();
+  idsString.push(userID.toString());
+  idsString.sort();
+  var idsString = idsString.join('-');
+  //Get string with tagged names
+  names.push(userName);
+  names.sort();
+  var namesString = names.join(', ');
+  var htmlArray = [];
+  for (var i = 0; i < names.length; i++) {
+    htmlArray.push('<a class="dropdown-item" href="#">'+names[i]+'</a>');
   }
+  var tagsHtml = htmlArray.join('');
+  
 
+  //Send all comment data to background page
+  chrome.storage.local.get(['tags', 'public'], function (result) {
+    tags = result['tags'];
+    all = result['public'];
+    chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
+      picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, tagsHtml : tagsHtml, checked : true});
+  });
+
+  //Append new comment to html using javascript
+  if (value !== "") {
+    appendComment(user, value, picture, namesString, idsString, all, tagsHtml);
+  }
 }
+  
+
+
 
 function yippIt(e) {
   
@@ -426,6 +416,13 @@ function yippIt(e) {
   var names = []; //Array of names tagged in comment
   var tags; // String with ids tagged in comment
   var all; // Boolean for whether the comment is for all friends or not
+
+  $('textarea.mention').mentionsInput('val', function(taggedIds) {
+      if(taggedIds){
+        tags = taggedIds;
+        ids = taggedIds;
+      }
+  });
 
   chrome.storage.local.set({'tags': JSON.stringify(ids)});
   chrome.storage.local.set({'public' : true});
@@ -570,6 +567,29 @@ function connect(message) {
           }
           }
         }
+
+        var friendsData = [];
+        for (i=0; i < result.friendsArray.length; i++){
+          friendsData.push({ id:result.friendsArray[i][0], name:result.friendsArray[i][1], 'avatar':result.friendsArray[i][2], 'type':'contact' });
+        }
+
+        $('textarea.mention').mentionsInput({
+          onDataRequest:function (mode, query, callback) {
+            var data = friendsData;
+            // var data = [
+            //   { id:1, name:'Kenneth Auchenberg', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+            //   { id:2, name:'Jon Froda', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+            //   { id:3, name:'Anders Pollas', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+            //   { id:4, name:'Kasper Hulthin', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+            //   { id:5, name:'Andreas Haugstrup', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+            //   { id:6, name:'Pete Lacey', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' }
+            // ];
+
+            data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+
+            callback.call(this, data);
+          }
+        });
 
       });
     // If background is not done loading, keep asking

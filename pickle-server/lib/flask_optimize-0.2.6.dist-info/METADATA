@@ -1,0 +1,23 @@
+Metadata-Version: 2.0
+Name: flask-optimize
+Version: 0.2.6
+Summary: Flask optimization: cache, minify html and gzip response
+Home-page: https://github.com/sunary/flask-optimize
+Author: Sunary [Nhat Vo Van]
+Author-email: v2nhat@gmail.com
+License: MIT
+Keywords: flask,optimize,cache,minify html,gzip
+Platform: any
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Dist: Flask (>=0.10.1)
+Requires-Dist: htmlmin (>=0.1.10)
+
+UNKNOWN
+
+

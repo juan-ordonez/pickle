@@ -4,6 +4,7 @@ from app import db
 import hashlib
 from sqlalchemy.orm import relationship
 from random import randint
+import uuid 
 
 
 
@@ -36,7 +37,7 @@ mentions_table = db.Table('mentions_table', db.Model.metadata,
 feed_table = db.Table('feed_table', db.Model.metadata,
     db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
     db.Column('feed_id', db.String(128), db.ForeignKey('auth_feed.id')),
-    mysql_charset='utf8',
+    
 )
 
 feed_tags_table = db.Table('feed_tags_table', db.Model.metadata,
@@ -45,12 +46,21 @@ feed_tags_table = db.Table('feed_tags_table', db.Model.metadata,
     mysql_charset='utf8',
 )
 
+user_groups_table = db.Table('user_groups_table', db.Model.metadata,
+    db.Column('user_id', db.String(128), db.ForeignKey('auth_user.id')),
+    db.Column('group_id', db.String(128), db.ForeignKey('auth_group.id')),
+    mysql_charset='utf8',
+)
+
+
+
 
 
 
 
 class User(UserMixin, db.Model):
 	__tablename__ = 'auth_user'
+	
 
 	id = db.Column(db.String(128), primary_key=True)
 	name = db.Column(db.String(128))
@@ -81,6 +91,7 @@ class User(UserMixin, db.Model):
 
 class Comment(db.Model):
 	__tablename__ = 'auth_comment'
+	__table_args__ = {'mysql_charset': 'utf8'}
 
 	id = db.Column(db.String(128), primary_key=True)
 	string = db.Column(db.String(256))
@@ -88,6 +99,7 @@ class Comment(db.Model):
 	time = db.Column(db.String(128))
 	public = db.Column(db.Boolean)
 	user_id = db.Column(db.String(128), db.ForeignKey('auth_user.id'))
+	group_id = db.Column(db.String(128), db.ForeignKey('auth_group.id'))
 	numLikes = db.Column(db.Integer)
 
 
@@ -180,6 +192,7 @@ class Feed(db.Model):
 	message = db.Column(db.String(256))
 	url = db.Column(db.String(512))
 	tags = db.relationship("User", secondary=feed_tags_table, lazy='dynamic', backref=db.backref('tagPosts', lazy='dynamic'))
+	group_id = db.Column(db.String(128), db.ForeignKey('auth_group.id'))
 	
 
 
@@ -197,6 +210,24 @@ class Feed(db.Model):
 		unique = poster_id + time + title + image + description + message + url
 		hashed.update(unique.encode('utf-8'))
 		self.id = str(hashed)
+
+
+class Group(db.Model):
+	__tablename__ = 'auth_group'
+	__table_args__ = {'mysql_charset': 'utf8'}
+
+	id = db.Column(db.String(128), primary_key=True)
+	time = db.Column(db.String(128))
+	name = db.Column(db.String(256))
+	users = db.relationship("User", secondary=user_groups_table, lazy='dynamic', backref=db.backref('groups', lazy='dynamic'))
+	posts = db.relationship("Feed", backref="group", lazy='dynamic')
+	comments = db.relationship("Comment", backref="group", lazy='dynamic')
+
+	
+	def __init__(self, name, time):
+		self.name = name
+		self.time = time
+		self.id = str(uuid.uuid4())
 
 
 

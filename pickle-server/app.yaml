@@ -1,6 +1,6 @@
 entrypoint: gunicorn -c gunicorn.conf.py -b :$PORT app:app
 env: flex
-runtime: python
+runtime: custom
 #[START cloudsql_settings]
 beta_settings:
     # If using Cloud SQL, uncomment and set this value to the Cloud SQL
@@ -8,7 +8,7 @@ beta_settings:
     #   "project:region:cloudsql-instance"
     # You must also update the values in config.py.
     #
-    cloud_sql_instances: "pickle-server-183401:us-west1:users-db"
+  cloud_sql_instances: pickle-server-183401:us-west1:users-db
 
 #[END cloudsql_settings]
 

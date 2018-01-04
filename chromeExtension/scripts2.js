@@ -11,6 +11,7 @@ var commentsHTML;
 var notificationsHTML;
 var commentsHTML;
 var postsHTML;
+var groupsHTML;
 
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   
@@ -92,6 +93,34 @@ $(document).on("click", ".userProfile", function(){
   // var profilePic = $(this).attr("id");
   chrome.extension.sendMessage({type : "loadUser", profileID : profileID, profileName : profileName});
   window.location.href = chrome.extension.getURL('userProfile.html');
+});
+
+$(document).on("click", "#createGroupBtn", function(event){ 
+  var name = $('#groupNameInput').val()
+  console.log(name);
+  var ids = [];
+  var users = [];
+  $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+      ids.push(element.id);
+      users.push($(element).parent().text().trim());
+    });
+  console.log(ids);
+  console.log(users);
+
+  chrome.storage.local.get(['userID'], function(data) {
+
+    $.post("http://127.0.0.1:8000/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users)}, function(groupID) {
+      chrome.storage.local.set({"currentGroup" : groupID}, function () {
+        
+        $("body").load("http://127.0.0.1:8000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
+              chrome.storage.local.set({groupsHTML : $("#groups").html()});
+              console.log(groupsHTML);
+              window.location.replace("newsfeed.html");
+          
+            });
+      });
+    });
+  });
 });
 
 //Loading user profiles
@@ -201,9 +230,11 @@ if (window.location.href == chrome.extension.getURL('popup.html')) {
 //Load newsfeed posts
 if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
   $("#posts").hide();
-  chrome.storage.local.get(['postsHTML'], function(result) {
-  postsHTML = result['postsHTML'];
-  if (postsHTML != null) { 
+  chrome.storage.local.get(['currentGroup'], function(result) {
+  var group = result['currentGroup'];
+  if (group != null) { 
+      chrome.storage.local.get([group], function(data) {
+        postsHTML = data[group];
         $("#posts").append(postsHTML);
         $("#posts .postDescription").each(function(){
           var htmlDescriptionNewsfeed = $(this).text();
@@ -211,6 +242,10 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
           $(this).html(htmlDescriptionNewsfeed);
         });
         $("#posts").show();
+
+
+
+      });
       } else {
         $("#posts").html(' ');
       }
@@ -343,7 +378,7 @@ function comment(e) {
   var all; // Boolean for whether the comment is for all friends or not
 
   $('textarea.mention').mentionsInput('val', function(taggedIds) {
-    if(taggedIds){
+    if (jQuery.type(taggedIds)=="array"){
       tags = taggedIds;
       ids = taggedIds;
     }
@@ -418,7 +453,7 @@ function yippIt(e) {
   var all; // Boolean for whether the comment is for all friends or not
 
   $('textarea.mention').mentionsInput('val', function(taggedIds) {
-      if(taggedIds){
+       if(jQuery.type(taggedIds)=="array"){
         tags = taggedIds;
         ids = taggedIds;
       }
@@ -431,6 +466,7 @@ function yippIt(e) {
   var user = userName.split(" ")[0];
   //Get string with tagged ids 
   var idsString = ids.slice();
+  console.log(idsString);
   idsString.push(userID.toString());
   idsString.sort();
   var idsString = idsString.join('-');
@@ -489,10 +525,10 @@ function connect(message) {
     
     //Get data from storage if background is done loading
     if (response.done) {
-      chrome.storage.local.get(['commentsHTML', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
-        'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML', 'profilePostsHTML'], function (result) {
-
-        commentsHTML = result['commentsHTML'];
+      chrome.storage.local.get(['commentsJSON', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
+        'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML', 'profilePostsHTML', 'groupsHTML', 'currentGroup'], function (result) {
+          console.log(result['commentsJSON']);
+        var commentsJSON = result['commentsJSON'];
         userName = result['userName'];
         userEmail = result['userEmail'];
         friendsArray = result['friendsArray'];
@@ -505,8 +541,10 @@ function connect(message) {
         userID = result['userID'];
         postsHTML = result['postsHTML'];
         profilePostsHTML = result['profilePostsHTML'];
-      if (commentsHTML != null) {
-        $("#commentsBody").html(commentsHTML);
+        groupsHTML = result['groupsHTML'];
+        var currentGroup = result['currentGroup'];
+      if (commentsJSON != null) {
+        $("#commentsBody").html(commentsJSON[currentGroup]);
       } else {
         
         $("#commentsBody").html(' ');
@@ -548,6 +586,18 @@ function connect(message) {
         // } else {
         //   $("#posts").html(' ');
         // }
+
+        if (groupsHTML != null) {
+          console.log(groupsHTML);
+          $(".groupsDrawer").html(groupsHTML);
+          chrome.storage.local.get(['currentGroup'], function(data) {
+            var group = $('#' + data['currentGroup']);
+            group.addClass("active");
+            $(".groupTitle").text(group.text());
+          });
+        } else {
+          $(".groupsDrawer").html('<div class="d-flex flex-row flex-nowrap justify-content-between"><small>GROUPS</small><a href="createGroup.html"><i class="far fa-plus-square"></i></a></div>');
+        }
         
         if (friendsHTML != null) {
           $("#friendListCheckboxes").html(friendsHTML);
@@ -635,4 +685,8 @@ function scrollable(container) {
     container.parent().scrollTop(container.parent()[0].scrollHeight);
   }
 }
+
+chrome.storage.local.get(["currentGroup"], function (data) {
+                      console.log(data['currentGroup']);
+});
 

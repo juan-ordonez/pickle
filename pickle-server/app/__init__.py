@@ -60,10 +60,10 @@ def crossdomain(origin=None, methods=None, headers=None,
 
 # Configurations
 app.config.from_object('config')
+app.jinja_env.cache = {}
 # Define the database object which is imported
 # by modules and controllers
 db = SQLAlchemy(app)
-
 
 
 # Sample HTTP error handling

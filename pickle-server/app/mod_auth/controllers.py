@@ -20,9 +20,10 @@ import operator
 from app.mod_auth.forms import LoginForm, RegistrationForm, RemoveForm
 
 # Import module models (i.e. User)
-from app.mod_auth.models import User, Comment, Session, tags_table, Notification, URL, Feed
+from app.mod_auth.models import User, Comment, Session, tags_table, Notification, URL, Feed, Group
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, user_logged_in, current_user
+from flask_optimize import FlaskOptimize
 
 from run import login_manager
 
@@ -58,6 +59,8 @@ google_places_access_token = 'AIzaSyAokrPlw45fd-jNzarVz09OPNVXRB2kdTg'
 
 mod_auth = Blueprint('auth', __name__, url_prefix='')
 
+flask_optimize = FlaskOptimize()
+
 
 instaConfig = {
 
@@ -70,6 +73,7 @@ api = InstagramAPI(**instaConfig)
 
 @mod_auth.route('/login/', methods=['GET', 'POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def login():
     return render_template('auth/login.html')
 
@@ -99,6 +103,7 @@ def check():
 #Registration controller
 @mod_auth.route('/register/', methods=['POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize('json')
 def register():
     data = json.loads(request.form['json'])
 
@@ -158,6 +163,7 @@ def register():
 
 @mod_auth.route('/user/<cookie>', methods=['GET'])
 @crossdomain(origin='*')
+@flask_optimize.optimize('json')
 def user(cookie):
     session = Session.query.filter_by(cookie=cookie).first()
     if not session:
@@ -166,13 +172,17 @@ def user(cookie):
 
     user = User.query.filter_by(id=session.id).first()
 
+    groups = []
+    for group in user.groups:
+        groups.append(group.id)
+
     
 
     friends = []
     for friend in session.friends:
         friends.append((friend.id, friend.name, friend.picture))
     
-    return json.dumps({"status" : True, "name" : session.name, "friends" : friends, "email" : session.email, "updated" : user.updated, "id" : session.id, "picture" : user.picture, "notifications" : user.numNotifications})
+    return json.dumps({"status" : True, "name" : session.name, "friends" : friends, "email" : session.email, "updated" : user.updated, "id" : session.id, "picture" : user.picture, "notifications" : user.numNotifications, "groups" : groups})
 
 
 @mod_auth.route('/logout/<cookie>', methods=['GET'])
@@ -187,6 +197,7 @@ def logout(cookie):
 
 @mod_auth.route('/comment/', methods=['POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize('json')
 def comment():
     url = canonical(request.form['url'])
     comment = Comment(request.form['string'], url, str(datetime.now()))
@@ -198,6 +209,7 @@ def comment():
     tags = ast.literal_eval(str(request.form['tags']))
     comment.mentions.append(user)
     posts = set([])
+
 
     if not comment.public:
         for tag in tags:
@@ -214,6 +226,16 @@ def comment():
             db.session.add(feed)
         else:
             feed = None
+
+
+
+        #if comment is in a group, add it to group, if it is in general group, proceed as normal
+        groupId = request.form['groupID']
+        if groupId != "general":
+            group = Group.query.filter_by(id=groupId).first()
+            group.comments.append(comment)
+            if feed:
+                group.posts.append(feed)
         
         #Add post and comment to user
         user.commentsTaggedIn.append(comment)
@@ -272,6 +294,7 @@ def comment():
 
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize('json')
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
     url = request.form['url']
@@ -281,59 +304,67 @@ def loadComment():
     for session in user.friendSession:
         if session.authToken:
             friends.add(session.id)
-    
+    jsonData = {}
+    groups = [("general", user.commentsTaggedIn)]
+    for group in user.groups:
+        groups.append((group.id, group.comments))
 
-    comments = []
-    #For each comment that the user has been tagged on
-    for comment in user.commentsTaggedIn.filter_by(url=url):
-        # If the url of the comment matches the current url that the user is on
-        # if comment.url == url:
-            #Get names and IDs of all user's friends also tagged in the comment
-        tagNames = []
-        tagIds = []
+    for group in groups:
+        comments = []
+        #For each comment that the user has been tagged on
+        for comment in group[1].filter_by(url=url):
+            # If the url of the comment matches the current url that the user is on
+            # if comment.url == url:
+                #Get names and IDs of all user's friends also tagged in the comment
+            tagNames = []
+            tagIds = []
 
 
-        if comment.mentions.count() > 0:
+            if comment.mentions.count() > 0:
 
-            for tag in comment.mentions:
-                tagNames.append(tag.name)
-                tagIds.append(tag.id)
-            # if user.id not in tagIds:
-            #     tagNames.append(user.name)
-            #     tagIds.append(user.id)
-        else:
-            for tag in comment.usersTagged:
-                if tag.id in friends or tag.id == user.id:
+                for tag in comment.mentions:
                     tagNames.append(tag.name)
                     tagIds.append(tag.id)
+                # if user.id not in tagIds:
+                #     tagNames.append(user.name)
+                #     tagIds.append(user.id)
+            else:
+                for tag in comment.usersTagged:
+                    if tag.id in friends or tag.id == user.id:
+                        tagNames.append(tag.name)
+                        tagIds.append(tag.id)
 
-        tags =[]
-        for i in range(0, len(tagNames)):
-            tags.append([tagIds[i], tagNames[i]])
+            tags =[]
+            for i in range(0, len(tagNames)):
+                tags.append([tagIds[i], tagNames[i]])
 
-        #Convert list of friends tagged into string
-        tagNamesString = '@' + ', @'.join(sorted(tagNames))
-        tagIdsString = '-'.join(sorted(tagIds))
-        if not comment.public:
-            css = "private"
-        else:
-            css="";
-        #Append data of comment to comments array
-        comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, tags, user in comment.likers, comment.user.id, tagIds))
+            #Convert list of friends tagged into string
+            tagNamesString = '@' + ', @'.join(sorted(tagNames))
+            tagIdsString = '-'.join(sorted(tagIds))
+            if not comment.public:
+                css = "private"
+            else:
+                css="";
+            #Append data of comment to comments array
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, tags, user in comment.likers, comment.user.id, tagIds))
 
-    comments = sorted(comments, reverse=False, key=lambda c : c[2])
+        comments = sorted(comments, reverse=False, key=lambda c : c[2])
 
-    templateData = {
-        
-        'comments' : comments
-        
-    }
+        templateData = {
+            
+            'comments' : comments
+            
+        }
 
-    return render_template('auth/popup.html', **templateData)
+
+        jsonData[group[0]] = render_template('auth/popup.html', **templateData)
+
+    return json.dumps(jsonData)
 
 
 @mod_auth.route('/like/', methods=['POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def like():
     comment = Comment.query.filter_by(id=request.form['commentID']).first()
     user = User.query.filter_by(id=request.form['userID']).first()
@@ -345,6 +376,7 @@ def like():
 
 @mod_auth.route('/unlike/', methods=['POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def unlike():
     comment = Comment.query.filter_by(id=request.form['commentID']).first()
     user = User.query.filter_by(id=request.form['userID']).first()
@@ -356,6 +388,7 @@ def unlike():
 
 @mod_auth.route('/token/', methods=['POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def token():
     session = Session.query.filter_by(cookie=request.form['session']).first()
     if session:
@@ -368,6 +401,7 @@ def token():
 
 @mod_auth.route('/friendsarray/<user>', methods=['GET'])
 @crossdomain(origin='*')
+@flask_optimize.optimize('json')
 def friends(user):
     friends = set([])
     user = User.query.filter_by(id=user).first()
@@ -381,6 +415,7 @@ def friends(user):
 
 @mod_auth.route('/domainComments', methods=['GET', 'POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def domain():
     comments = {}
     user = User.query.filter_by(id=request.form['user']).first()
@@ -412,6 +447,7 @@ def domain():
 
 @mod_auth.route('/commentUser/<id>', methods=['GET'])
 @crossdomain(origin='*')
+@flask_optimize.optimize('json')
 def commentUser(id):
     info = {}
     comment = Comment.query.filter_by(id=id).first()
@@ -431,6 +467,7 @@ def commentUser(id):
 
 @mod_auth.route('/notification/', methods=['GET','POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def notification():
     
     cookies = ast.literal_eval(str(request.form['cookies']))
@@ -458,6 +495,7 @@ def notification():
 
 @mod_auth.route('/loadnotifications/', methods=['GET','POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def loadnotifications():
     notifications = []
     user = User.query.filter_by(id=request.form['id']).first()
@@ -475,6 +513,7 @@ def loadnotifications():
 
 @mod_auth.route('/reset', methods=['POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def reset():
     user = User.query.filter_by(id=request.form['id']).first()
     user.numNotifications = 0
@@ -484,6 +523,7 @@ def reset():
 
 @mod_auth.route('/friends/', methods=['GET','POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def friendsList():
     friends = []
     user = User.query.filter_by(id=request.form['id']).first()
@@ -501,6 +541,7 @@ def friendsList():
 
 @mod_auth.route('/friendstokens/', methods=['GET','POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize('json')
 def friendsTokens():
     friends = set([])
     ids = ast.literal_eval(str(request.form['friends']))
@@ -517,6 +558,7 @@ def friendsTokens():
 
 @mod_auth.route('/canonicalize/', methods=['POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def canonicalize():
     url = request.form['url']
     url = canonical(url)
@@ -528,6 +570,7 @@ def canonicalize():
 
 @mod_auth.route('/history/', methods=['POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def history():
     url = canonical(request.form['url'])
     userID = request.form['user']
@@ -550,11 +593,18 @@ def history():
 
 @mod_auth.route('/loadPosts/', methods=['GET','POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def loadPosts():
     posts = []
     user = User.query.filter_by(id=request.form['id']).first()
+    groupID = request.form['groupID']
+    if groupID == "general":
+        print("THE GENERAL")
+        groupFeed = user.newsfeed
+    else:
+        groupFeed = Group.query.filter_by(id=groupID).first().posts      
     
-    for post in user.newsfeed:
+    for post in groupFeed:
         parsed_uri = urlparse(post.url)
         domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
         poster = User.query.filter_by(id=post.poster_id).first()
@@ -592,6 +642,7 @@ def loadPosts():
 
 @mod_auth.route('/loadPostsProfile/', methods=['GET','POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def loadPostsProfile():
     posts = []
     user = User.query.filter_by(id=request.form['id']).first()
@@ -634,6 +685,7 @@ def loadPostsProfile():
 
 @mod_auth.route('/loadPostsUser/', methods=['GET','POST'])
 @crossdomain(origin='*')
+@flask_optimize.optimize()
 def loadPostsUser():
     profile = User.query.filter_by(id=request.form['profileID']).first()
     posts = []
@@ -676,6 +728,60 @@ def loadPostsUser():
     }
     return render_template('auth/userProfile.html', **templateData)
 
+@mod_auth.route('/createGroup/', methods=['POST', 'GET'])
+@crossdomain(origin='*')
+@flask_optimize.optimize()
+def createGroup():
+
+    name = request.form['name']
+    group = Group(name, str(datetime.now()))
+    users = ast.literal_eval(str(request.form['users']))
+    if not name:
+        group.name = ",".join(users)
+    db.session.add(group)
+
+    friends = ast.literal_eval(str(request.form['ids']))
+    for friend in friends:
+        user = User.query.filter_by(id=friend).first()
+        group.users.append(user)
+    user = User.query.filter_by(id=request.form['id']).first()
+    group.users.append(user)
+    db.session.commit()
+
+    return group.id
+
+
+@mod_auth.route('/groupNames/', methods=['GET','POST'])
+@crossdomain(origin='*')
+@flask_optimize.optimize()
+def groupNames():
+    groups = []
+    user = User.query.filter_by(id=request.form['id']).first()
+    for group in user.groups:
+        print(group.name) 
+        groups.append((group.id, group.name))
+    templateData = {
+        'groups' : groups
+    }
+
+    return render_template('auth/groups.html', **templateData)
+
+
+@mod_auth.route('/getGroups/', methods=['GET','POST'])
+@crossdomain(origin='*')
+@flask_optimize.optimize('json')
+def getGroups():
+    groups = []
+    user = User.query.filter_by(id=request.form['id']).first()
+    for group in user.groups: 
+        groups.append(group.id)
+
+    return json.dumps(list(groups))
+
+
+    
+
+    
 
 
 

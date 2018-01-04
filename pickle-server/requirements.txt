@@ -28,3 +28,4 @@ js2py==0.50
 selenium==3.6.0
 lxml==3.7.3
 metadata_parser==0.9.14
+flask_optimize==0.2.6

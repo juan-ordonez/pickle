@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+
+<div id="groups">
+	<div class="d-flex flex-row flex-nowrap justify-content-between">
+                <small>GROUPS</small>
+                <a href="createGroup.html"><i class="far fa-plus-square"></i></a>
+            </div>
+
+    <a class="nav-link drawerLink" href="#" id="general"># General</a>
+    {% for i in groups %}
+  	<a class="nav-link drawerLink" href="#" id={{i[0]}}># {{i[1]}}</a>
+	{% endfor %}
+</div>
+</body>
+
+</html>

@@ -85,7 +85,7 @@ if (window.location.href == chrome.extension.getURL('popup.html') || window.loca
 	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 		var activeTab = arrayOfTabs[0];
 		pageTitle = activeTab.title;
-		$("#topNav h1").text(pageTitle.trimToLength(34));
+		$("#topNav h1").text(pageTitle.trimToLength(32));
 	});
 
 	//Scroll to bottom of chat page each time popup is opened

@@ -327,73 +327,69 @@ function comment(e) {
   e.preventDefault();
 
   //Get string of comment submitted by user
-  var value = $("#newComment").val();
-
-  //Get the url and title of the page on which the comment is being posted
-  // chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
-  //   var activeTab = arrayOfTabs[0];
-  //   url = activeTab.url;
-  //   pageTitle = activeTab.title;
-  // });   
-
-  //Get the following comment data
-  ids = []; //Array of ids tagged in comment
-  names = []; //Array of names tagged in comment
-  var tags; // String with ids tagged in comment
-  var all; // Boolean for whether the comment is for all friends or not
-
-  $('textarea.mention').mentionsInput('val', function(taggedIds) {
-    if(taggedIds){
-      tags = taggedIds;
-      ids = taggedIds;
-    }
-  });
-
-  chrome.storage.local.set({'tags': JSON.stringify(ids)});
-  chrome.storage.local.set({'public' : true});
-  all = true;
-
-  // if (document.getElementById('publicMessage').checked) {
-    
-  //   chrome.storage.local.set({'public' : true});
-  //   all = true;
-
-  // } 
-  // //Else if user only tagging selected friends
-  // else {
-  //   chrome.storage.local.set({'public' : ""})
-  //   all = "";
-
-  // }
-
-  //Get user name
-  var user = userName.split(" ")[0];
-  //Get string with tagged ids 
-  var idsString = ids.slice();
-  idsString.push(userID.toString());
-  idsString.sort();
-  var idsString = idsString.join('-');
-  //Get string with tagged names
-  names.push(userName);
-  names.sort();
-  var namesString = names.join(', ');
-  var htmlArray = [];
-  for (var i = 0; i < names.length; i++) {
-    htmlArray.push('<a class="dropdown-item" href="#">'+names[i]+'</a>');
-  }
-  var tagsHtml = htmlArray.join('');
+  var value = $("#newComment").val(); 
   
-
-  //Send all comment data to background page
-  chrome.storage.local.get(['tags', 'public'], function (result) {
-    tags = result['tags'];
-    all = result['public'];
-    chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
-      picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, tagsHtml : tagsHtml, checked : true});
-  });
-
   //Append new comment to html using javascript
-  if (value !== "") {
+  if (value) {
+
+    //Get the following comment data
+    ids = []; //Array of ids tagged in comment
+    names = []; //Array of names tagged in comment
+    var tags; // String with ids tagged in comment
+    var all; // Boolean for whether the comment is for all friends or not
+
+    $('textarea.mention').mentionsInput('val', function(taggedIds) {
+      if(jQuery.type(taggedIds)=="array"){
+        console.log(taggedIds);
+        tags = taggedIds;
+        ids = taggedIds;
+      }
+    });
+
+    chrome.storage.local.set({'tags': JSON.stringify(ids)});
+    chrome.storage.local.set({'public' : true});
+    all = true;
+
+    // if (document.getElementById('publicMessage').checked) {
+      
+    //   chrome.storage.local.set({'public' : true});
+    //   all = true;
+
+    // } 
+    // //Else if user only tagging selected friends
+    // else {
+    //   chrome.storage.local.set({'public' : ""})
+    //   all = "";
+
+    // }
+
+    //Get user name
+    var user = userName.split(" ")[0];
+    //Get string with tagged ids 
+    var idsString = ids.slice();
+    idsString.push(userID.toString());
+    idsString.sort();
+    var idsString = idsString.join('-');
+    //Get string with tagged names
+    names.push(userName);
+    names.sort();
+    var namesString = names.join(', ');
+    var htmlArray = [];
+    for (var i = 0; i < names.length; i++) {
+      htmlArray.push('<a class="dropdown-item" href="#">'+names[i]+'</a>');
+    }
+    var tagsHtml = htmlArray.join('');
+    
+
+    //Send all comment data to background page
+    chrome.storage.local.get(['tags', 'public'], function (result) {
+      tags = result['tags'];
+      all = result['public'];
+      chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
+        picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, tagsHtml : tagsHtml, checked : true});
+    });
+
+    //Append comment to current window
     appendComment(user, value, picture, namesString, idsString, all, tagsHtml);
   }
 }

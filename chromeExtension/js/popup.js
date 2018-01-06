@@ -35,9 +35,10 @@ if (window.location.href == chrome.extension.getURL("userProfile.html")) {
 
 //Populate group details page
 if (window.location.href == chrome.extension.getURL("groupDetails.html")) {
-	chrome.storage.local.get(["previousPage", "previousUrl"], function(result){
+	chrome.storage.local.get(["previousPage", "previousUrl", "currentGroupName"], function(result){
 	 	$("#"+result.previousPage).addClass("active");
 	 	$(".backBtn").prop("href", result.previousUrl);
+	 	$(".currentGroupLabel").text(result.currentGroupName);
 	});
 	 
 }

@@ -95,9 +95,11 @@ $(document).on("click", ".userProfile", function(){
   window.location.href = chrome.extension.getURL('userProfile.html');
 });
 
+//Clicking on group details
 $(document).on("click", ".groupDetailsBtn", function(){
   var previousPage = $("#bottomNav .active").attr('id');
-  chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href});
+  var currentGroupName = $(".drawer .active").text();
+  chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href, "currentGroupName" : currentGroupName});
 });
 
 $(document).on("click", "#createGroupBtn", function(event){ 

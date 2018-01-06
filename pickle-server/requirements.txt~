@@ -27,4 +27,4 @@ BeautifulSoup==3.2.1
 js2py==0.50
 selenium==3.6.0
 lxml==3.7.3
-metadata_parser=0.9.14
+metadata_parser==0.9.14

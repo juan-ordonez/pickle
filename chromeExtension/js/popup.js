@@ -34,7 +34,11 @@ if (window.location.href == chrome.extension.getURL("userProfile.html")) {
 }
 
 if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.location.href == chrome.extension.getURL("popup.html")) {
-	
+	if (window.location.href == chrome.extension.getURL("newsfeed.html")) {
+		var newsfeed = true;
+	} else {
+		var newsfeed = false;
+	}
 	//Autosize textarea for new comments
 	autosize($('#newComment'));
 
@@ -56,7 +60,18 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
 		$(".drawerLink").removeClass("active");
 		$(this).addClass("active");
 		$(".groupTitle").text($(this).text());
+		var id = $(this)[0].id;
+		chrome.storage.local.set({"currentGroup" : id}, function () {
+			console.log(id);
+
+		});
+		console.log(window.location.href);
 		toggleDrawer();
+		if (newsfeed) {
+			window.location.replace("newsfeed.html");
+		} else {
+			window.location.replace("popup.html");
+		}
 	});
 
 }

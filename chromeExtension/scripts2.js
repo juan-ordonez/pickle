@@ -199,7 +199,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
     if (commentUrl == url && comment != 'like') {
 
-      appendComment(user, comment, profilePic, namesString, idsString, all, tagsHtml);
+      appendComment(user, comment, profilePic, all);
       //Hide the new comment if the user is in inside another group conversation
       if ($("#topNav").hasClass("replying") || $("#topNav").hasClass("replyingPrivate") ) {
         if ($(".temporaryComment").last().attr("class").split(' ')[1] !== $(".commentGroup").not(".hiddenComment").attr("class").split(' ')[1]) {
@@ -385,6 +385,7 @@ function comment(e) {
         console.log(taggedIds);
         tags = taggedIds;
         ids = taggedIds;
+        $(".mentions div").empty();
       }
     });
 
@@ -407,32 +408,17 @@ function comment(e) {
 
     //Get user name
     var user = userName.split(" ")[0];
-    //Get string with tagged ids 
-    var idsString = ids.slice();
-    idsString.push(userID.toString());
-    idsString.sort();
-    var idsString = idsString.join('-');
-    //Get string with tagged names
-    names.push(userName);
-    names.sort();
-    var namesString = names.join(', ');
-    var htmlArray = [];
-    for (var i = 0; i < names.length; i++) {
-      htmlArray.push('<a class="dropdown-item" href="#">'+names[i]+'</a>');
-    }
-    var tagsHtml = htmlArray.join('');
-    
 
     //Send all comment data to background page
     chrome.storage.local.get(['tags', 'public'], function (result) {
       tags = result['tags'];
       all = result['public'];
       chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
-        picture : picture, pageTitle : pageTitle, names : namesString, ids : idsString, tagsHtml : tagsHtml, checked : true});
+        picture : picture, pageTitle : pageTitle, checked : true});
     });
 
     //Append comment to current window
-    appendComment(user, value, picture, namesString, idsString, all, tagsHtml);
+    appendComment(user, value, picture, all);
   }
 }
   
@@ -459,6 +445,7 @@ function yippIt(e) {
        if(jQuery.type(taggedIds)=="array"){
         tags = taggedIds;
         ids = taggedIds;
+        $(".mentions div").empty();
       }
   });
 
@@ -530,7 +517,7 @@ function connect(message) {
     if (response.done) {
       chrome.storage.local.get(['commentsJSON', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
         'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML', 'profilePostsHTML', 'groupsHTML', 'currentGroup'], function (result) {
-          console.log(result['commentsJSON']);
+        // console.log(result['commentsJSON']);
         var commentsJSON = result['commentsJSON'];
         userName = result['userName'];
         userEmail = result['userEmail'];
@@ -591,7 +578,7 @@ function connect(message) {
         // }
 
         if (groupsHTML != null) {
-          console.log(groupsHTML);
+          // console.log(groupsHTML);
           $(".groupsDrawer").html(groupsHTML);
           chrome.storage.local.get(['currentGroup'], function(data) {
             var group = $('#' + data['currentGroup']);
@@ -655,7 +642,7 @@ function connect(message) {
 }
 
 //Append html of new comment to body of existing comments
-function appendComment(user, value, picture, names, ids, all, tagsHtml) {
+function appendComment(user, value, picture, all) {
   //create css class for private comments
   var css = "";
   var tagsIcon = "fa-tag";
@@ -663,7 +650,7 @@ function appendComment(user, value, picture, names, ids, all, tagsHtml) {
     css = "private";
     tagsIcon = "fa-user-secret";
   }
-  $("#commentsBody").append('<div class="commentGroup '+ids+' temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble '+css+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><div class="commentDetails d-flex justify-content-start align-items-center"><a class="replyBtn mb-0" href="#"><small>Reply</small></a><small class="ml-1 mr-1 mb-0">•</small><div class="tagsDropdown dropdown show"><a href="#" class="btn mb-0 tagsToggle" role="button" id="tags-temporary" "="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><small><i class="fa '+tagsIcon+'"></i></small></a><div class="dropdown-menu" aria-labelledby="tagsToggle-temporary"><p class="mr-3 ml-3 mb-0"><small><strong>Tags</strong></small></p>'+tagsHtml+'</div></div><small class="ml-1 mr-1 mb-0">• Now</small></div><p style="display:none;">'+names+'</p></div>');
+  $("#commentsBody").append('<div class="commentGroup temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble '+css+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><div class="commentDetails d-flex justify-content-start align-items-center"><small class="mb-0">Now</small></div></div>');
   //Show reply button if user is not in reply mode
   if ($("#topNav").hasClass("replying") || $("#topNav").hasClass("replyingPrivate")) {
     $(".commentDetails").children().hide();

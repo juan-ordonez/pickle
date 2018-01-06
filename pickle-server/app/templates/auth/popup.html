@@ -1,19 +1,19 @@
 
     <div id="comments">
     {% for i in comments %}
-        <div class="commentGroup {{i[6]}}" id={{i[5]}}>
+        <div class="commentGroup" id={{i[5]}}>
             <div class="d-flex flex-nowrap align-items-center">
                 <div class="thumbnail align-self-start">
-                    <a class="userProfile" href="#" id="{{i[12]}}">
+                    <a class="userProfile" href="#" id="{{i[8]}}">
                         <p style="display:none;">{{i[3]}}</p>
                         <img src={{i[4]}}>
                     </a>
                 </div>
-                <div class="chatBubble {{i[9]}}">
-                    <a id="{{i[12]}}" class="userProfile" href="#"><strong>{{i[3]}}</strong></a> {{i[0]}} 
+                <div class="chatBubble">
+                    <a id="{{i[8]}}" class="userProfile" href="#"><strong>{{i[3]}}</strong></a> {{i[0]}} 
                 </div>
                 <div class="likeButton">
-                    {% if i[11] %}
+                    {% if i[7] %}
                     <a href="#" class="active"><i class="fa fa-heart"></i> {{i[1]}}</a>
                     {% else %}
                     <a href="#"><i class="fa fa-heart"></i> {{i[1]}}</a>
@@ -21,26 +21,8 @@
                 </div>
             </div>
             <div class="commentDetails d-flex justify-content-start align-items-center">
-                <a class="replyBtn mb-0" href="#"><small>Reply</small></a>
-                <small class="ml-1 mr-1 mb-0">•</small>
-
-                <div class="tagsDropdown dropdown show">    
-                    {% if i[9] %}
-                    <a href="#" class="btn mb-0 tagsToggle" role="button" id="tags-{{i[5]}}"" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false""><small><i class="fa fa-user-secret"></i></small></a>
-                    {% else %}
-                    <a href="#" class="btn mb-0 tagsToggle" role="button" id="tagsToggle-{{i[5]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><small><i class="fa fa-tag"></i></small></a>
-                    {% endif %}
-                    <div class="dropdown-menu" aria-labelledby="tagsToggle-{{i[5]}}">
-                        <p class="mr-3 ml-3 mb-0"><small><strong>Tags</strong></small></p>
-                        {% for j in i[10] %}
-                        <a class="dropdown-item userProfile" href="#" id="{{j[0]}}">{{j[1]}}</a>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <p class="ml-1 mb-0"><small>• {{i[8]}}</small></p>
+                <p class="mb-0"><small>{{i[6]}}</small></p>
             </div>
-            <p style="display: none;">{{i[7]}}</p>
         </div>
     {% endfor %}
 </div>

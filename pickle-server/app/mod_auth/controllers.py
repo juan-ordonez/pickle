@@ -313,40 +313,9 @@ def loadComment():
         comments = []
         #For each comment that the user has been tagged on
         for comment in group[1].filter_by(url=url):
-            # If the url of the comment matches the current url that the user is on
-            # if comment.url == url:
-                #Get names and IDs of all user's friends also tagged in the comment
-            tagNames = []
-            tagIds = []
 
-
-            if comment.mentions.count() > 0:
-
-                for tag in comment.mentions:
-                    tagNames.append(tag.name)
-                    tagIds.append(tag.id)
-                # if user.id not in tagIds:
-                #     tagNames.append(user.name)
-                #     tagIds.append(user.id)
-            else:
-                for tag in comment.usersTagged:
-                    if tag.id in friends or tag.id == user.id:
-                        tagNames.append(tag.name)
-                        tagIds.append(tag.id)
-
-            tags =[]
-            for i in range(0, len(tagNames)):
-                tags.append([tagIds[i], tagNames[i]])
-
-            #Convert list of friends tagged into string
-            tagNamesString = '@' + ', @'.join(sorted(tagNames))
-            tagIdsString = '-'.join(sorted(tagIds))
-            if not comment.public:
-                css = "private"
-            else:
-                css="";
             #Append data of comment to comments array
-            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), tagIdsString, tagNamesString, getTimeLabel(comment.time), css, tags, user in comment.likers, comment.user.id, tagIds))
+            comments.append((comment.string, comment.numLikes, comment.time, comment.user.name.split(" ")[0], comment.user.picture, urllib.quote(comment.id), getTimeLabel(comment.time), user in comment.likers, comment.user.id))
 
         comments = sorted(comments, reverse=False, key=lambda c : c[2])
 

@@ -380,6 +380,8 @@ button:active {
 
 .commentDetails {
 	color:#9E9E9E;
+	padding-left: 56px;
+	padding-right: 56px;
 }
 
 .commentDetails i {

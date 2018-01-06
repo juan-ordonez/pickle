@@ -87,7 +87,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
                console.log("updating profile");
             });
 
-            $.post("http://127.0.0.1:8000/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
+            $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
                var json = {};
                json[groupID] = groupsHTML;
                chrome.storage.local.set(json);
@@ -97,7 +97,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
       }
 
           if (type == "post") {
-              $.post("http://127.0.0.1:8000/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
+              $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
                var json = {};
                json[groupID] = groupsHTML;
                chrome.storage.local.set(json);
@@ -191,8 +191,7 @@ function getUserData() {
     
     session = data['accessToken'];
     
-    $.get("http://127.0.0.1:8000/user/" + session, function(data) {
-      console.log(data);
+    $.get("http://localhost:5000/user/" + session, function(data) {
       var json = JSON.parse(data);
       if (json.status == false) {
         chrome.browserAction.setPopup({popup : "register.html"});
@@ -241,8 +240,7 @@ function getUserData() {
                 d3 = $.Deferred();
             
 
-            $.post("http://127.0.0.1:8000/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
-              console.log(data);
+            $.post("http://localhost:5000/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
               var groupsComments = JSON.parse(data);
               commentsJSON = groupsComments;
               d1.resolve();
@@ -257,7 +255,7 @@ function getUserData() {
               d2.resolve();
             });
 
-            $("body").load("http://127.0.0.1:8000/groupNames/ #groups", {"id" : userID.toString()}, function () {
+            $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : userID.toString()}, function () {
               groupsHTML = $("#groups").html();
               d3.resolve();
             });
@@ -328,7 +326,7 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) { 
 
     if (request.type == "comment") {
-      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.names, request.ids, request.checked, request.tagsHtml);
+      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.checked);
       done = false;
 
     } 
@@ -421,26 +419,24 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                 picture = api.picture.data.url;
                 $.post('https://pickle-server-183401.appspot.com/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray, "picture" : picture, "authToken" : accessToken})}, function() {
 
-                  $.post("http://127.0.0.1:8000/getGroups/", {"id" : userID.toString()}, function(array) {
+                  $.post("http://localhost:5000/getGroups/", {"id" : userID.toString()}, function(array) {
                     var groupsIDs = JSON.parse(array);
                     groupsIDs.forEach(function(element) {
                       console.log(element);
 
 
-                      $.post("http://127.0.0.1:8000/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
+                      $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
 
-                        console.log(data);
-
-                   var json = {};
-                   json[element] = data;
-                  chrome.storage.local.set(json);
+                      var json = {};
+                      json[element] = data;
+                      chrome.storage.local.set(json);
 
               
             });
 
                     });
 
-                     $.post("http://127.0.0.1:8000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {
+                     $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {
                     
                   chrome.storage.local.set({"general" : data});
                     chrome.extension.sendMessage({handshake:"login"});
@@ -463,7 +459,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
               
             });
 
-                  $("body").load("http://127.0.0.1:8000/groupNames/ #groups", {"id" : userID.toString()}, function () {
+                  $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : userID.toString()}, function () {
                     groupsHTML = $("#groups").html();
               
                   });
@@ -497,7 +493,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
 
 
-function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, checked, tagsHtml) {
+function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
 
   var d1 = $.Deferred();
   var storage = chrome.storage.local.get(['accessToken'], function(data) {
@@ -551,7 +547,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
   $.when(d1).done(function () {
     chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription', 'currentGroup'], function(store) {
 
-      var comPost = $.post('http://127.0.0.1:8000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+      var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : store['currentGroup']}, function(data) {
           var feeds = JSON.parse(JSON.parse(data)[1]);
           data = JSON.parse(JSON.parse(data)[0]);
@@ -567,19 +563,21 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
           var d1 = $.Deferred(),
                 d2 = $.Deferred();
           var currentGroup = store['currentGroup'];
-          $("body").load("http://127.0.0.1:8000/loadPosts/ #posts", {"id" : userID.toString(), "groupID" : currentGroup}, function () {
-          var json = {};
-          json[currentGroup] = $("#posts").html();
-          chrome.storage.local.set(json);
-           d1.resolve();
+
+          $("body").load("http://localhost:5000/loadPosts/ #posts", {"id" : userID.toString(), "groupID" : currentGroup}, function () {
+            var json = {};
+            json[currentGroup] = $("#posts").html();
+            chrome.storage.local.set(json);
+            console.log("group newsfeed updated");
+            d1.resolve();
           });
 
-          $.post("http://127.0.0.1:8000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (html) {
-          var json = {};
-          json["general"] = html;
-          chrome.storage.local.set(json);
-          d2.resolve();
-           
+          $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (html) {
+            var json = {};
+            json["general"] = html;
+            chrome.storage.local.set(json);
+            console.log("general newsfeed updated");
+            d2.resolve();          
           });
 
           $.when(d1,d2).done(function() {
@@ -593,7 +591,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
           if (checked) {
             var array = data.slice();
             console.log("PUBLIC");
-            var json = JSON.stringify({"data" : {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids, "tagsHtml" : tagsHtml, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
+            var json = JSON.stringify({"data" : {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
           
             $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
               // console.log("notify", data, json);
@@ -605,7 +603,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, names, ids, 
             console.log("SECRET");
             var array = data.slice();
             
-            var json = JSON.stringify({"data": {"status" : "sent you a secret message on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "names" : names, "ids" : ids, "tagsHtml" : tagsHtml, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
+            var json = JSON.stringify({"data": {"status" : "sent you a secret message on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
             $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "sent you a secret message on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
               notify(data, json);
             });

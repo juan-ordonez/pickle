@@ -95,6 +95,11 @@ $(document).on("click", ".userProfile", function(){
   window.location.href = chrome.extension.getURL('userProfile.html');
 });
 
+$(document).on("click", ".groupDetailsBtn", function(){
+  var previousPage = $("#bottomNav .active").attr('id');
+  chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href});
+});
+
 $(document).on("click", "#createGroupBtn", function(event){ 
   var name = $('#groupNameInput').val()
   console.log(name);
@@ -683,6 +688,6 @@ function scrollable(container) {
 }
 
 chrome.storage.local.get(["currentGroup"], function (data) {
-                      console.log(data['currentGroup']);
+  console.log(data['currentGroup']);
 });
 

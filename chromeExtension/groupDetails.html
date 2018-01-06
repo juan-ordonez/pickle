@@ -1,0 +1,114 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+
+  <head>
+
+    <title>Yipp User Profile</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link href="https://use.fontawesome.com/releases/v5.0.0/css/all.css" rel="stylesheet">
+    <!-- Waves CSS -->
+    <link href="css/waves.min.css" rel="stylesheet">
+    <!-- Custome Styles CSS -->
+    <link href="css/style.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- Top navigation bar -->
+    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center pr-3 pl-3">
+      <!-- dummy anchor to prevent autofocus-->
+      <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
+      <div>
+        <a href="#" class="backBtn"><i class="fas fa-arrow-left mr-3"></i></a>
+        <h1 class="navbar-brand">Group details</h1>
+      </div>
+    </nav>
+
+    <!-- Bottom navigation bar -->
+    <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
+      <div class="d-flex justify-content-between" style="width: 375px;">
+        <a class="nav-link" href="newsfeed.html" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
+        <!-- <a class="nav-link" href="popup.html" id="commentsNav"><i class="fa fa-comment fa-lg"></i></a> -->
+        <a class="nav-link" href="notifications.html" id="notificationsNav"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
+        <a class="nav-link" href="account.html" id="accountNav"><i class="fa fa-user-circle fa-lg"></i></a>
+        <div id="notificationBadge">
+          <span class="badge badge-primary" id="numNotifications"></span>
+        </div>
+      </div> 
+    </nav> 
+
+    <div class="container">
+
+      <h1 class=mb-3># General</h1>
+
+      <div class="card pt-2 pb-2 groupMembersCard">
+        <small class="mb-2 pl-3 pr-3">Members</small>
+
+        <a href="#" class="groupMember d-flex justify-content-start align-items-center">
+          <div class="thumbnail mr-3">
+            <img src="https://scontent.xx.fbcdn.net/v/t1.0-1/c4.0.50.50/p50x50/16113996_10154442269603655_2333710094948453706_n.jpg?oh=3c802da5d71f76cf2f30238ec24ea967&oe=5A64A3C0">
+          </div>
+          Juan Ordonez
+        </a>
+
+        <a href="#" class="groupMember d-flex justify-content-start align-items-center">
+          <div class="thumbnail mr-3">
+            <img src="https://scontent.xx.fbcdn.net/v/t1.0-1/c4.0.50.50/p50x50/16113996_10154442269603655_2333710094948453706_n.jpg?oh=3c802da5d71f76cf2f30238ec24ea967&oe=5A64A3C0">
+          </div>
+          Juan Ordonez
+        </a>
+
+        <a href="#" class="groupMember d-flex justify-content-start align-items-center">
+          <div class="thumbnail mr-3">
+            <img src="https://scontent.xx.fbcdn.net/v/t1.0-1/c4.0.50.50/p50x50/16113996_10154442269603655_2333710094948453706_n.jpg?oh=3c802da5d71f76cf2f30238ec24ea967&oe=5A64A3C0">
+          </div>
+          Juan Ordonez
+        </a>
+
+      </div>
+
+      <button id="leaveGroupBtn" type="button" class="mt-3 btn btn-outline-danger btn-lg btn-block" style="text-align: left" data-toggle="modal" data-target="#exitGroupModal"><i class="fas fa-sign-out-alt mr-3"></i>Leave group</button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="exitGroupModal" tabindex="-1" role="dialog" aria-labelledby="exitGroupModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Leave group?</h5>
+            </div>
+            <div class="modal-body">
+              <a href="#" class="mr-3" data-dismiss="modal">CANCEL</a>
+              <a href="#" id="confirmLeaveGroup">LEAVE</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </body>
+
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+  <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="js/popper.js"></script>
+  <script type="text/javascript" src="js/autosize.min.js"></script>
+  <script type="text/javascript" src="js/waves.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="scripts2.js"></script>
+  <!-- js for popup.html -->
+  <script src="js/popup.js"></script>
+
+</html>

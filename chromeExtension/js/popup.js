@@ -23,13 +23,22 @@ $(document).on("click", ".hidePost", function(){
 	});
 });
 
+//Populate friend profile page
 if (window.location.href == chrome.extension.getURL("userProfile.html")) {
 	 chrome.storage.local.get(["previousPage", "previousUrl", "profileName"], function(result){
 	 	$("#"+result.previousPage).addClass("active");
-	 	console.log(result.previousUrl);
 	 	$(".backBtn").prop("href", result.previousUrl);
 	 	$("#topNav h1").text(result.profileName);
 	 });
+	 
+}
+
+//Populate group details page
+if (window.location.href == chrome.extension.getURL("groupDetails.html")) {
+	chrome.storage.local.get(["previousPage", "previousUrl"], function(result){
+	 	$("#"+result.previousPage).addClass("active");
+	 	$(".backBtn").prop("href", result.previousUrl);
+	});
 	 
 }
 

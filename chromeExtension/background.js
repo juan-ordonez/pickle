@@ -326,7 +326,7 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) { 
 
     if (request.type == "comment") {
-      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.checked);
+      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.checked, request.currentGroup);
       done = false;
 
     } 
@@ -493,7 +493,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
 
 
-function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
+function comment(userID, url, value, tags, all, picture, pageTitle, checked, currentGroup) {
 
   var d1 = $.Deferred();
   var storage = chrome.storage.local.get(['accessToken'], function(data) {
@@ -529,7 +529,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
             var length = 80;
             var trimmedString = description.length > length ? description.substring(0, length - 3) + "..." : description;
             chrome.storage.local.set({"pageTitle" : title, "pageImage" : image, "pageDescription" : trimmedString});
-            chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url});
+            chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
             d1.resolve();
           });
 
@@ -556,13 +556,13 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
 
           $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
                  profilePostsHTML = $("#posts").html();
+                 console.log("profile newsfeed updated");
                  chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
-
           });
           
           var d1 = $.Deferred(),
-                d2 = $.Deferred();
-          var currentGroup = store['currentGroup'];
+          d2 = $.Deferred();
+          // var currentGroup = store['currentGroup'];
 
           $("body").load("http://localhost:5000/loadPosts/ #posts", {"id" : userID.toString(), "groupID" : currentGroup}, function () {
             var json = {};
@@ -580,8 +580,12 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked) {
             d2.resolve();          
           });
 
-          $.when(d1,d2).done(function() {
-            chrome.extension.sendMessage({type : "yippPosted"});
+          $.when(d1).done(function() {
+            chrome.extension.sendMessage({type : "yippPostedCurrent", completedCurrentGroup : currentGroup});
+          });
+
+          $.when(d2).done(function() {
+            chrome.extension.sendMessage({type : "yippPostedGeneral"});
           });
 
           var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup}, "registration_ids": feeds});

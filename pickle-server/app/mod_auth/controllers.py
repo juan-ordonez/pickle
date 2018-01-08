@@ -495,13 +495,18 @@ def reset():
 @flask_optimize.optimize()
 def friendsList():
     friends = []
+    if request.form['direct']:
+        direct = True
+    else:
+        direct = False
     user = User.query.filter_by(id=request.form['id']).first()
     ids = ast.literal_eval(str(request.form['friends']))
     for friend in ids:
         user = User.query.filter_by(id=friend).first()
         friends.append((friend, user.name))
     templateData = {
-        'friends' : sorted(friends, key=lambda c : c[1])
+        'friends' : sorted(friends, key=lambda c : c[1]),
+        'direct' : direct
     }
 
     return render_template('auth/friends.html', **templateData)
@@ -704,6 +709,10 @@ def createGroup():
 
     name = request.form['name']
     group = Group(name, str(datetime.now()))
+    if request.form['direct']:
+        group.direct = True 
+    else:
+        group.direct = False
     users = ast.literal_eval(str(request.form['users']))
     if not name:
         group.name = ",".join(users)
@@ -725,12 +734,16 @@ def createGroup():
 @flask_optimize.optimize()
 def groupNames():
     groups = []
+    direct = []
     user = User.query.filter_by(id=request.form['id']).first()
     for group in user.groups:
-        print(group.name) 
-        groups.append((group.id, group.name))
+        if group.direct:
+            direct.append((group.id, group.name))
+        else:
+            groups.append((group.id, group.name))
     templateData = {
-        'groups' : groups
+        'groups' : groups,
+        'direct' : direct
     }
 
     return render_template('auth/groups.html', **templateData)
@@ -746,6 +759,87 @@ def getGroups():
         groups.append(group.id)
 
     return json.dumps(list(groups))
+
+
+@mod_auth.route('/getNotificationsDict/', methods=['GET','POST'])
+@crossdomain(origin='*')
+@flask_optimize.optimize('json')
+def getNotificationsDict():
+    user = User.query.filter_by(id=request.args.get('id')).first()
+
+    json = {}
+    if not user.notificationsDictString:
+        for group in user.groups:
+            json[group.id] = 0
+        return json
+    else:
+        return json.loads(user.notificationsDictString)
+
+
+
+@mod_auth.route('/postNotificationsDict/', methods=['GET','POST'])
+@crossdomain(origin='*')
+@flask_optimize.optimize()
+def postNotificationsDict():
+    user = User.query.filter_by(id=request.form['id']).first()
+    data = request.form['json']
+
+    user.notificationsDictString = data
+
+    db.session.commit()
+    
+
+    return "posted"
+
+
+@mod_auth.route('/loadGroupData/', methods=['GET','POST'])
+@crossdomain(origin='*')
+@flask_optimize.optimize('json')
+def loadGroupData():
+    user = User.query.filter_by(id=request.form['id']).first()
+    jsonData = {}
+    groups = []
+    for group in user.groups:
+        users = []
+        #For each comment that the user has been tagged on
+        for i in group.users:
+            #Append data of comment to comments array
+            if i != user:
+                users.append((i.id, i.name, i.picture))
+
+
+        templateData = {
+            
+            'users' : users
+            
+        }
+
+
+        jsonData[group.id] = render_template('auth/groupInfo.html', **templateData)
+
+    return json.dumps(jsonData)
+
+
+@mod_auth.route('/leaveGroup/', methods=['GET','POST'])
+@crossdomain(origin='*')
+@flask_optimize.optimize('json')
+def leaveGroup():
+    info = {}
+    ids = set()
+    user = User.query.filter_by(id=request.form['id']).first()
+    group = Group.query.filter_by(id=request.form['currentGroup']).first()
+    for member in group.users:
+        if member != user:
+            sessions = Session.query.filter_by(id=member.id).all()
+            for session in sessions:
+                ids.add(session.authToken)
+
+
+    group.users.remove(user)
+    db.session.commit()
+
+    info['ids'] = list(ids)
+    return json.dumps(info)
 
 
     

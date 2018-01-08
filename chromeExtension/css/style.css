@@ -172,6 +172,19 @@ button:active {
 	background-color: #E91E63;
 }
 
+#createDirectBtn {
+	border-radius: 0;
+	border:none;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	position: fixed;
+	bottom:50px;
+}
+	
+#createDirectBtn[disabled] {
+	background-color: #E91E63;	
+}
+
 #formNewComments {
 	width: 368px;
 	position: fixed;

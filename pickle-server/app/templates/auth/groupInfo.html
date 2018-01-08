@@ -1,0 +1,10 @@
+<small class="mb-2 pl-3 pr-3">Members</small>
+{% for i in users %}
+<a href="#" class="groupMember d-flex justify-content-start align-items-center" id={{i[0]}}>
+          <div class="thumbnail mr-3">
+            <img src={{i[2]}}>
+          </div>
+          {{i[1]}}
+        </a>
+
+{% endfor %}

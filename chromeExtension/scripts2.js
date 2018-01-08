@@ -12,6 +12,8 @@ var notificationsHTML;
 var commentsHTML;
 var postsHTML;
 var groupsHTML;
+var friendsHTMLDirect;
+var friendsHTMLGroup;
 
 chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   
@@ -116,10 +118,37 @@ $(document).on("click", "#createGroupBtn", function(event){
 
   chrome.storage.local.get(['userID'], function(data) {
 
-    $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users)}, function(groupID) {
+    $.post("http://loacalhost:5000/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : ''}, function(groupID) {
       chrome.storage.local.set({"currentGroup" : groupID}, function () {
         
-        $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
+        $("body").load("http://127.0.0.1:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
+              chrome.storage.local.set({groupsHTML : $("#groups").html()});
+              console.log(groupsHTML);
+              window.location.replace("newsfeed.html");
+          
+            });
+      });
+    });
+  });
+});
+
+$(document).on("click", "#createDirectBtn", function(event){ 
+  
+  var ids = [];
+  var users = [];
+  $('.form-check-input:radio:checked').get().forEach(function(element) {
+      ids.push(element.id);
+      users.push($(element).parent().text().trim());
+    });
+  console.log(ids);
+  console.log(users);
+
+  chrome.storage.local.get(['userID'], function(data) {
+
+    $.post("http://127.0.0.1:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
+      chrome.storage.local.set({"currentGroup" : groupID}, function () {
+        
+        $("body").load("http://127.0.0.1:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
               chrome.storage.local.set({groupsHTML : $("#groups").html()});
               console.log(groupsHTML);
               window.location.replace("newsfeed.html");
@@ -406,6 +435,19 @@ if (window.location.href == chrome.extension.getURL('notifications.html')) {
   chrome.storage.local.set({"notifications" : 0});
 }
 
+
+if (window.location.href == chrome.extension.getURL('groupDetails.html')) {
+  chrome.storage.local.get(['currentGroup', 'groupInfo'], function(result) {
+  var groupInfo = result['groupInfo'];
+  if (groupInfo != null) { 
+        $("#groupMembers").html(groupInfo[result['currentGroup']]);
+      } else {
+        $("#groupMembers").html(' ');
+      }
+
+  });
+}
+
 // populate account tab
 if (window.location.href == chrome.extension.getURL('account.html')) {
   chrome.storage.local.get(['picture', 'userName'], function(result) {
@@ -418,12 +460,18 @@ if (window.location.href == chrome.extension.getURL('account.html')) {
 
 //Populate createGroup page
 if (window.location.href == chrome.extension.getURL("createGroup.html")) {
-  chrome.storage.local.get(['friendsHTML'], function(result) {
-    var friendsHTML = result.friendsHTML;
+  chrome.storage.local.get(['friendsHTMLGroup'], function(result) {
+    var friendsHTML = result.friendsHTMLGroup;
     $(".friendList").html(friendsHTML);
   });
 }
 
+if (window.location.href == chrome.extension.getURL("createDirect.html")) {
+  chrome.storage.local.get(['friendsHTMLDirect'], function(result) {
+    var friendsHTML = result.friendsHTMLDirect;
+    $(".friendList").html(friendsHTML);
+  });
+}
 // message listener for background communication
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -453,6 +501,40 @@ $(document).on("click", "#accountNav", function(){
 $(document).on("click", "#notifications a, .cardNewsfeed a", function(){
   chrome.extension.sendMessage({type : "popupComments"});
 });
+
+$(document).on("click", "#confirmLeaveGroup", function(){
+    chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
+      var id = result['userID'];
+      $.post("http://localhost:5000/leaveGroup/", {"id" : id, "currentGroup" : result['currentGroup']}, function(data) {
+        
+        chrome.storage.local.set({"currentGroup" : "general"}, function () {
+          $("body").load("http://127.0.0.1:5000/groupNames/ #groups", {"id" : id}, function () {
+              chrome.storage.local.set({groupsHTML : $("#groups").html()});
+              console.log(groupsHTML);
+              window.location.replace("newsfeed.html");
+          
+            });
+        });
+
+        var json = JSON.stringify({ "data": {"type" : "leave"}, 
+            "registration_ids": JSON.parse(data)['ids'] });
+      $.ajax({
+        url:"https://gcm-http.googleapis.com/gcm/send",
+        type:"POST",
+        data:json,
+        beforeSend: function(request) {
+            request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+        },
+        contentType:"application/json; charset=utf-8",
+        dataType:"json",
+        success: function(){}
+      });
+
+
+      });
+
+    });
+  });
 
 function comment(e) {
 
@@ -552,11 +634,16 @@ function logout(e) {
   
   e.preventDefault();
 
-  chrome.storage.local.get(['session'], function(response) {
+  chrome.storage.local.get(['session', 'userID', 'notificationsJSON'], function(response) {
 
     session = response['session'];
+    userID = response['userID'];
+    var notificationsJSON = response['notificationsJSON'];
   
     if (session) {
+
+      $.post("http://localhost:5000/postNotificationsDict", {"id" : userID, "json" : JSON.stringify(notificationsJSON)});
+
       //Log user out
       $.get("https://pickle-server-183401.appspot.com/logout/" + session, function(data){
         chrome.browserAction.setPopup({popup : "register.html"});
@@ -579,7 +666,7 @@ function connect(message) {
     //Get data from storage if background is done loading
     if (response.done) {
       chrome.storage.local.get(['commentsJSON', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
-        'notificationsHTML', 'friendsHTML', 'userID', 'postsHTML', 'profilePostsHTML', 'groupsHTML', 'currentGroup'], function (result) {
+        'notificationsHTML', 'friendsHTMLGroup', 'friendsHTMLDirect', 'userID', 'postsHTML', 'profilePostsHTML', 'groupsHTML', 'currentGroup', 'notificationsJSON'], function (result) {
         // console.log(result['commentsJSON']);
         var commentsJSON = result['commentsJSON'];
         userName = result['userName'];
@@ -590,12 +677,28 @@ function connect(message) {
         picture = result['picture'];
         notifications = result['notifications'];
         notificationsHTML = result['notificationsHTML'];
-        friendsHTML = result['friendsHTML'];
+        friendsHTMLGroup = result['friendsHTMLGroup'];
+        friendsHTMLDirect = result['friendsHTMLDirect']
         userID = result['userID'];
         postsHTML = result['postsHTML'];
         profilePostsHTML = result['profilePostsHTML'];
         groupsHTML = result['groupsHTML'];
         var currentGroup = result['currentGroup'];
+        var notificationsJSON = result['notificationsJSON'];
+      
+    // if (groupsHTML != null) {
+    //       // console.log(groupsHTML);
+    //       $("#groupsHTML").html(groupsHTML);
+          
+    //       var group = $('#' + currentGroup);
+    //       group.addClass("active");
+    //       $(".groupTitle").text(group.text());
+          
+    //     } else {
+    //       $("#groupsHTML").html('<div class="d-flex flex-row flex-nowrap justify-content-between"><small>GROUPS</small><a href="createGroup.html"><i class="far fa-plus-square"></i></a></div>');
+    //     }
+
+
       if (commentsJSON != null) {
         $("#commentsBody").html(commentsJSON[currentGroup]);
       } else {
@@ -641,29 +744,43 @@ function connect(message) {
         // }
 
         if (groupsHTML != null) {
-          // console.log(groupsHTML);
           $(".groupsDrawer").html(groupsHTML);
           chrome.storage.local.get(['currentGroup'], function(data) {
-            console.log("current group is" + data['currentGroup']);
             var group = $('#' + data['currentGroup']);
             group.addClass("active");
             $(".groupTitle").text(group.text());
           });
+        
 
-            // var currentGroup = $(".drawer.active").attr("id");
-            // var outgoingGroup = 'outgoing-' + currentGroup;
-            // console.log("loading outgoing posts, current group: " + outgoingGroup);
-            // $("#outgoingPosts").append(data[outgoingGroup]);
+        var total = 0;
+        Object.keys(notificationsJSON).forEach(function(key) {
+            var span = $("#" + key).find("span");
+            total += notificationsJSON[key];
+            if (notificationsJSON[key] == 0) {
+              span.hide();
+            } else {
+              span.innerHTML = notificationsJSON[key];
+              span.show();
+            }
+            console.log(span);
+        });
 
+        if (total == 0) {
+          $("#general").find("span").hide();
         } else {
-          $(".groupsDrawer").html('<div class="d-flex flex-row flex-nowrap justify-content-between"><small>GROUPS</small><a href="createGroup.html"><i class="far fa-plus-square"></i></a></div>');
+          $("#general").find("span").innerHTML = total;
+          $("#general").find("span").show();
+        }
+        if (currentGroup == "general") {
+          $(".fa-cog").hide();
         }
         
-        if (friendsHTML != null) {
-          $("#friendListCheckboxes").html(friendsHTML);
-        } else {
-          $("#friendListCheckboxes").html(' ');
-        }
+        
+        // if (friendsHTML != null) {
+        //   $("#friendListCheckboxes").html(friendsHTML);
+        // } else {
+        //   $("#friendListCheckboxes").html(' ');
+        // }
 
         if (notifications == 0){
           $("#numNotifications").hide();

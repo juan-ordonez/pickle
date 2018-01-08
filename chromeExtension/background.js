@@ -8,13 +8,15 @@ var picture;
 var notifications;
 var notificationsHTML;
 var commentsHTML;
-var friendsHTML;
+var friendsHTMLGroup;
+var friendsHTMLDirect;
 var done = false;
 var successURL = 'www.facebook.com/connect/login_success.html';
 var permissions = [];
 var postsHTML;
 var groupsHTML;
 var commentsJSON;
+var notificationsJSON = {};
 var popup = "newsfeed.html";
 
 
@@ -67,8 +69,28 @@ chrome.gcm.onMessage.addListener(function(payload) {
           chrome.browserAction.setBadgeText({text: notifications.toString()});
         }
 
+        chrome.storage.local.get(['notificationsJSON'], function(data) {
+          notificationsJSON = data['notificationsJSON'];
+          if (!(groupID in notificationsJSON)) {
+            notificationsJSON[groupID] = 1;
 
-            
+          }
+          else {
+            notificationsJSON[groupID] += 1;
+          chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+
+          }
+        })
+
+
+          if (type == "leave") {
+            $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
+                    
+                  chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
+                  console.log(JSON.parse(data));
+                  });
+
+          }
           
           if (type == "notification") {
             $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
@@ -172,7 +194,7 @@ chrome.notifications.onClicked.addListener(function (id) {
     });
 
   //chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
-  chrome.storage.local.remove(['commentsHTML', 'notifications', 'friendsHTML']);
+  chrome.storage.local.remove(['commentsHTML', 'notifications']);
   done = false;
   getUserData();
 
@@ -237,7 +259,8 @@ function getUserData() {
             // console.log(url);
             var d1 = $.Deferred(),
                 d2 = $.Deferred(),
-                d3 = $.Deferred();
+                d3 = $.Deferred(),
+                d4 = $.Deferred();
             
 
             $.post("http://localhost:5000/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
@@ -250,17 +273,22 @@ function getUserData() {
             //   d2.resolve();
             // });
             var friendIds = friendsArray.map(function(value,index) { return value[0]; });
-            $("body").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function () {
-              friendsHTML = $("#friends").html();
+            $("body").load("http://localhost:5000/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "direct" : ''}, function () {
+              friendsHTMLGroup = $("#friends").html();
               d2.resolve();
+            });
+
+            $("body").load("http://localhost:5000/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "direct" : 'direct'}, function () {
+              friendsHTMLDirect = $("#friends").html();
+              d3.resolve();
             });
 
             $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : userID.toString()}, function () {
               groupsHTML = $("#groups").html();
-              d3.resolve();
+              d4.resolve();
             });
             
-            $.when(d1, d2).done(function () {
+            $.when(d1, d2, d3, d4).done(function () {
               
               done = true;
               chrome.storage.local.set({ "userID" : userID, 
@@ -273,7 +301,8 @@ function getUserData() {
                 "notifications" : notifications,
                 "notificationsHTML" : notificationsHTML,
                 "commentsJSON" : commentsJSON,
-                "friendsHTML" : friendsHTML,
+                "friendsHTMLGroup" : friendsHTMLGroup,
+                "friendsHTMLDirect" : friendsHTMLDirect,
                 "postsHTML" : postsHTML, 
                 "groupsHTML" : groupsHTML});
               })
@@ -423,6 +452,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                     var groupsIDs = JSON.parse(array);
                     groupsIDs.forEach(function(element) {
                       console.log(element);
+                      
 
 
                       $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
@@ -435,6 +465,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
             });
 
                     });
+                    
 
                      $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {
                     
@@ -458,11 +489,22 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                   chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
               
             });
+                $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
+                    
+                  chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
+                  console.log(JSON.parse(data));
+                  });
+
+                  $.get("http://localhost:5000/getNotificationsDict/", {"id" : userID.toString()}, function (data) {
+                  console.log(data);
+                  chrome.storage.local.set({"notificationsJSON" : data});
+              
+            });
 
                   $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : userID.toString()}, function () {
                     groupsHTML = $("#groups").html();
               
-                  });
+                  })
 
                   chrome.storage.local.set({"currentGroup" : "general"}, function () {
                       console.log(id);

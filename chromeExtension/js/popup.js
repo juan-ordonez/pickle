@@ -75,6 +75,11 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
 			console.log(id);
 
 		});
+		chrome.storage.local.get(['notificationsJSON'], function(data) {
+			var notifJSON = data['notificationsJSON'];
+			notifJSON[id] = 0;
+			chrome.storage.local.set({"notificationsJSON" : notifJSON});
+		})
 		console.log(window.location.href);
 		toggleDrawer();
 		if (newsfeed) {
@@ -99,6 +104,26 @@ if (window.location.href == chrome.extension.getURL("createGroup.html")) {
 		else if (checked.length === 0) {
 			$("#createGroupBtn").slideUp(function(){
 				$("#createGroupBtn").prop("disabled", "true");
+			});
+		}
+	});
+}
+
+if (window.location.href == chrome.extension.getURL("createDirect.html")) {
+	$(document).on("change", ":radio", function(){
+		console.log("CREATE");
+		var checked = [];
+		$("input:checked").each(function(){
+		    checked.push($(this));
+		});
+		if (checked.length === 1) {
+			console.log($("#createDirectBtn"));
+			$("#createDirectBtn").removeAttr("disabled");
+			$("#createDirectBtn").slideDown();
+		}
+		else if (checked.length === 0) {
+			$("#createDirectBtn").slideUp(function(){
+				$("#createDirectBtn").prop("disabled", "true");
 			});
 		}
 	});

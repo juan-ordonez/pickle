@@ -181,14 +181,10 @@ chrome.runtime.onMessage.addListener(
         });
       }
     }
+    // When user Yipps from the newsfeed, append yipp to newsfeed
     else if(request.type == "cardInfoReady"){
-      
-      console.log("outgoing post, current group: " + request.currentGroup);
-      var outgoingCurrentString = "outgoing-" + request.currentGroup;
-      var outgoingCurrent;
-      var outgoingGeneral;
 
-      chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription', 'outgoing-general', outgoingCurrentString], function(result) {
+      chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription'], function(result) {
 
         domain = request.url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
 
@@ -203,72 +199,15 @@ chrome.runtime.onMessage.addListener(
           $("#submitYipp").removeAttr("disabled");
         }
 
-        if (request.currentGroup != "general") {
-
-          if (result[outgoingCurrentString]) {
-            outgoingCurrent = result[outgoingCurrentString];
-            outgoingCurrent.push('<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div></div>');
-            console.log("other outgoing current posts present");
-            console.log(outgoingCurrent);
-          }
-          else {
-            outgoingCurrent = ['<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
-            console.log(outgoingCurrent);
-          }
-
-          chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
-
-        }
-        
-        if (result["outgoing-general"]) {
-          outgoingGeneral = result["outgoing-general"];
-          outgoingGeneral.push('<div class="card cardNewsfeed mb-3"><p class="postDescription">You yipped this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div></div>');
-          console.log("other outgoing general posts present");
-          console.log(outgoingGeneral);
-        }
-        else {
-          outgoingGeneral = ['<div class="card cardNewsfeed mb-3"><p class="postDescription">You yipped this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
-          console.log(outgoingGeneral);
-        }
-
-        chrome.storage.local.set({"outgoing-general" : outgoingGeneral});
-        console.log("outgoingPosts updated");
-
       });
     }
 
+    //Refresh newfeed page when a new yipp is done posting
     else if(request.type == "yippPostedCurrent") {
-
       console.log("Current Yipp Posted!");
-
-      if (request.completedCurrentGroup != "general") {
-
-        var outgoingCurrentString = "outgoing-" + request.completedCurrentGroup;
-
-        chrome.storage.local.get([outgoingCurrentString], function(result) {
-          var outgoingCurrent = result[outgoingCurrentString];
-          outgoingCurrent.shift();
-          chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
-        });
-
-        if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
-          window.location.replace("newsfeed.html");
-        }
-
+      if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
+        window.location.replace("newsfeed.html");
       }
-
-    }
-
-    else if(request.type == "yippPostedGeneral") {
-
-      console.log("General Yipp Posted!");
-
-      chrome.storage.local.get(['outgoing-general'], function(result) {
-        var outgoingGeneral = result["outgoing-general"];
-        outgoingGeneral.shift();
-        chrome.storage.local.set({"outgoing-general" : outgoingGeneral});
-      });
-
     }
 });
 
@@ -376,20 +315,20 @@ if (window.location.href == chrome.extension.getURL('account.html')) {
   $("#postsProfile").hide();
 
   //add any outgoing posts
-  chrome.storage.local.get(['currentGroup'], function(result) {
-    var group = result['currentGroup'];
-    var outgoingGroup = "outgoing-" + group;
-    if (group != null) { 
-      chrome.storage.local.get([outgoingGroup], function(data) {
-        if (data[outgoingGroup]) {
-          var outgoingPosts = data[outgoingGroup];
-          for (var i = 0; i < outgoingPosts.length; i++ ) {
-            $("#outgoingPosts").prepend(outgoingPosts[i]);
-          }
-        }
-      });
-    }
-  });
+  // chrome.storage.local.get(['currentGroup'], function(result) {
+  //   var group = result['currentGroup'];
+  //   var outgoingGroup = "outgoing-" + group;
+  //   if (group != null) { 
+  //     chrome.storage.local.get([outgoingGroup], function(data) {
+  //       if (data[outgoingGroup]) {
+  //         var outgoingPosts = data[outgoingGroup];
+  //         for (var i = 0; i < outgoingPosts.length; i++ ) {
+  //           $("#outgoingPosts").prepend(outgoingPosts[i]);
+  //         }
+  //       }
+  //     });
+  //   }
+  // });
 
   chrome.storage.local.get(['profilePostsHTML'], function(result) {
   profilePostsHTML = result['profilePostsHTML'];

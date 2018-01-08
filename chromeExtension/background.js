@@ -545,35 +545,64 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
     
     session = data['accessToken'];
 
-  var fbPost = $.post("https://graph.facebook.com/v2.11/?id=" + encodeURIComponent(url) + "?scrape=true&access_token=" + session, function(api) {
-            console.log(api);
-          if (api.image != null) {
-            var image = api.image[0].url;
-            console.log(api.image);
-          } else {
-            var image = "";
+      var fbPost = $.post("https://graph.facebook.com/v2.11/?id=" + encodeURIComponent(url) + "?scrape=true&access_token=" + session, function(api) {
+        console.log(api);
+        if (api.image != null) {
+          var image = api.image[0].url;
+          console.log(api.image);
+        } else {
+          var image = "";
+        }
+
+        if (api.description != null) {
+          var description = api.description;
+          console.log(api.description);
+        } else {
+          var description = "";
+        }
+
+        if (api.title != null) {
+          console.log(api.title);
+          var title = api.title;
+        } else {
+          var title = "";
+        }
+
+        var length = 80;
+        var trimmedString = description.length > length ? description.substring(0, length - 3) + "..." : description;
+        chrome.storage.local.set({"pageTitle" : title, "pageImage" : image, "pageDescription" : trimmedString});
+
+        var outgoingCurrentString = "outgoing-" + currentGroup;
+        var outgoingCurrent;
+        var outgoingGeneral;
+
+        chrome.storage.local.get([outgoingCurrentString], function(result) {
+
+          domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
+
+          // if (currentGroup != "general") {
+
+          // }
+
+          if (result[outgoingCurrentString]) {
+            outgoingCurrent = result[outgoingCurrentString];
+            outgoingCurrent.push('<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+image+'></a></div><div style="padding: 1rem;"><a href='+url+' class="notificationTab pageTitle"><h1>'+title+'</h1></a><p class="pageDescription">'+trimmedString+'</p><p class="pageDomain">'+domain+'</p></div></div>');
+            console.log(outgoingCurrent);
+          }
+          else {
+            outgoingCurrent = ['<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+image+'></a></div><div style="padding: 1rem;"><a href='+url+' class="notificationTab pageTitle"><h1>'+title+'</h1></a><p class="pageDescription">'+trimmedString+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
+            console.log(outgoingCurrent);
           }
 
-          if (api.description != null) {
-            var description = api.description;
-            console.log(api.description);
-          } else {
-            var description = "";
-          }
+          chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
 
-          if (api.title != null) {
-            console.log(api.title);
-            var title = api.title;
-          } else {
-            var title = "";
-          }
+        });
 
-            var length = 80;
-            var trimmedString = description.length > length ? description.substring(0, length - 3) + "..." : description;
-            chrome.storage.local.set({"pageTitle" : title, "pageImage" : image, "pageDescription" : trimmedString});
-            chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
-            d1.resolve();
-          });
+        //send message to scripts to append new yipp to newsfeed, if needed
+        chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
+
+        d1.resolve();
+      });
 
       fbPost.fail(
         function(jqXHR, textStatus, errorThrown) {
@@ -606,12 +635,22 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           d2 = $.Deferred();
           // var currentGroup = store['currentGroup'];
 
-          $("body").load("http://localhost:5000/loadPosts/ #posts", {"id" : userID.toString(), "groupID" : currentGroup}, function () {
+          $("body").load("http://localhost:5000/loadPosts/ #posts", {"id" : userID.toString(), "groupID" : currentGroup}, function (response, status, xhr) {
             var json = {};
             json[currentGroup] = $("#posts").html();
             chrome.storage.local.set(json);
             console.log("group newsfeed updated");
             d1.resolve();
+            //If posting fails, remove pending post from container with outgoing posts 
+            if (status == "error") {
+              console.log("Error: Yipp not posted");
+              var outgoingCurrentString = "outgoing-" + currentGroup;
+              chrome.storage.local.get([outgoingCurrentString], function(result) {
+                var outgoingCurrent = result[outgoingCurrentString];
+                outgoingCurrent.shift();
+                chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
+              });
+            }
           });
 
           $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (html) {
@@ -623,11 +662,27 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           });
 
           $.when(d1).done(function() {
-            chrome.extension.sendMessage({type : "yippPostedCurrent", completedCurrentGroup : currentGroup});
+  
+            //When posting is done, remove pending post from container with outgoing posts
+            var outgoingCurrentString = "outgoing-" + currentGroup;
+            chrome.storage.local.get([outgoingCurrentString], function(result) {
+              var outgoingCurrent = result[outgoingCurrentString];
+              outgoingCurrent.shift();
+              chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
+            });
+
+            //Send message to scripts2 to refresh newsfeed after posting is done
+            chrome.extension.sendMessage({type : "yippPostedCurrent"});
+
           });
 
           $.when(d2).done(function() {
-            chrome.extension.sendMessage({type : "yippPostedGeneral"});
+            // chrome.extension.sendMessage({type : "yippPostedGeneral"});
+            // chrome.storage.local.get(['outgoing-general'], function(result) {
+            //   var outgoingGeneral = result["outgoing-general"];
+            //   outgoingGeneral.shift();
+            //   chrome.storage.local.set({"outgoing-general" : outgoingGeneral});
+            // });
           });
 
           var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup}, "registration_ids": feeds});

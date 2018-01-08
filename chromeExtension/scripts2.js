@@ -118,10 +118,10 @@ $(document).on("click", "#createGroupBtn", function(event){
 
   chrome.storage.local.get(['userID'], function(data) {
 
-    $.post("http://loacalhost:5000/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : ''}, function(groupID) {
+    $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : ''}, function(groupID) {
       chrome.storage.local.set({"currentGroup" : groupID}, function () {
         
-        $("body").load("http://127.0.0.1:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
+        $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
               chrome.storage.local.set({groupsHTML : $("#groups").html()});
               console.log(groupsHTML);
               window.location.replace("newsfeed.html");
@@ -145,10 +145,10 @@ $(document).on("click", "#createDirectBtn", function(event){
 
   chrome.storage.local.get(['userID'], function(data) {
 
-    $.post("http://127.0.0.1:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
+    $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
       chrome.storage.local.set({"currentGroup" : groupID}, function () {
         
-        $("body").load("http://127.0.0.1:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
+        $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
               chrome.storage.local.set({groupsHTML : $("#groups").html()});
               console.log(groupsHTML);
               window.location.replace("newsfeed.html");
@@ -194,7 +194,7 @@ chrome.runtime.onMessage.addListener(
 
         if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
           $("#outgoingPosts").prepend('<div class="yippContainer" style="display:none; opacity:0;"></div>');
-          $(".yippContainer").first().prepend('<div class="card cardNewsfeed mb-3"><p class="postDescription">You yipped this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div>');
+          $(".yippContainer").first().prepend('<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div>');
           $(".yippContainer").first().slideToggle(function(){
             $(".yippContainer").first().animate({opacity: 1});
           });
@@ -207,12 +207,12 @@ chrome.runtime.onMessage.addListener(
 
           if (result[outgoingCurrentString]) {
             outgoingCurrent = result[outgoingCurrentString];
-            outgoingCurrent.push('<div class="card cardNewsfeed mb-3"><p class="postDescription">You yipped this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div></div>');
+            outgoingCurrent.push('<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div></div>');
             console.log("other outgoing current posts present");
             console.log(outgoingCurrent);
           }
           else {
-            outgoingCurrent = ['<div class="card cardNewsfeed mb-3"><p class="postDescription">You yipped this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
+            outgoingCurrent = ['<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+request.value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+request.url+' class="notificationTab"><img src='+result.pageImage+'></a></div><div style="padding: 1rem;"><a href='+request.url+' class="notificationTab pageTitle"><h1>'+result.pageTitle+'</h1></a><p class="pageDescription">'+result.pageDescription+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
             console.log(outgoingCurrent);
           }
 
@@ -250,6 +250,10 @@ chrome.runtime.onMessage.addListener(
           outgoingCurrent.shift();
           chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
         });
+
+        if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
+          window.location.replace("newsfeed.html");
+        }
 
       }
 
@@ -326,7 +330,7 @@ if (window.location.href == chrome.extension.getURL('popup.html')) {
   connect("first");
 }
 
-// chrome.storage.local.remove(['outgoing-general', "outgoing-a9695597-bbdf-4923-8fc4-d861bd72bd12"]);
+// chrome.storage.local.remove(['outgoing-general', "outgoing-90281c92-b1de-4fd3-94bd-ab8b1de649eb"]);
 //Load newsfeed posts
 if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
   $("#posts").hide();
@@ -508,7 +512,7 @@ $(document).on("click", "#confirmLeaveGroup", function(){
       $.post("http://localhost:5000/leaveGroup/", {"id" : id, "currentGroup" : result['currentGroup']}, function(data) {
         
         chrome.storage.local.set({"currentGroup" : "general"}, function () {
-          $("body").load("http://127.0.0.1:5000/groupNames/ #groups", {"id" : id}, function () {
+          $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : id}, function () {
               chrome.storage.local.set({groupsHTML : $("#groups").html()});
               console.log(groupsHTML);
               window.location.replace("newsfeed.html");
@@ -750,7 +754,8 @@ function connect(message) {
             group.addClass("active");
             $(".groupTitle").text(group.text());
           });
-        
+        }
+
 
         var total = 0;
         Object.keys(notificationsJSON).forEach(function(key) {

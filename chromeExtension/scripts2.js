@@ -105,6 +105,10 @@ $(document).on("click", ".groupDetailsBtn", function(){
 });
 
 $(document).on("click", "#createGroupBtn", function(event){ 
+  
+  $("#createGroupForm").hide();
+  $(".loadingSpinner").show();
+
   var name = $('#groupNameInput').val()
   console.log(name);
   var ids = [];
@@ -132,33 +136,41 @@ $(document).on("click", "#createGroupBtn", function(event){
   });
 });
 
-$(document).on("click", "#createDirectBtn", function(event){ 
+if (window.location.href == chrome.extension.getURL("createDirect.html")) {
   
-  var ids = [];
-  var users = [];
-  $('.form-check-input:radio:checked').get().forEach(function(element) {
-      ids.push(element.id);
-      users.push($(element).parent().text().trim());
-    });
-  console.log(ids);
-  console.log(users);
+  $(document).on("change", ":radio", function(){
+  
+    $("#createDirectForm").hide();
+    $(".loadingSpinner").show();
+
+    var ids = [];
+    var users = [];
+    $('.form-check-input:radio:checked').get().forEach(function(element) {
+        ids.push(element.id);
+        users.push($(element).parent().text().trim());
+      });
+    console.log(ids);
+    console.log(users);
+
 
   chrome.storage.local.get(['userID'], function(data) {
     ids.push(data['userID']);
 
-    $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
-      chrome.storage.local.set({"currentGroup" : groupID}, function () {
-        
-        $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
-              chrome.storage.local.set({groupsHTML : $("#groups").html()});
-              console.log(groupsHTML);
-              window.location.replace("newsfeed.html");
+
+      $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
+        chrome.storage.local.set({"currentGroup" : groupID}, function () {
           
-            });
+          $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
+                chrome.storage.local.set({groupsHTML : $("#groups").html()});
+                console.log(groupsHTML);
+                window.location.replace("newsfeed.html");
+            
+              });
+        });
       });
     });
   });
-});
+}
 
 //Loading user profiles
 chrome.runtime.onMessage.addListener(
@@ -447,8 +459,12 @@ $(document).on("click", "#notifications a, .cardNewsfeed a", function(){
 });
 
 $(document).on("click", "#confirmLeaveGroup", function(){
-    chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
-      var id = result['userID'];
+    
+  $(".fa-spinner").show();
+  $(".modal-body a").addClass("disableClick");
+
+  chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
+    var id = result['userID'];
       $.post("http://localhost:5000/leaveGroup/", {"id" : id, "currentGroup" : result['currentGroup']}, function(data) {
         
         chrome.storage.local.set({"currentGroup" : "general"}, function () {
@@ -475,10 +491,10 @@ $(document).on("click", "#confirmLeaveGroup", function(){
       });
 
 
-      });
-
     });
+
   });
+});
 
 function comment(e) {
 

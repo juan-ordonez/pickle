@@ -169,7 +169,9 @@ button:active {
 }
 
 #createGroupBtn[disabled] {
-	background-color: #E91E63;
+	background-color: #BDBDBD;
+	opacity: 1;
+	cursor: default;
 }
 
 #createDirectBtn {
@@ -179,6 +181,10 @@ button:active {
 	padding-bottom: 1rem;
 	position: fixed;
 	bottom:50px;
+}
+
+#createDirectForm .form-check-input {
+	display: none;
 }
 	
 #createDirectBtn[disabled] {
@@ -520,6 +526,8 @@ button:active {
 
 .disableClick{
     pointer-events: none;
+    cursor: default;
+    color: #BDBDBD;
 }
 
 .drawer {
@@ -562,22 +570,38 @@ button:active {
 }
 
 .dropdown-item {
-	padding-left: 1rem;
-	padding-right: 1rem;
+	color: #424242;
+	margin: 0;
+	cursor: pointer;
+	padding: 0;
 }
 
 .dropdown-item:hover {
-	background-color: transparent;
-	color: #2196F3;
+	background-color: #EEEEEE;
+	color: #424242;
 }
 
 .dropdown-item:active {
-	color: #2196F3;
-	background-color: transparent;
+	color: #424242;
+	background-color: #EEEEEE;
 }
 
 .dropdown-item .disabled{
 	color: #BDBDBD!important;
+}
+
+.dropdown-item .form-check-label {
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+	padding: 8px;
+	padding-left: 36px;
+	padding-right: 36px;
+}
+
+#createDirectForm .dropdown-item .form-check-label {
+	padding-left: 16px;
+	padding-right: 16px;
 }
 
 .fadedOverlay {

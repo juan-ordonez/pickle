@@ -33,7 +33,7 @@
     <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center pr-3 pl-3">
       <div>
         <a href="newsfeed.html" class="backBtn"><i class="fas fa-arrow-left mr-3"></i></a>
-        <h1 class="navbar-brand">Create Group</h1>
+        <h1 class="navbar-brand">Direct Messages</h1>
       </div>
     </nav>
 
@@ -53,12 +53,15 @@
     <!-- <i class="loadingSpinner fa fa-2x fa-spinner fa-spin mb-5"></i> -->
 
     <div class="container pl-0 pr-0 pt-0">
-        <form>
+        
+        <i class="loadingSpinner fa fa-2x fa-spinner fa-spin" style="display:none;"></i>
+
+        <form id="createDirectForm">
             
-            <small class="ml-3">ADD FRIEND</small>
-            <div class="friendList mt-1" style="margin-bottom: 72px;">
+            <p class="mt-2 mb-2 ml-3 mr-3"><small>START A DIRECT CHAT</small></p>
+            <div class="friendList mt-1" style="margin-bottom: 16px;">
             </div>
-            <button type="button" class="btn btn-primary btn-block" id="createDirectBtn" style="display:none;" disabled>Create</button>
+            <!-- <button type="button" class="btn btn-primary btn-block" id="createDirectBtn" style="display:none;" disabled>Create</button> -->
         </form>
 
     </div>

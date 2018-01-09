@@ -144,6 +144,7 @@ $(document).on("click", "#createDirectBtn", function(event){
   console.log(users);
 
   chrome.storage.local.get(['userID'], function(data) {
+    ids.push(data['userID']);
 
     $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
       chrome.storage.local.set({"currentGroup" : groupID}, function () {
@@ -695,7 +696,7 @@ function connect(message) {
           });
         }
 
-
+        console.log(notificationsJSON);
         var total = 0;
         Object.keys(notificationsJSON).forEach(function(key) {
             var span = $("#" + key).find("span");
@@ -703,7 +704,7 @@ function connect(message) {
             if (notificationsJSON[key] == 0) {
               span.hide();
             } else {
-              span.innerHTML = notificationsJSON[key];
+              span[0].innerHTML = notificationsJSON[key];
               span.show();
             }
             console.log(span);
@@ -712,7 +713,7 @@ function connect(message) {
         if (total == 0) {
           $("#general").find("span").hide();
         } else {
-          $("#general").find("span").innerHTML = total;
+          $("#general").find("span")[0].innerHTML = total;
           $("#general").find("span").show();
         }
         if (currentGroup == "general") {

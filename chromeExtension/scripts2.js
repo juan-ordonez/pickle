@@ -125,6 +125,14 @@ $(document).on("click", "#createGroupBtn", function(event){
     $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : ''}, function(groupID) {
       chrome.storage.local.set({"currentGroup" : groupID}, function () {
         
+        $.post("http://localhost:5000/loadGroupData/", {"id" : data['userID']}, function (data) {
+                    
+                  chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
+                  console.log(JSON.parse(data));
+                  
+            });
+
+
         $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
               chrome.storage.local.set({groupsHTML : $("#groups").html()});
               console.log(groupsHTML);
@@ -166,6 +174,14 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
                 window.location.replace("newsfeed.html");
             
               });
+          $.post("http://localhost:5000/loadGroupData/", {"id" : data['userID']}, function (data) {
+                    
+                  chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
+                  console.log(JSON.parse(data));
+                  
+            });
+
+
         });
       });
     });

@@ -633,7 +633,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           // console.log(data);
           // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
 
-          $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+          $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
                  profilePostsHTML = $("#posts").html();
                  console.log("profile newsfeed updated");
                  chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
@@ -702,7 +702,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             console.log("PUBLIC");
             var json = JSON.stringify({"data" : {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
           
-            $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
+            $.post("http://localhost:5000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
               // console.log("notify", data, json);
               notify(data, json);
             });
@@ -713,7 +713,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             var array = data.slice();
             
             var json = JSON.stringify({"data": {"status" : "sent you a secret message on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
-            $.post("https://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "sent you a secret message on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
+            $.post("http://localhost:5000/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "sent you a secret message on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
               notify(data, json);
             });
           }

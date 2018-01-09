@@ -274,8 +274,9 @@ def comment():
                         friendUser = User.query.filter_by(id=session.id).first()
                         if friendUser not in added:
                             friendGeneral = Group.query.filter_by(id=friendUser.id).first()
-                            friendGeneral.comments.append(comment)
-                            friendGeneral.posts.append(post)
+                            if friendGeneral:
+                                friendGeneral.comments.append(comment)
+                                friendGeneral.posts.append(post)
 
                     if member.notificationsDictString:
                         notificationsJSON = json.loads(member.notificationsDictString)
@@ -289,7 +290,7 @@ def comment():
                         notificationsDictString[group.id] = 1
                         for g in member.groups:
                             if g != group: 
-                                notificationsDictString[g] = 0
+                                notificationsDictString[g.id] = 0
                         member.notificationsDictString = json.dumps(notificationsDictString)
 
         

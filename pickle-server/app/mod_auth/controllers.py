@@ -276,7 +276,7 @@ def comment():
                             friendGeneral = Group.query.filter_by(id=friendUser.id).first()
                             if friendGeneral:
                                 friendGeneral.comments.append(comment)
-                                friendGeneral.posts.append(post)
+                                friendGeneral.posts.append(feed)
 
                     if member.notificationsDictString:
                         notificationsJSON = json.loads(member.notificationsDictString)

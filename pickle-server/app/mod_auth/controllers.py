@@ -118,10 +118,25 @@ def register():
 
         if user:
             user.updated = True
+            group = Group.query.filter_by(id=user.id).first()
+            if user not in group.users:
+                group.users.append(user)
+            if not group:
+                group = Group("General", str(datetime.now()))
+                group.id = user.id
+                db.session.add(group)
+                group.users.append(user)
+
 
         else:
             create = User(data['id'], data['name'], email, data['picture'])
             create.updated = True
+            group = Group.query.filter_by(id=create.id).first()
+            if not group:
+                group = Group("General", str(datetime.now()))
+                group.id = create.id
+                db.session.add(group)
+                group.users.append(create)
             for friend in data['friends']:
                 friendObject = User.query.filter_by(id=friend['id']).first()
                 if friendObject:
@@ -228,14 +243,56 @@ def comment():
             feed = None
 
 
+        userFriends = []
+        for session in user.friendSession:
+            friendUser = User.query.filter_by(id=session.id).first()
+            userFriends.append(friendUser)
 
         #if comment is in a group, add it to group, if it is in general group, proceed as normal
         groupId = request.form['groupID']
-        if groupId != "general":
-            group = Group.query.filter_by(id=groupId).first()
-            group.comments.append(comment)
-            if feed:
-                group.posts.append(feed)
+        
+        group = Group.query.filter_by(id=groupId).first()
+        general = Group.query.filter_by(id=user.id).first()
+        group.comments.append(comment)
+        general.comments.append(comment)
+        if feed:
+            if group.id == "general":
+                members = userFriends
+            else:
+                members = group.users
+            group.posts.append(feed)
+            general.posts.append(feed)
+            added = set()
+            for member in members:
+                if member != user:
+                    added.add(member)
+                    general = Group.query.filter_by(id=member.id).first()
+                    if general:
+                        general.comments.append(comment)
+                        general.posts.append(feed)
+                    for session in member.friendSession:
+                        friendUser = User.query.filter_by(id=session.id).first()
+                        if friendUser not in added:
+                            friendGeneral = Group.query.filter_by(id=friendUser.id).first()
+                            if friendGeneral:
+                                friendGeneral.comments.append(comment)
+                                friendGeneral.posts.append(feed)
+
+                    if member.notificationsDictString:
+                        notificationsJSON = json.loads(member.notificationsDictString)
+                        if group.id not in notificationsJSON.keys():
+                            notificationsJSON[group.id] = 1
+                        else:
+                            notificationsJSON[group.id] += 1
+                        member.notificationsDictString = json.dumps(notificationsJSON)
+                    else:
+                        notificationsDictString = {}
+                        notificationsDictString[group.id] = 1
+                        for g in member.groups:
+                            if g != group: 
+                                notificationsDictString[g.id] = 0
+                        member.notificationsDictString = json.dumps(notificationsDictString)
+
         
         #Add post and comment to user
         user.commentsTaggedIn.append(comment)
@@ -425,7 +482,7 @@ def commentUser(id):
     info['first'] = user.name.split(' ')[0]
     info['url'] = comment.url
     info['id'] = user.id
-    sessions = Session.query.filter_by(name=user.name).all()
+    sessions = Session.query.filter_by(name=user.name).first()
     ids = set()
     for session in sessions:
         ids.add(session.authToken)
@@ -520,7 +577,7 @@ def friendsTokens():
     friends = set([])
     ids = ast.literal_eval(str(request.form['friends']))
     for friend in ids:
-        sessions = Session.query.filter_by(id=friend).all()
+        sessions = Session.query.filter_by(id=friend).first()
         for session in sessions:
             if session.authToken:
                 friends.add(session.authToken)
@@ -574,7 +631,7 @@ def loadPosts():
     groupID = request.form['groupID']
     if groupID == "general":
         print("THE GENERAL")
-        groupFeed = user.newsfeed
+        groupFeed = Group.query.filter_by(id=user.id).first().posts
     else:
         groupFeed = Group.query.filter_by(id=groupID).first().posts      
     
@@ -737,10 +794,15 @@ def groupNames():
     direct = []
     user = User.query.filter_by(id=request.form['id']).first()
     for group in user.groups:
-        if group.direct:
-            direct.append((group.id, group.name))
-        else:
-            groups.append((group.id, group.name))
+        if group.id != user.id:
+            if user.name in group.name and len(group.name.split(',')) > 1:
+                name = ",".join(group.name.split(',').remove(user.name))
+            else:
+                name = group.name
+            if group.direct:
+                direct.append((group.id, name))
+            else:
+                groups.append((group.id, name))
     templateData = {
         'groups' : groups,
         'direct' : direct
@@ -767,11 +829,11 @@ def getGroups():
 def getNotificationsDict():
     user = User.query.filter_by(id=request.args.get('id')).first()
 
-    json = {}
+    notif = {}
     if not user.notificationsDictString:
         for group in user.groups:
-            json[group.id] = 0
-        return json
+            notif[group.id] = 0
+        return notif
     else:
         return json.loads(user.notificationsDictString)
 
@@ -830,7 +892,7 @@ def leaveGroup():
     group = Group.query.filter_by(id=request.form['currentGroup']).first()
     for member in group.users:
         if member != user:
-            sessions = Session.query.filter_by(id=member.id).all()
+            sessions = Session.query.filter_by(id=member.id).first()
             for session in sessions:
                 ids.add(session.authToken)
 

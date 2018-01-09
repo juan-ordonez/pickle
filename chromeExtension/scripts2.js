@@ -125,6 +125,14 @@ $(document).on("click", "#createGroupBtn", function(event){
     $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : ''}, function(groupID) {
       chrome.storage.local.set({"currentGroup" : groupID}, function () {
         
+        $.post("http://localhost:5000/loadGroupData/", {"id" : data['userID']}, function (data) {
+                    
+                  chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
+                  console.log(JSON.parse(data));
+                  
+            });
+
+
         $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
               chrome.storage.local.set({groupsHTML : $("#groups").html()});
               console.log(groupsHTML);
@@ -152,7 +160,10 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
     console.log(ids);
     console.log(users);
 
-    chrome.storage.local.get(['userID'], function(data) {
+
+  chrome.storage.local.get(['userID'], function(data) {
+    ids.push(data['userID']);
+
 
       $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
         chrome.storage.local.set({"currentGroup" : groupID}, function () {
@@ -163,6 +174,14 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
                 window.location.replace("newsfeed.html");
             
               });
+          $.post("http://localhost:5000/loadGroupData/", {"id" : data['userID']}, function (data) {
+                    
+                  chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
+                  console.log(JSON.parse(data));
+                  
+            });
+
+
         });
       });
     });
@@ -715,7 +734,7 @@ function connect(message) {
           });
         }
 
-
+        console.log(notificationsJSON);
         var total = 0;
         Object.keys(notificationsJSON).forEach(function(key) {
             var span = $("#" + key).find("span");
@@ -723,7 +742,7 @@ function connect(message) {
             if (notificationsJSON[key] == 0) {
               span.hide();
             } else {
-              span.innerHTML = notificationsJSON[key];
+              span[0].innerHTML = notificationsJSON[key];
               span.show();
             }
             console.log(span);
@@ -732,7 +751,7 @@ function connect(message) {
         if (total == 0) {
           $("#general").find("span").hide();
         } else {
-          $("#general").find("span").innerHTML = total;
+          $("#general").find("span")[0].innerHTML = total;
           $("#general").find("span").show();
         }
         if (currentGroup == "general") {

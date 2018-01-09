@@ -91,43 +91,40 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
 
 }
 
-if (window.location.href == chrome.extension.getURL("createGroup.html")) {
-	$(document).on("change", ":checkbox", function(){
-		var checked = [];
-		$("input:checked").each(function(){
-		    checked.push($(this));
-		});
-		if (checked.length === 1) {
-			$("#createGroupBtn").removeAttr("disabled");
-			$("#createGroupBtn").slideDown();
-		}
-		else if (checked.length === 0) {
-			$("#createGroupBtn").slideUp(function(){
-				$("#createGroupBtn").prop("disabled", "true");
-			});
-		}
-	});
-}
+// if (window.location.href == chrome.extension.getURL("createGroup.html")) {
+// 	$(document).on("change", ":checkbox", function(){
+// 		var checked = [];
+// 		$("input:checked").each(function(){
+// 		    checked.push($(this));
+// 		});
+// 		if (checked.length === 1) {
+// 			$("#createGroupBtn").removeAttr("disabled");
+// 		}
+// 		else if (checked.length === 0) {
+// 			$("#createGroupBtn").prop("disabled", "true");
+// 		}
+// 	});
+// }
 
-if (window.location.href == chrome.extension.getURL("createDirect.html")) {
-	$(document).on("change", ":radio", function(){
-		console.log("CREATE");
-		var checked = [];
-		$("input:checked").each(function(){
-		    checked.push($(this));
-		});
-		if (checked.length === 1) {
-			console.log($("#createDirectBtn"));
-			$("#createDirectBtn").removeAttr("disabled");
-			$("#createDirectBtn").slideDown();
-		}
-		else if (checked.length === 0) {
-			$("#createDirectBtn").slideUp(function(){
-				$("#createDirectBtn").prop("disabled", "true");
-			});
-		}
-	});
-}
+// if (window.location.href == chrome.extension.getURL("createDirect.html")) {
+// 	$(document).on("change", ":radio", function(){
+// 		console.log("CREATE");
+// 		var checked = [];
+// 		$("input:checked").each(function(){
+// 		    checked.push($(this));
+// 		});
+// 		if (checked.length === 1) {
+// 			console.log($("#createDirectBtn"));
+// 			$("#createDirectBtn").removeAttr("disabled");
+// 			$("#createDirectBtn").slideDown();
+// 		}
+// 		else if (checked.length === 0) {
+// 			$("#createDirectBtn").slideUp(function(){
+// 				$("#createDirectBtn").prop("disabled", "true");
+// 			});
+// 		}
+// 	});
+// }
 
 if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 

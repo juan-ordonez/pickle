@@ -136,35 +136,38 @@ $(document).on("click", "#createGroupBtn", function(event){
   });
 });
 
-$(document).on("click", "#createDirectBtn", function(event){ 
+if (window.location.href == chrome.extension.getURL("createDirect.html")) {
   
-  $("#createDirectForm").hide();
-  $(".loadingSpinner").show();
+  $(document).on("change", ":radio", function(){
+  
+    $("#createDirectForm").hide();
+    $(".loadingSpinner").show();
 
-  var ids = [];
-  var users = [];
-  $('.form-check-input:radio:checked').get().forEach(function(element) {
-      ids.push(element.id);
-      users.push($(element).parent().text().trim());
-    });
-  console.log(ids);
-  console.log(users);
+    var ids = [];
+    var users = [];
+    $('.form-check-input:radio:checked').get().forEach(function(element) {
+        ids.push(element.id);
+        users.push($(element).parent().text().trim());
+      });
+    console.log(ids);
+    console.log(users);
 
-  chrome.storage.local.get(['userID'], function(data) {
+    chrome.storage.local.get(['userID'], function(data) {
 
-    $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
-      chrome.storage.local.set({"currentGroup" : groupID}, function () {
-        
-        $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
-              chrome.storage.local.set({groupsHTML : $("#groups").html()});
-              console.log(groupsHTML);
-              window.location.replace("newsfeed.html");
+      $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
+        chrome.storage.local.set({"currentGroup" : groupID}, function () {
           
-            });
+          $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
+                chrome.storage.local.set({groupsHTML : $("#groups").html()});
+                console.log(groupsHTML);
+                window.location.replace("newsfeed.html");
+            
+              });
+        });
       });
     });
   });
-});
+}
 
 //Loading user profiles
 chrome.runtime.onMessage.addListener(

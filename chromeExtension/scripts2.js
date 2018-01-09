@@ -105,6 +105,10 @@ $(document).on("click", ".groupDetailsBtn", function(){
 });
 
 $(document).on("click", "#createGroupBtn", function(event){ 
+  
+  $("#createGroupForm").hide();
+  $(".loadingSpinner").show();
+
   var name = $('#groupNameInput').val()
   console.log(name);
   var ids = [];
@@ -134,6 +138,9 @@ $(document).on("click", "#createGroupBtn", function(event){
 
 $(document).on("click", "#createDirectBtn", function(event){ 
   
+  $("#createDirectForm").hide();
+  $(".loadingSpinner").show();
+
   var ids = [];
   var users = [];
   $('.form-check-input:radio:checked').get().forEach(function(element) {
@@ -446,8 +453,12 @@ $(document).on("click", "#notifications a, .cardNewsfeed a", function(){
 });
 
 $(document).on("click", "#confirmLeaveGroup", function(){
-    chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
-      var id = result['userID'];
+    
+  $(".fa-spinner").show();
+  $(".modal-body a").addClass("disableClick");
+
+  chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
+    var id = result['userID'];
       $.post("http://localhost:5000/leaveGroup/", {"id" : id, "currentGroup" : result['currentGroup']}, function(data) {
         
         chrome.storage.local.set({"currentGroup" : "general"}, function () {
@@ -474,10 +485,10 @@ $(document).on("click", "#confirmLeaveGroup", function(){
       });
 
 
-      });
-
     });
+
   });
+});
 
 function comment(e) {
 

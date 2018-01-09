@@ -10,13 +10,11 @@
                 <a href="createGroup.html"><i class="far fa-plus-square"></i></a>
             </div>
 
-    <a class="nav-link drawerLink" href="#" id="general"># General <div>
-          <span class="badge badge-primary"></span>
-        </div></a>
+    <a class="nav-link drawerLink" href="#" id="general"># General<span class="badge badge-primary ml-2"></span>
+    </a>
     {% for i in groups %}
-  	<a class="nav-link drawerLink" href="#" id={{i[0]}}># {{i[1]}} <div>
-          <span class="badge badge-primary"></span>
-        </div></a>
+  	<a class="nav-link drawerLink" href="#" id={{i[0]}}># {{i[1]}}<span class="badge badge-primary ml-2"></span>
+    </a>
 	{% endfor %}
 </div>
 

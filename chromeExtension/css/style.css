@@ -520,6 +520,8 @@ button:active {
 
 .disableClick{
     pointer-events: none;
+    cursor: default;
+    color: #BDBDBD;
 }
 
 .drawer {

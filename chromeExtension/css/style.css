@@ -138,7 +138,7 @@ button:active {
 }
 
 #bottomNav .nav-link, #topNav .nav-link {
-	width: 100px;
+	width: 200px;
 	text-align: center;
 	color: #E0E0E0;
 }
@@ -300,8 +300,9 @@ button:active {
 }
 
 #topNav {
-	padding: 0;
+	padding: 1rem;
 	padding-top: 5px;
+	padding-bottom: 5px;
 	border-bottom: solid 1px #E0E0E0;
 	max-height: 50px;
 }
@@ -661,9 +662,9 @@ button:active {
 }
 
 .hamburger {
-	position: absolute;
+	/*position: absolute;
 	left: 1rem;
-	top: 13px;
+	top: 13px;*/
 }
 
 .likeButton {

@@ -101,15 +101,15 @@ $(document).on("click", "#notificationsBell", function(){
 });
 
 //Clicking on user names
-$(document).on("click", ".userProfile", function(){
-  var previousPage = $("#bottomNav .active").attr('id');
-  chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href});
-  var profileID = $(this).attr("id");
-  var profileName = $(this).text();
-  // var profilePic = $(this).attr("id");
-  chrome.extension.sendMessage({type : "loadUser", profileID : profileID, profileName : profileName});
-  window.location.href = chrome.extension.getURL('userProfile.html');
-});
+// $(document).on("click", ".userProfile", function(){
+//   var previousPage = $("#bottomNav .active").attr('id');
+//   chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href});
+//   var profileID = $(this).attr("id");
+//   var profileName = $(this).text();
+//   // var profilePic = $(this).attr("id");
+//   chrome.extension.sendMessage({type : "loadUser", profileID : profileID, profileName : profileName});
+//   window.location.href = chrome.extension.getURL('userProfile.html');
+// });
 
 //Clicking on group details
 $(document).on("click", ".groupDetailsBtn", function(){
@@ -205,27 +205,29 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
 //Loading user profiles
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.type == "userLoaded") {
-      if (window.location.href == chrome.extension.getURL('userProfile.html')) {
-        $("#posts").hide(); 
-        chrome.storage.local.get(['userPostsHTML'], function(result) {
-        userPostsHTML = result['userPostsHTML'];
-        if (userPostsHTML != null) {
-              $("#posts").html(userPostsHTML);
-              $("#posts .postDescription").each(function(){
-                var htmlDescriptionUser = $(this).text();
-                $(this).empty();
-                $(this).html(htmlDescriptionUser);
-              });
-              $("#posts").show();
-            } else {
-              $("#posts").html(' ');
-            }
-        });
-      }
-    }
+
+    // if (request.type == "userLoaded") {
+    //   if (window.location.href == chrome.extension.getURL('userProfile.html')) {
+    //     $("#posts").hide(); 
+    //     chrome.storage.local.get(['userPostsHTML'], function(result) {
+    //     userPostsHTML = result['userPostsHTML'];
+    //     if (userPostsHTML != null) {
+    //           $("#posts").html(userPostsHTML);
+    //           $("#posts .postDescription").each(function(){
+    //             var htmlDescriptionUser = $(this).text();
+    //             $(this).empty();
+    //             $(this).html(htmlDescriptionUser);
+    //           });
+    //           $("#posts").show();
+    //         } else {
+    //           $("#posts").html(' ');
+    //         }
+    //     });
+    //   }
+    // }
+
     // When user Yipps from the newsfeed, append yipp to newsfeed
-    else if(request.type == "cardInfoReady"){
+    if(request.type == "cardInfoReady"){
 
       chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription'], function(result) {
 
@@ -373,21 +375,21 @@ if (window.location.href == chrome.extension.getURL('account.html')) {
   //   }
   // });
 
-  chrome.storage.local.get(['profilePostsHTML'], function(result) {
-  profilePostsHTML = result['profilePostsHTML'];
-  if (profilePostsHTML != null) {
-        $("#postsProfile").html(profilePostsHTML);
-        $("#postsProfile .postDescription").each(function(){
-          var htmlDescriptionProfile = $(this).text();
-          $(this).empty();
-          $(this).html(htmlDescriptionProfile);
-        });
-        $("#postsProfile").show();
-      } else {
-        $("#postsProfile").html(' ');
-      }
+  // chrome.storage.local.get(['profilePostsHTML'], function(result) {
+  // profilePostsHTML = result['profilePostsHTML'];
+  // if (profilePostsHTML != null) {
+  //       $("#postsProfile").html(profilePostsHTML);
+  //       $("#postsProfile .postDescription").each(function(){
+  //         var htmlDescriptionProfile = $(this).text();
+  //         $(this).empty();
+  //         $(this).html(htmlDescriptionProfile);
+  //       });
+  //       $("#postsProfile").show();
+  //     } else {
+  //       $("#postsProfile").html(' ');
+  //     }
 
-  });
+  // });
 
   connect("first");
 }
@@ -435,7 +437,7 @@ if (window.location.href == chrome.extension.getURL('groupDetails.html')) {
 }
 
 // populate account tab
-if (window.location.href == chrome.extension.getURL('account.html')) {
+if (window.location.href == chrome.extension.getURL('settings.html')) {
   chrome.storage.local.get(['picture', 'userName'], function(result) {
   userName = result['userName'];
   picture = result['picture'];
@@ -662,7 +664,7 @@ function connect(message) {
     //Get data from storage if background is done loading
     if (response.done) {
       chrome.storage.local.get(['commentsJSON', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
-        'notificationsHTML', 'friendsHTMLGroup', 'friendsHTMLDirect', 'userID', 'postsHTML', 'profilePostsHTML', 'groupsHTML', 'currentGroup', 'notificationsJSON'], function (result) {
+        'notificationsHTML', 'friendsHTMLGroup', 'friendsHTMLDirect', 'userID', 'postsHTML', 'groupsHTML', 'currentGroup', 'notificationsJSON'], function (result) {
         // console.log(result['commentsJSON']);
         var commentsJSON = result['commentsJSON'];
         userName = result['userName'];
@@ -677,7 +679,7 @@ function connect(message) {
         friendsHTMLDirect = result['friendsHTMLDirect']
         userID = result['userID'];
         postsHTML = result['postsHTML'];
-        profilePostsHTML = result['profilePostsHTML'];
+        // profilePostsHTML = result['profilePostsHTML'];
         groupsHTML = result['groupsHTML'];
         var currentGroup = result['currentGroup'];
         var notificationsJSON = result['notificationsJSON'];

@@ -32,7 +32,7 @@
       <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
       <div>
         <a href="#" class="backBtn"><i class="fas fa-arrow-left mr-3"></i></a>
-        <h1 class="navbar-brand">Settings</h1>
+        <h1 class="navbar-brand">Account</h1>
       </div>
       <!-- <a class="active" href="settings.html"><i class="fa fa-sliders-h"></i></a> -->
     </nav>
@@ -43,7 +43,7 @@
         <a class="nav-link" href="newsfeed.html" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
         <!-- <a class="nav-link" href="popup.html" id="commentsNav"><i class="fa fa-comment fa-lg"></i></a> -->
         <a class="nav-link" href="notifications.html" id="notificationsNav"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
-        <a class="nav-link active" href="#" id="accountNav"><i class="fa fa-user-circle fa-lg"></i></a>
+        <!-- <a class="nav-link active" href="#" id="accountNav"><i class="fa fa-user-circle fa-lg"></i></a> -->
         <div id="notificationBadge">
           <span class="badge badge-primary" id="numNotifications"></span>
         </div>
@@ -52,6 +52,13 @@
 
     <div class="container">
       
+      <div class="d-flex flex-column align-items-center mt-3 mb-3">
+        <div class="thumbnail mb-3">
+          <img id="accountProfilePicture">
+        </div>
+        <strong class="accountName"></strong>
+      </div>
+
       <div class="d-flex flex-column align-items-center">
         <div class="card mb-3 pr-3 pl-3 pt-3 pb-3">
           <h5>Invite friends to Yipp!</h5>

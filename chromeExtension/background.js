@@ -292,7 +292,7 @@ function getUserData() {
             $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
                     
                   chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
-                  console.log(JSON.parse(data));
+                  // console.log(JSON.parse(data));
                   d5.resolve();
             });
             

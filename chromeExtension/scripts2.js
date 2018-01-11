@@ -22,6 +22,20 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   var domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
   pageTitle = activeTab.title;
 
+  if ($("#groupsHTML")) {
+    chrome.storage.local.get(['groupsHTML'], function (result) {
+      var groupsHTML = result['groupsHTML']
+      if (groupsHTML != null) {
+        $(".groupsDrawer").html(groupsHTML);
+        chrome.storage.local.get(['currentGroup'], function(data) {
+          var group = $('#' + data['currentGroup']);
+          group.addClass("active");
+          $(".groupTitle").text(group.text());
+        });
+      }
+    });
+  }
+
   //Populate active tab card in newsfeed
   if ($("#activePageCard")) {
     $("#activePageTitle").text(pageTitle.trimToLength(80));
@@ -667,18 +681,6 @@ function connect(message) {
         groupsHTML = result['groupsHTML'];
         var currentGroup = result['currentGroup'];
         var notificationsJSON = result['notificationsJSON'];
-      
-    // if (groupsHTML != null) {
-    //       // console.log(groupsHTML);
-    //       $("#groupsHTML").html(groupsHTML);
-          
-    //       var group = $('#' + currentGroup);
-    //       group.addClass("active");
-    //       $(".groupTitle").text(group.text());
-          
-    //     } else {
-    //       $("#groupsHTML").html('<div class="d-flex flex-row flex-nowrap justify-content-between"><small>GROUPS</small><a href="createGroup.html"><i class="far fa-plus-square"></i></a></div>');
-    //     }
 
 
       if (commentsJSON != null) {
@@ -724,15 +726,6 @@ function connect(message) {
         // } else {
         //   $("#posts").html(' ');
         // }
-
-        if (groupsHTML != null) {
-          $(".groupsDrawer").html(groupsHTML);
-          chrome.storage.local.get(['currentGroup'], function(data) {
-            var group = $('#' + data['currentGroup']);
-            group.addClass("active");
-            $(".groupTitle").text(group.text());
-          });
-        }
 
         console.log(notificationsJSON);
         var total = 0;
@@ -786,14 +779,6 @@ function connect(message) {
         $('textarea.mention').mentionsInput({
           onDataRequest:function (mode, query, callback) {
             var data = friendsData;
-            // var data = [
-            //   { id:1, name:'Kenneth Auchenberg', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:2, name:'Jon Froda', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:3, name:'Anders Pollas', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:4, name:'Kasper Hulthin', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:5, name:'Andreas Haugstrup', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:6, name:'Pete Lacey', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' }
-            // ];
 
             data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
 

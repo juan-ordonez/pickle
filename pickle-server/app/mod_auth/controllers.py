@@ -285,7 +285,7 @@ def comment():
         #Add post and comment to users tagged in comment
         if len(tags) > 0:
             for tag in tags:
-                # taggedUser = User.query.filter_by(id=tag).first()
+                taggedUser = User.query.filter_by(id=tag).first()
                 # comment.mentions.append(taggedUser)
                 # if taggedUser.id not in publicFriends:
                 #     taggedUser.commentsTaggedIn.append(comment)

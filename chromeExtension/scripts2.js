@@ -458,6 +458,12 @@ $(document).on("click", "#newsfeedNav", function(){
   chrome.extension.sendMessage({type : "popupNewsfeed"});
 });
 
+if ($("#newsfeedNav").hasClass("active")) {
+  $(document).on("click", ".backBtn", function(){
+    chrome.extension.sendMessage({type : "popupNewsfeed"});
+  });
+}
+
 $(document).on("click", "#commentsNav", function(){
   chrome.extension.sendMessage({type : "popupComments"});
 });

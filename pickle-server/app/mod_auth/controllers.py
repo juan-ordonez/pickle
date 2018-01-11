@@ -47,7 +47,7 @@ from oauth2client.client import GoogleCredentials
 from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
 import ast
 from selenium import webdriver
-from helpers import canonical, getTimeLabel, getPostDescription
+from helpers import canonical, getTimeLabel, getPostDescription, friendsOfFriends
 
 credentials = GoogleCredentials.get_application_default()
 
@@ -119,12 +119,12 @@ def register():
         if user:
             user.updated = True
             group = Group.query.filter_by(id=user.id).first()
-            if user not in group.users:
-                group.users.append(user)
             if not group:
                 group = Group("General", str(datetime.now()))
                 group.id = user.id
                 db.session.add(group)
+                group.users.append(user)
+            if user not in group.users:
                 group.users.append(user)
 
 
@@ -248,89 +248,61 @@ def comment():
             friendUser = User.query.filter_by(id=session.id).first()
             userFriends.append(friendUser)
 
-        #if comment is in a group, add it to group, if it is in general group, proceed as normal
+        
         groupId = request.form['groupID']
         
-        group = Group.query.filter_by(id=groupId).first()
+        group1 = Group.query.filter_by(id=groupId).first()
         general = Group.query.filter_by(id=user.id).first()
-        group.comments.append(comment)
+        if group1:
+            group1.comments.append(comment)
         general.comments.append(comment)
         if feed:
-            if group.id == "general":
+            if not group1:
                 members = userFriends
             else:
-                members = group.users
-            group.posts.append(feed)
+                members = group1.users
+                group1.posts.append(feed)
             general.posts.append(feed)
-            added = set()
-            for member in members:
-                if member != user:
-                    added.add(member)
-                    general = Group.query.filter_by(id=member.id).first()
-                    if general:
-                        general.comments.append(comment)
-                        general.posts.append(feed)
-                    for session in member.friendSession:
-                        friendUser = User.query.filter_by(id=session.id).first()
-                        if friendUser not in added:
-                            friendGeneral = Group.query.filter_by(id=friendUser.id).first()
-                            if friendGeneral:
-                                friendGeneral.comments.append(comment)
-                                friendGeneral.posts.append(feed)
-
-                    if member.notificationsDictString:
-                        notificationsJSON = json.loads(member.notificationsDictString)
-                        if group.id not in notificationsJSON.keys():
-                            notificationsJSON[group.id] = 1
-                        else:
-                            notificationsJSON[group.id] += 1
-                        member.notificationsDictString = json.dumps(notificationsJSON)
-                    else:
-                        notificationsDictString = {}
-                        notificationsDictString[group.id] = 1
-                        for g in member.groups:
-                            if g != group: 
-                                notificationsDictString[g.id] = 0
-                        member.notificationsDictString = json.dumps(notificationsDictString)
+            # friendsOfFriends(members, user, group1, comment, feed)
 
         
         #Add post and comment to user
-        user.commentsTaggedIn.append(comment)
-        if feed:
-            user.newsfeed.append(feed)
-            feed.tags.append(user)
-        publicFriends.add(user.id)
+        # user.commentsTaggedIn.append(comment)
+        # if feed:
+        #     user.newsfeed.append(feed)
+        #     feed.tags.append(user)
+        # publicFriends.add(user.id)
 
         #Add post and comment to friends of user (excluding those tagged in comment)
-        for session in user.friendSession:
-            friendUser = User.query.filter_by(id=session.id).first()
-            if friendUser.id not in publicFriends and friendUser.id not in tags:
-                friendUser.commentsTaggedIn.append(comment)
-                if feed:
-                    friendUser.newsfeed.append(feed)
-                publicFriends.add(friendUser.id)
+        # for session in user.friendSession:
+        #     friendUser = User.query.filter_by(id=session.id).first()
+        #     if friendUser.id not in publicFriends and friendUser.id not in tags:
+        #         friendUser.commentsTaggedIn.append(comment)
+        #         if feed:
+        #             friendUser.newsfeed.append(feed)
+        #         publicFriends.add(friendUser.id)
 
         #Add post and comment to users tagged in comment
         if len(tags) > 0:
             for tag in tags:
-                taggedUser = User.query.filter_by(id=tag).first()
-                comment.mentions.append(taggedUser)
-                if taggedUser.id not in publicFriends:
-                    taggedUser.commentsTaggedIn.append(comment)
-                    if feed:
-                        taggedUser.newsfeed.append(feed)
-                        feed.tags.append(taggedUser)
-                    publicFriends.add(taggedUser.id)
+                # taggedUser = User.query.filter_by(id=tag).first()
+                # comment.mentions.append(taggedUser)
+                # if taggedUser.id not in publicFriends:
+                #     taggedUser.commentsTaggedIn.append(comment)
+                #     if feed:
+                #         taggedUser.newsfeed.append(feed)
+                #         feed.tags.append(taggedUser)
+                #     publicFriends.add(taggedUser.id)
 
                 for session in taggedUser.friendSession:
                     if session.authToken:
                         posts.add(session.authToken)
-                    if session.id not in publicFriends and session.id not in tags:
-                        friend = User.query.filter_by(id=session.id).first()
-                        friend.commentsTaggedIn.append(comment)
-                        if feed:
-                            friend.newsfeed.append(feed)
-                        publicFriends.add(session.id)
+                    # if session.id not in publicFriends and session.id not in tags:
+                    #     friend = User.query.filter_by(id=session.id).first()
+                    #     friend.commentsTaggedIn.append(comment)
+                    #     if feed:
+                    #         friend.newsfeed.append(feed)
+                    #     publicFriends.add(session.id)
 
 
 
@@ -830,7 +802,7 @@ def getNotificationsDict():
     user = User.query.filter_by(id=request.args.get('id')).first()
 
     notif = {}
-    if not user.notificationsDictString:
+    if not user.notificationsDictString or user.name=="Josh Goldman":
         for group in user.groups:
             notif[group.id] = 0
         return notif
@@ -845,6 +817,7 @@ def getNotificationsDict():
 def postNotificationsDict():
     user = User.query.filter_by(id=request.form['id']).first()
     data = request.form['json']
+    print(data)
 
     user.notificationsDictString = data
 

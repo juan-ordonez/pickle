@@ -102,12 +102,12 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
 
 
-            $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+            // $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
 
-               profilePostsHTML = $("#posts").html();
-               chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
-               console.log("updating profile");
-            });
+            //    profilePostsHTML = $("#posts").html();
+            //    chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
+            //    console.log("updating profile");
+            // });
 
             $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
                var json = {};
@@ -484,13 +484,13 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                   });
 
 
-                  $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+            //       $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
 
-                   profilePostsHTML = $("#posts").html();
-                  chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
+            //        profilePostsHTML = $("#posts").html();
+            //       chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
 
               
-            });
+            // });
               
                   $("body").load("http://localhost:5000/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
                    notificationsHTML = $("#notifications").html();
@@ -633,19 +633,20 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           // console.log(data);
           // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
 
-          $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
-                 profilePostsHTML = $("#posts").html();
-                 console.log("profile newsfeed updated");
-                 chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
-          });
+          // $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+          //        profilePostsHTML = $("#posts").html();
+          //        console.log("profile newsfeed updated");
+          //        chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
+          // });
           
           var d1 = $.Deferred(),
           d2 = $.Deferred();
           // var currentGroup = store['currentGroup'];
 
-          $("body").load("http://localhost:5000/loadPosts/ #posts", {"id" : userID.toString(), "groupID" : currentGroup}, function (response, status, xhr) {
+          $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : currentGroup}, function (response, status, xhr) {
             var json = {};
-            json[currentGroup] = $("#posts").html();
+            console.log(currentGroup);
+            json[currentGroup] = response;
             chrome.storage.local.set(json);
             console.log("group newsfeed updated");
             d1.resolve();

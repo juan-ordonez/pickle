@@ -164,7 +164,7 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
   chrome.storage.local.get(['userID'], function(data) {
     ids.push(data['userID']);
 
-
+      console.log(ids);
       $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
         chrome.storage.local.set({"currentGroup" : groupID}, function () {
           
@@ -617,8 +617,8 @@ function logout(e) {
     var notificationsJSON = response['notificationsJSON'];
   
     if (session) {
-
-      $.post("http://localhost:5000/postNotificationsDict", {"id" : userID, "json" : JSON.stringify(notificationsJSON)});
+      console.log(notificationsJSON);
+      $.post("http://localhost:5000/postNotificationsDict/", {"id" : userID, "json" : JSON.stringify(notificationsJSON)});
 
       //Log user out
       $.get("https://pickle-server-183401.appspot.com/logout/" + session, function(data){

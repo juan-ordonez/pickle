@@ -1,6 +1,9 @@
 import metadata_parser
 from datetime import datetime
 from dateutil import tz
+from app.mod_auth.models import User, Comment, Session, tags_table, Notification, URL, Feed, Group
+from app import db
+import ujson as json
 
 """For a given URL, retrieve HTML and look for potential canonical URL. 
    Returns canonical URL if found, or regular URL otherwise"""
@@ -158,3 +161,37 @@ def getTimeLabel(commentDatetime):
             timeLabel = str(months[commentTime[1] - 1]) +" "+ str(commentTime[2]) +" "+ str(commentTime[0]) +", " + str(commentTime[3]-12) + ":" + str(commentTime[4]) + " PM"
 
     return timeLabel
+
+
+def friendsOfFriends(members, user, group1, comment, feed):
+    added = set()
+    for member in members:
+        if member != user:
+            added.add(member)
+            generalFriend = Group.query.filter_by(id=member.id).first()
+            if generalFriend:
+                generalFriend.comments.append(comment)
+                generalFriend.posts.append(feed)
+            for session in member.friendSession:
+                friendUser = User.query.filter_by(id=session.id).first()
+                if friendUser not in added and friendUser != user:
+                    friendGeneral = Group.query.filter_by(id=friendUser.id).first()
+                    if friendGeneral:
+                        friendGeneral.comments.append(comment)
+                        friendGeneral.posts.append(feed)
+
+            # if group1:
+            #     group1ID = group1.id
+            # else:
+            #     group1ID = "general"
+            # if member.notificationsDictString:
+            #     notificationsJSON = json.loads(member.notificationsDictString)
+            #     if group1ID not in notificationsJSON.keys():
+            #         notificationsJSON[group1ID] = 1
+            #     else:
+            #         notificationsJSON[group1ID] += 1
+            #     member.notificationsDictString = json.dumps(notificationsJSON)
+            # else:
+            #     notificationsDictString = {}
+            #     notificationsDictString[group1ID] = 1
+            #     member.notificationsDictString = json.dumps(notificationsDictString)

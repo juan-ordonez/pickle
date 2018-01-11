@@ -52,6 +52,18 @@ user_groups_table = db.Table('user_groups_table', db.Model.metadata,
     mysql_charset='utf8',
 )
 
+groups_posts_table = db.Table('groups_posts_table', db.Model.metadata,
+    db.Column('group_id', db.String(128), db.ForeignKey('auth_group.id')),
+    db.Column('post_id', db.String(128), db.ForeignKey('auth_feed.id')),
+    mysql_charset='utf8',
+)
+
+groups_comments_table = db.Table('groups_comments_table', db.Model.metadata,
+    db.Column('group_id', db.String(128), db.ForeignKey('auth_group.id')),
+    db.Column('comment_id', db.String(128), db.ForeignKey('auth_comment.id')),
+    mysql_charset='utf8',
+)
+
 
 
 
@@ -222,8 +234,8 @@ class Group(db.Model):
 	name = db.Column(db.String(256))
 	direct = db.Column(db.Boolean)
 	users = db.relationship("User", secondary=user_groups_table, lazy='dynamic', backref=db.backref('groups', lazy='dynamic'))
-	posts = db.relationship("Feed", backref="group", lazy='dynamic')
-	comments = db.relationship("Comment", backref="group", lazy='dynamic')
+	posts = db.relationship("Feed", secondary=groups_posts_table, lazy='dynamic', backref=db.backref('groups', lazy='dynamic'))
+	comments = db.relationship("Comment", secondary=groups_comments_table, lazy='dynamic', backref=db.backref('groups', lazy='dynamic'))
 
 	
 	def __init__(self, name, time):

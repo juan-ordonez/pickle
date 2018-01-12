@@ -182,8 +182,8 @@ def friendsOfFriendsHelper(groupID, userID, comment, feed):
 
     added = set()
     for member in members:
-        print len(members)
         if member != user:
+            print(member.id)
             added.add(member)
             generalFriend = Group.query.filter_by(id=member.id).first()
             if generalFriend:

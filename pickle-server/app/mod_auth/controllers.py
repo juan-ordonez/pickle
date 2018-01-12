@@ -310,7 +310,7 @@ def comment():
 
     friends = set([])
     for session in user.friendSession:
-        if session.authToken and session.id in tags:
+        if session.authToken and session.id != user.id:
             friends.add(session.authToken)
     if feed:
         return json.dumps([json.dumps(list(friends)), json.dumps(list(posts)), groupId, user.id, comment.id, feed.id])
@@ -886,7 +886,50 @@ def friendsOfFriends():
     userID = request.form['userID']
     comment = request.form['comment']
     feed = request.form['feed']
-    friendsOfFriendsHelper(groupID, userID, comment, feed)
+    user = User.query.filter_by(id=userID).first()
+    comment = Comment.query.filter_by(id=comment).first()
+    feed = Feed.query.filter_by(id=feed).first()
+    userFriends = set()
+    for session in user.friendSession:
+        friendUser = User.query.filter_by(id=session.id).first()
+        if friendUser not in userFriends:
+            userFriends.add(friendUser)
+    if groupID == "general":
+        members = userFriends
+    else:
+        group1 = Group.query.filter_by(id=groupID).first()
+        members = group1.users
+
+
+    added = set()
+    for member in members:
+        if member != user:
+            added.add(member)
+            generalFriend = Group.query.filter_by(id=member.id).first()
+            if generalFriend:
+                generalFriend.comments.append(comment)
+                generalFriend.posts.append(feed)
+            # for session in member.friendSession:
+            #     friendUser = User.query.filter_by(id=session.id).first()
+            #     if friendUser not in added and friendUser != user:
+            #         added.add(friendUser)
+            #         friendGeneral = Group.query.filter_by(id=friendUser.id).first()
+            #         if friendGeneral:
+            #             friendGeneral.comments.append(comment)
+            #             friendGeneral.posts.append(feed)
+
+            if member.notificationsDictString:
+                notificationsJSON = json.loads(member.notificationsDictString)
+                if groupID not in notificationsJSON.keys():
+                    notificationsJSON[groupID] = 1
+                else:
+                    notificationsJSON[groupID] += 1
+                member.notificationsDictString = json.dumps(notificationsJSON)
+            else:
+                notificationsDictString = {}
+                notificationsDictString[groupID] = 1
+                member.notificationsDictString = json.dumps(notificationsDictString)
+    db.session.commit()
     return "done"
     
 

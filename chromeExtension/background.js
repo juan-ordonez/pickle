@@ -31,6 +31,7 @@ chrome.storage.local.get(['accessToken'], function(result) {
 
 
 chrome.gcm.onMessage.addListener(function(payload) {
+  console.log("RECEIVED MESSAGE");
   var type = payload.data.type;
   var groupID = payload.data.groupID;
   //done = true;
@@ -113,6 +114,14 @@ chrome.gcm.onMessage.addListener(function(payload) {
                console.log("updating newsfeed");
                // getUserData();
             });
+
+            $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
+               var json = {};
+               json["general"] = groupsHTML;
+               chrome.storage.local.set(json);
+               console.log("updating newsfeed");
+               // getUserData();
+            });
       }
 
           if (type == "post") {
@@ -123,6 +132,14 @@ chrome.gcm.onMessage.addListener(function(payload) {
                console.log("updating newsfeed");
                // getUserData();
               });
+
+              $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
+               var json = {};
+               json["general"] = groupsHTML;
+               chrome.storage.local.set(json);
+               console.log("updating newsfeed");
+               // getUserData();
+            });
 
           }
          
@@ -413,9 +430,8 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                 userID = api.id;
                 userName = api.name;
                 userEmail = api.email;
-                friendsArray = api.friends.data;
                 picture = api.picture.data.url;
-                $.post('http://localhost:5000/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : friendsArray, "picture" : picture, "authToken" : accessToken})}, function() {
+                $.post('http://localhost:5000/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : api.friends.data, "picture" : picture, "authToken" : accessToken})}, function() {
 
                   $.post("http://localhost:5000/getGroups/", {"id" : userID.toString()}, function(array) {
                     var groupsIDs = JSON.parse(array);

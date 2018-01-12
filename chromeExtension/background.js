@@ -150,7 +150,33 @@ chrome.gcm.onMessage.addListener(function(payload) {
                chrome.storage.local.set(json);
                console.log("updating newsfeed");
                // getUserData();
-            });
+              });
+
+              var poster = payload.data.poster;
+              var groupName = payload.data.currentGroupName;
+              var comment = payload.data.comment;
+              var commentUrl = payload.data.url;
+              var tags = payload.data.tags;
+              var notificationTitle = poster + " posted to " + groupName; 
+
+              if (groupName.charAt(0) == '@') {
+                notificationTitle = poster;
+              }
+              
+              //Create notification only if user is not directly tagged
+              if (tags.indexOf(userID) == -1) {
+                chrome.notifications.create({   
+                  type: 'basic', 
+                  iconUrl: 'iconBig.png', 
+                  title: notificationTitle, 
+                  message: comment
+
+                  }, function (notif) {
+                    dict = {};
+                    dict[notif] = commentUrl;
+                    chrome.storage.local.set(dict);
+                  });
+              }
 
           }
          
@@ -390,7 +416,7 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) { 
 
     if (request.type == "comment") {
-      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.checked, request.currentGroup);
+      comment(request.userID, request.url, request.value, request.tags, request.all, request.picture, request.pageTitle, request.checked, request.currentGroup, request.currentGroupName);
       done = false;
 
     } 
@@ -538,7 +564,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
 
 
-function comment(userID, url, value, tags, all, picture, pageTitle, checked, currentGroup) {
+function comment(userID, url, value, tags, all, picture, pageTitle, checked, currentGroup, currentGroupName) {
 
   var d1 = $.Deferred();
   var storage = chrome.storage.local.get(['accessToken'], function(data) {
@@ -699,7 +725,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             // });
           });
 
-          var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup}, "registration_ids": feeds});
+          var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "url" : url, "tags" : tags}, "registration_ids": feeds});
           notify(feeds, feedJSON);
 
           var genJSON = JSON.stringify({ "data": {"type" : "postGeneral"}, "registration_ids": friendsof});
@@ -709,7 +735,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           if (checked) {
             var array = data.slice();
             console.log("PUBLIC");
-            var json = JSON.stringify({"data" : {"status" : "tagged you on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
+            var json = JSON.stringify({"data" : {"status" : "tagged you on", "pic" : picture, "first" : userName, "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
           
             $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
               // console.log("notify", data, json);
@@ -717,15 +743,15 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             });
           }
           //Else if comment is private, notification should say that the user sent a secret message to recipient                 
-          else {
-            console.log("SECRET");
-            var array = data.slice();
+          // else {
+          //   console.log("SECRET");
+          //   var array = data.slice();
             
-            var json = JSON.stringify({"data": {"status" : "sent you a secret message on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
-            $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "sent you a secret message on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
-              notify(data, json);
-            });
-          }
+          //   var json = JSON.stringify({"data": {"status" : "sent you a secret message on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
+          //   $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "sent you a secret message on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
+          //     notify(data, json);
+          //   });
+          // }
 
         });
 

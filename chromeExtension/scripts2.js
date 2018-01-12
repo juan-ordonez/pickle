@@ -596,12 +596,13 @@ function comment(e) {
     chrome.storage.local.get(['currentGroup'], function(result) {
       //Get current group
       var currentGroup = result['currentGroup'];
+      var currentGroupName = $("#"+currentGroup).text();
         //Send all comment data to background page
       chrome.storage.local.get(['tags', 'public'], function (result) {
         tags = result['tags'];
         all = result['public'];
         chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
-        picture : picture, pageTitle : pageTitle, checked : true, currentGroup : currentGroup});
+        picture : picture, pageTitle : pageTitle, checked : true, currentGroup : currentGroup, currentGroupName: currentGroupName });
       });
     });
 
@@ -646,13 +647,14 @@ function yippIt(e) {
   var user = userName.split(" ")[0];
   //Get current group
   var currentGroup = $(".drawer .active").attr("id");
+  var currentGroupName = $("#"+currentGroup).text();
 
   //Send all comment data to background page
   chrome.storage.local.get(['tags', 'public'], function (result) {
     tags = result['tags'];
     all = result['public'];
     chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
-      picture : picture, pageTitle : pageTitle, checked : true, currentGroup : currentGroup});
+      picture : picture, pageTitle : pageTitle, checked : true, currentGroup : currentGroup, currentGroupName: currentGroupName});
   });
 
   //Change styling of activeTab card

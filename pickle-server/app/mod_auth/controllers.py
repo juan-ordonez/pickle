@@ -340,9 +340,12 @@ def loadComment():
         if session.authToken:
             friends.add(session.id)
     jsonData = {}
-    groups = [("general", user.commentsTaggedIn)]
+    groups = []
     for group in user.groups:
-        groups.append((group.id, group.comments))
+        if group.id == user.id:
+            groups.append(("general", group.comments))
+        else:
+            groups.append((group.id, group.comments))
 
     for group in groups:
         comments = []

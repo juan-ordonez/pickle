@@ -34,13 +34,6 @@
     <!-- Drawer -->
     <div class="drawer fixed-top hidden" id="groupsHTML">
         <div class="groupsDrawer">
-            <!-- <div class="d-flex flex-row flex-nowrap justify-content-between">
-                <small>GROUPS</small>
-                <a href="createGroup.html"><i class="far fa-plus-square"></i></a>
-            </div>
-            <a class="nav-link drawerLink active" href="#"># General</a>
-            <a class="nav-link drawerLink" href="#"># Family</a>
-            <a class="nav-link drawerLink" href="#"># BrosB4Hoes</a> -->
         </div>
         <div class="directDrawer mt-3">
         </div>
@@ -49,9 +42,10 @@
     <div class="closeDrawerArea" style="display:none;"></div> 
 
     <!-- Top navigation bar -->
-    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-center align-items-center">
+    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center">
       <a href="#" class="hamburger"><i class="fas fa-bars"></i></a>
       <h1 class="navbar-brand">Yipp</h1>
+      <a href="settings.html"><i class="fa fa-user-circle fa-lg"></i></a>
     </nav>
 
     <!-- Bottom navigation bar -->
@@ -60,10 +54,10 @@
         <a class="nav-link active" href="#" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
         <!-- <a class="nav-link" href="popup.html" id="commentsNav"><i class="fa fa-comment fa-lg"></i></a> -->
         <a class="nav-link" href="notifications.html" id="notificationsNav"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
-        <a class="nav-link" href="account.html" id="accountNav"><i class="fa fa-user-circle fa-lg"></i></a>
         <div id="notificationBadge">
           <span class="badge badge-primary" id="numNotifications"></span>
         </div>
+        <!-- <a class="nav-link" href="account.html" id="accountNav"><i class="fa fa-user-circle fa-lg"></i></a> -->
       </div> 
     </nav>
 
@@ -72,7 +66,7 @@
     <div class="container">
         <div class="groupTitleContainer d-flex justify-content-start align-items-center">
             <small><a href="#" class="groupTitle"></a></small>
-            <a href="groupDetails.html" class="groupDetailsBtn ml-auto"><i class="fas fa-cog"></i></a>
+            <a href="groupDetails.html" class="groupDetailsBtn ml-auto"><i class="fas fa-chevron-right"></i></a>
         </div>
         <div id="activePageCard" class="card mb-3" style="height:auto;">
             <div class="pr-3 pl-3 pt-2 pb-2">

@@ -22,14 +22,54 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   var domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
   pageTitle = activeTab.title;
 
+  //Populate drawer
+  if ($("#groupsHTML")) {
+    chrome.storage.local.get(['groupsHTML'], function (result) {
+      var groupsHTML = result['groupsHTML']
+      if (groupsHTML != null) {
+        $(".groupsDrawer").html(groupsHTML);
+        chrome.storage.local.get(['currentGroup'], function(data) {
+          var group = $('#' + data['currentGroup']);
+          group.addClass("active");
+          $(".groupTitle").text(group.text());
+        });
+      }
+    });
+  }
+
   //Populate active tab card in newsfeed
-  if ($("#activePageCard")) {
+  if (window.location.href == chrome.extension.getURL("newsfeed.html")) {
     $("#activePageTitle").text(pageTitle.trimToLength(80));
     $("#activePageUrl").text(domain);
     $(document).on("click", "#viewComments", function(){
       window.location.href = chrome.extension.getURL('popup.html');
     });
   }
+
+if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.location.href == chrome.extension.getURL("popup.html")) {
+  //Initialize textareas for comments
+  chrome.storage.local.get(['friendsArray'], function (result) {
+    var friendsData = [];
+    for (i=0; i < result.friendsArray.length; i++){
+      friendsData.push({ id:result.friendsArray[i][0], name:result.friendsArray[i][1], 'avatar':result.friendsArray[i][2], 'type':'contact' });
+    }
+    $('textarea.mention').mentionsInput({
+      onDataRequest:function (mode, query, callback) {
+        var data = friendsData;
+
+        data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+
+        callback.call(this, data);
+
+      }
+    });
+
+    chrome.storage.local.get(['messageBackup'], function(result) {
+      $("#newComment").val(result['messageBackup'])
+    });
+
+  });
+}
 
   //Submit comments
   if (document.getElementById("submitComment")) {
@@ -87,15 +127,15 @@ $(document).on("click", "#notificationsBell", function(){
 });
 
 //Clicking on user names
-$(document).on("click", ".userProfile", function(){
-  var previousPage = $("#bottomNav .active").attr('id');
-  chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href});
-  var profileID = $(this).attr("id");
-  var profileName = $(this).text();
-  // var profilePic = $(this).attr("id");
-  chrome.extension.sendMessage({type : "loadUser", profileID : profileID, profileName : profileName});
-  window.location.href = chrome.extension.getURL('userProfile.html');
-});
+// $(document).on("click", ".userProfile", function(){
+//   var previousPage = $("#bottomNav .active").attr('id');
+//   chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href});
+//   var profileID = $(this).attr("id");
+//   var profileName = $(this).text();
+//   // var profilePic = $(this).attr("id");
+//   chrome.extension.sendMessage({type : "loadUser", profileID : profileID, profileName : profileName});
+//   window.location.href = chrome.extension.getURL('userProfile.html');
+// });
 
 //Clicking on group details
 $(document).on("click", ".groupDetailsBtn", function(){
@@ -193,27 +233,29 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
 //Loading user profiles
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.type == "userLoaded") {
-      if (window.location.href == chrome.extension.getURL('userProfile.html')) {
-        $("#posts").hide(); 
-        chrome.storage.local.get(['userPostsHTML'], function(result) {
-        userPostsHTML = result['userPostsHTML'];
-        if (userPostsHTML != null) {
-              $("#posts").html(userPostsHTML);
-              $("#posts .postDescription").each(function(){
-                var htmlDescriptionUser = $(this).text();
-                $(this).empty();
-                $(this).html(htmlDescriptionUser);
-              });
-              $("#posts").show();
-            } else {
-              $("#posts").html(' ');
-            }
-        });
-      }
-    }
+
+    // if (request.type == "userLoaded") {
+    //   if (window.location.href == chrome.extension.getURL('userProfile.html')) {
+    //     $("#posts").hide(); 
+    //     chrome.storage.local.get(['userPostsHTML'], function(result) {
+    //     userPostsHTML = result['userPostsHTML'];
+    //     if (userPostsHTML != null) {
+    //           $("#posts").html(userPostsHTML);
+    //           $("#posts .postDescription").each(function(){
+    //             var htmlDescriptionUser = $(this).text();
+    //             $(this).empty();
+    //             $(this).html(htmlDescriptionUser);
+    //           });
+    //           $("#posts").show();
+    //         } else {
+    //           $("#posts").html(' ');
+    //         }
+    //     });
+    //   }
+    // }
+
     // When user Yipps from the newsfeed, append yipp to newsfeed
-    else if(request.type == "cardInfoReady"){
+    if(request.type == "cardInfoReady"){
 
       chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription'], function(result) {
 
@@ -361,21 +403,21 @@ if (window.location.href == chrome.extension.getURL('account.html')) {
   //   }
   // });
 
-  chrome.storage.local.get(['profilePostsHTML'], function(result) {
-  profilePostsHTML = result['profilePostsHTML'];
-  if (profilePostsHTML != null) {
-        $("#postsProfile").html(profilePostsHTML);
-        $("#postsProfile .postDescription").each(function(){
-          var htmlDescriptionProfile = $(this).text();
-          $(this).empty();
-          $(this).html(htmlDescriptionProfile);
-        });
-        $("#postsProfile").show();
-      } else {
-        $("#postsProfile").html(' ');
-      }
+  // chrome.storage.local.get(['profilePostsHTML'], function(result) {
+  // profilePostsHTML = result['profilePostsHTML'];
+  // if (profilePostsHTML != null) {
+  //       $("#postsProfile").html(profilePostsHTML);
+  //       $("#postsProfile .postDescription").each(function(){
+  //         var htmlDescriptionProfile = $(this).text();
+  //         $(this).empty();
+  //         $(this).html(htmlDescriptionProfile);
+  //       });
+  //       $("#postsProfile").show();
+  //     } else {
+  //       $("#postsProfile").html(' ');
+  //     }
 
-  });
+  // });
 
   connect("first");
 }
@@ -423,7 +465,7 @@ if (window.location.href == chrome.extension.getURL('groupDetails.html')) {
 }
 
 // populate account tab
-if (window.location.href == chrome.extension.getURL('account.html')) {
+if (window.location.href == chrome.extension.getURL('settings.html')) {
   chrome.storage.local.get(['picture', 'userName'], function(result) {
   userName = result['userName'];
   picture = result['picture'];
@@ -457,29 +499,30 @@ chrome.runtime.onMessage.addListener(
   });
 
 $(document).on("click", "#newsfeedNav", function(){
-  chrome.extension.sendMessage({type : "popupNewsfeed"});
+  chrome.storage.local.set({"defaultPopup" : "newsfeed.html"});
+  chrome.browserAction.setPopup({popup : "newsfeed.html"});
 });
 
 if ($("#newsfeedNav").hasClass("active")) {
   $(document).on("click", ".backBtn", function(){
-    chrome.extension.sendMessage({type : "popupNewsfeed"});
+    chrome.storage.local.set({"defaultPopup" : "newsfeed.html"});
+    chrome.browserAction.setPopup({popup : "newsfeed.html"});
   });
 }
 
-$(document).on("click", "#commentsNav", function(){
-  chrome.extension.sendMessage({type : "popupComments"});
-});
+// $(document).on("click", "#viewComments", function(){
+//   chrome.storage.local.set({"defaultPopup" : "popup.html"});
+//   chrome.browserAction.setPopup({popup : "popup.html"});
+// });
 
 $(document).on("click", "#notificationsNav", function(){
-  chrome.extension.sendMessage({type : "popupNotifications"});
-});
-
-$(document).on("click", "#accountNav", function(){
-  chrome.extension.sendMessage({type : "popupAccount"});
+  chrome.storage.local.set({"defaultPopup" : "notifications.html"});
+  chrome.browserAction.setPopup({popup : "notifications.html"});
 });
 
 $(document).on("click", "#notifications a, .cardNewsfeed a", function(){
-  chrome.extension.sendMessage({type : "popupComments"});
+  chrome.storage.local.set({"defaultPopup" : "popup.html"});
+  chrome.browserAction.setPopup({popup : "popup.html"});
 });
 
 $(document).on("click", "#confirmLeaveGroup", function(){
@@ -616,6 +659,9 @@ function yippIt(e) {
 
 function logout(e) {
   
+  $(".container").hide();
+  $(".logoutSpinner").show();
+
   e.preventDefault();
 
   chrome.storage.local.get(['session', 'userID', 'notificationsJSON'], function(response) {
@@ -650,7 +696,7 @@ function connect(message) {
     //Get data from storage if background is done loading
     if (response.done) {
       chrome.storage.local.get(['commentsJSON', 'userName', 'userEmail', 'friendsArray', 'session', 'url', 'picture', 'notifications', 
-        'notificationsHTML', 'friendsHTMLGroup', 'friendsHTMLDirect', 'userID', 'postsHTML', 'profilePostsHTML', 'groupsHTML', 'currentGroup', 'notificationsJSON'], function (result) {
+        'notificationsHTML', 'friendsHTMLGroup', 'friendsHTMLDirect', 'userID', 'postsHTML', 'groupsHTML', 'currentGroup', 'notificationsJSON'], function (result) {
         // console.log(result['commentsJSON']);
         var commentsJSON = result['commentsJSON'];
         userName = result['userName'];
@@ -665,22 +711,10 @@ function connect(message) {
         friendsHTMLDirect = result['friendsHTMLDirect']
         userID = result['userID'];
         postsHTML = result['postsHTML'];
-        profilePostsHTML = result['profilePostsHTML'];
+        // profilePostsHTML = result['profilePostsHTML'];
         groupsHTML = result['groupsHTML'];
         var currentGroup = result['currentGroup'];
         var notificationsJSON = result['notificationsJSON'];
-      
-    // if (groupsHTML != null) {
-    //       // console.log(groupsHTML);
-    //       $("#groupsHTML").html(groupsHTML);
-          
-    //       var group = $('#' + currentGroup);
-    //       group.addClass("active");
-    //       $(".groupTitle").text(group.text());
-          
-    //     } else {
-    //       $("#groupsHTML").html('<div class="d-flex flex-row flex-nowrap justify-content-between"><small>GROUPS</small><a href="createGroup.html"><i class="far fa-plus-square"></i></a></div>');
-    //     }
 
 
       if (commentsJSON != null) {
@@ -727,15 +761,6 @@ function connect(message) {
         //   $("#posts").html(' ');
         // }
 
-        if (groupsHTML != null) {
-          $(".groupsDrawer").html(groupsHTML);
-          chrome.storage.local.get(['currentGroup'], function(data) {
-            var group = $('#' + data['currentGroup']);
-            group.addClass("active");
-            $(".groupTitle").text(group.text());
-          });
-        }
-
         console.log(notificationsJSON);
         var total = 0;
         Object.keys(notificationsJSON).forEach(function(key) {
@@ -757,7 +782,7 @@ function connect(message) {
           $("#general").find("span").show();
         }
         if (currentGroup == "general") {
-          $(".fa-cog").hide();
+          $(".fa-chevron-right").hide();
         }
         
         
@@ -780,28 +805,21 @@ function connect(message) {
           }
         }
 
-        var friendsData = [];
-        for (i=0; i < result.friendsArray.length; i++){
-          friendsData.push({ id:result.friendsArray[i][0], name:result.friendsArray[i][1], 'avatar':result.friendsArray[i][2], 'type':'contact' });
-        }
+        // var friendsData = [];
+        // for (i=0; i < result.friendsArray.length; i++){
+        //   friendsData.push({ id:result.friendsArray[i][0], name:result.friendsArray[i][1], 'avatar':result.friendsArray[i][2], 'type':'contact' });
+        // }
 
-        $('textarea.mention').mentionsInput({
-          onDataRequest:function (mode, query, callback) {
-            var data = friendsData;
-            // var data = [
-            //   { id:1, name:'Kenneth Auchenberg', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:2, name:'Jon Froda', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:3, name:'Anders Pollas', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:4, name:'Kasper Hulthin', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:5, name:'Andreas Haugstrup', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-            //   { id:6, name:'Pete Lacey', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' }
-            // ];
+        // $('textarea.mention').mentionsInput({
+        //   onDataRequest:function (mode, query, callback) {
+        //     var data = friendsData;
 
-            data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+        //     data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
 
-            callback.call(this, data);
-          }
-        });
+        //     callback.call(this, data);
+
+        //   }
+        // });
 
       });
     // If background is not done loading, keep asking

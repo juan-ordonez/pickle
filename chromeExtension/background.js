@@ -17,16 +17,13 @@ var postsHTML;
 var groupsHTML;
 var commentsJSON;
 var notificationsJSON;
-var popup = "newsfeed.html";
-
 
 chrome.storage.local.get(['accessToken'], function(result) {
 
   var token = result['accessToken'];
 
   if (token) {
-    chrome.browserAction.setPopup({popup : popup});
-
+    chrome.browserAction.setPopup({popup : "newsfeed.html"});
   }
 
 
@@ -206,11 +203,12 @@ chrome.notifications.onClicked.addListener(function (id) {
 function getUserData() {
 
 
-  chrome.storage.local.get(['accessToken', 'userName', 'userEmail', 'session', 'picture', 'userID'], function(data) {
+  chrome.storage.local.get(['accessToken', 'userName', 'userEmail', 'session', 'picture', 'userID', 'defaultPopup'], function(data) {
     
+  var popup = data['defaultPopup'];
+
   if (data['accessToken'] != null) { 
 
-    
     session = data['accessToken'];
     
     $.get("http://localhost:5000/user/" + session, function(data) {
@@ -218,8 +216,8 @@ function getUserData() {
       if (json.status == false) {
         chrome.browserAction.setPopup({popup : "register.html"});
     
-      } else {
-          chrome.browserAction.setPopup({popup : popup});
+      } else { 
+          // chrome.browserAction.setPopup({popup : popup});
           userName = json.name;
           userEmail = json.email;
           friendsArray = json.friends;
@@ -293,7 +291,7 @@ function getUserData() {
             $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
                     
                   chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
-                  console.log(JSON.parse(data));
+                  // console.log(JSON.parse(data));
                   d5.resolve();
             });
             
@@ -389,52 +387,14 @@ chrome.runtime.onMessage.addListener(
 
 });
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) { 
-    if (request.type == "popupNewsfeed") {
-      popup = "newsfeed.html";
-    }
-
-    else if (request.type == "popupComments") {
-      popup = "popup.html";
-    }
-
-    else if (request.type == "popupNotifications") {
-      popup = "notifications.html";
-    }
-
-    else if (request.type == "popupAccount") {
-      popup = "account.html";
-    }
-
-    else if (request.type == "loadUser") {
-      // chrome.extension.sendMessage({type : "userLoading", profileName : request.profileName});
-      chrome.storage.local.set({"profileName" : request.profileName});
-      // chrome.extension.sendMessage({type : "userLoading"});
-      $("body").load("http://pickle-server-183401.appspot.com/loadPostsUser/ #posts", {"id" : userID.toString(), "profileID" : request.profileID}, function () {
-        userPostsHTML = $("#posts").html();
-        chrome.storage.local.set({"userPostsHTML" : userPostsHTML});
-        chrome.extension.sendMessage({type : "userLoaded"});
-      });
-    }
-
-    // else if (request.type == "profileClick") {
-    //   var previousPage = request.previousPage;
-    //   chrome.storage.local.set({"previousPage" : previousPage});
-
-    // }
-});
-
-
 
 function onFacebookLogin(){
-
-  
 
 chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
   var token = result['accessToken'];
   var id = result['userID'];
+  var popup = result['defaultPopup'];
   // console.log(!token);
   if (!token) {
     console.log("LOGIN");
@@ -529,12 +489,12 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
               });     
           });
           chrome.tabs.remove(tabs[i].id);
-          chrome.browserAction.setPopup({popup : popup});
+          // chrome.browserAction.setPopup({popup : "popup"});
         }
       }
     });
   } else {
-    chrome.browserAction.setPopup({popup : popup});
+    // chrome.browserAction.setPopup({popup : "popup"});
   }
 
   

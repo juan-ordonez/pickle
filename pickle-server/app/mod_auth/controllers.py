@@ -621,7 +621,7 @@ def loadPosts():
 
         #Get names of users tagged in post
         tags = []
-        
+
         for tag in post.tags:
             if tag.id != poster.id:
                 tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
@@ -640,93 +640,93 @@ def loadPosts():
 
 
 
-@mod_auth.route('/loadPostsProfile/', methods=['GET','POST'])
-@crossdomain(origin='*')
-@flask_optimize.optimize()
-def loadPostsProfile():
-    posts = []
-    user = User.query.filter_by(id=request.form['id']).first()
+# @mod_auth.route('/loadPostsProfile/', methods=['GET','POST'])
+# @crossdomain(origin='*')
+# @flask_optimize.optimize()
+# def loadPostsProfile():
+#     posts = []
+#     user = User.query.filter_by(id=request.form['id']).first()
     
-    for post in user.newsfeed:
-        poster = User.query.filter_by(id=post.poster_id).first()
-        if user in post.tags or user==poster:
-            parsed_uri = urlparse(post.url)
-            domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+#     for post in user.newsfeed:
+#         poster = User.query.filter_by(id=post.poster_id).first()
+#         if user in post.tags or user==poster:
+#             parsed_uri = urlparse(post.url)
+#             domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
             
-            #format usernames of user and poster
-            userName = "<a class='userProfile' href=# id="+user.id+">"+user.name+"</a>"
-            posterName = "<a class='userProfile' href=# id="+poster.id+">"+poster.name+"</a>"
+#             #format usernames of user and poster
+#             userName = "<a class='userProfile' href=# id="+user.id+">"+user.name+"</a>"
+#             posterName = "<a class='userProfile' href=# id="+poster.id+">"+poster.name+"</a>"
 
-            #Get names of friends of user
-            friends = []
-            for session in user.friendSession:
-                if session.authToken:
-                    friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
+#             #Get names of friends of user
+#             friends = []
+#             for session in user.friendSession:
+#                 if session.authToken:
+#                     friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
 
-            #Get names of users tagged in post
-            tags = []
+#             #Get names of users tagged in post
+#             tags = []
 
-            for tag in post.tags:
-                if tag.id != poster.id:
-                    tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
+#             for tag in post.tags:
+#                 if tag.id != poster.id:
+#                     tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
 
-            postDescription = getPostDescription(userName, posterName, tags, friends)
+#             postDescription = getPostDescription(userName, posterName, tags, friends)
 
-            posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
+#             posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
         
 
-    posts = sorted(posts, reverse=True, key=lambda c : c[2])
-    templateData = {
-        'posts' : posts
+#     posts = sorted(posts, reverse=True, key=lambda c : c[2])
+#     templateData = {
+#         'posts' : posts
         
-    }
-    return render_template('auth/profile.html', **templateData)
+#     }
+#     return render_template('auth/profile.html', **templateData)
 
 
-@mod_auth.route('/loadPostsUser/', methods=['GET','POST'])
-@crossdomain(origin='*')
-@flask_optimize.optimize()
-def loadPostsUser():
-    profile = User.query.filter_by(id=request.form['profileID']).first()
-    posts = []
-    user = User.query.filter_by(id=request.form['id']).first()
+# @mod_auth.route('/loadPostsUser/', methods=['GET','POST'])
+# @crossdomain(origin='*')
+# @flask_optimize.optimize()
+# def loadPostsUser():
+#     profile = User.query.filter_by(id=request.form['profileID']).first()
+#     posts = []
+#     user = User.query.filter_by(id=request.form['id']).first()
     
-    for post in user.newsfeed:
-        poster = User.query.filter_by(id=post.poster_id).first()
-        if profile in post.tags or profile==poster:
-            parsed_uri = urlparse(post.url)
-            domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+#     for post in user.newsfeed:
+#         poster = User.query.filter_by(id=post.poster_id).first()
+#         if profile in post.tags or profile==poster:
+#             parsed_uri = urlparse(post.url)
+#             domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
             
-            #format usernames of user and poster
-            userName = "<a class='userProfile' href=# id="+user.id+">"+user.name+"</a>"
-            posterName = "<a class='userProfile' href=# id="+poster.id+">"+poster.name+"</a>"
+#             #format usernames of user and poster
+#             userName = "<a class='userProfile' href=# id="+user.id+">"+user.name+"</a>"
+#             posterName = "<a class='userProfile' href=# id="+poster.id+">"+poster.name+"</a>"
 
-            #Get names of friends of user
-            friends = []
-            for session in user.friendSession:
-                if session.authToken:
-                    friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
+#             #Get names of friends of user
+#             friends = []
+#             for session in user.friendSession:
+#                 if session.authToken:
+#                     friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
 
-            #Get names of users tagged in post
-            tags = []
+#             #Get names of users tagged in post
+#             tags = []
 
-            for tag in post.tags:
-                if tag.id != poster.id:
-                    tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
+#             for tag in post.tags:
+#                 if tag.id != poster.id:
+#                     tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
 
-            postDescription = getPostDescription(userName, posterName, tags, friends)
+#             postDescription = getPostDescription(userName, posterName, tags, friends)
 
-            posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
+#             posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
         
 
-    posts = sorted(posts, reverse=True, key=lambda c : c[2])
-    templateData = {
-        'posts' : posts,
-        'userName' : profile.name,
-        'userPic' : profile.picture
+#     posts = sorted(posts, reverse=True, key=lambda c : c[2])
+#     templateData = {
+#         'posts' : posts,
+#         'userName' : profile.name,
+#         'userPic' : profile.picture
         
-    }
-    return render_template('auth/userProfile.html', **templateData)
+#     }
+#     return render_template('auth/userProfile.html', **templateData)
 
 @mod_auth.route('/createGroup/', methods=['POST', 'GET'])
 @crossdomain(origin='*')

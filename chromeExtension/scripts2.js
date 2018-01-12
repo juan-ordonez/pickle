@@ -608,6 +608,10 @@ function comment(e) {
     //Append comment to current window
     appendComment(user, value, picture, all);
   }
+
+  $("#newComment").val("");
+  chrome.storage.local.set({"messageBackup" : ""});
+
 }
   
 
@@ -654,6 +658,9 @@ function yippIt(e) {
   //Change styling of activeTab card
   $("#activePageCard").addClass("inactive");
   $("#submitYipp").prop("disabled", "true");
+
+  $("#newComment").val("");
+  chrome.storage.local.set({"messageBackup" : ""});
 
 }
 

@@ -254,8 +254,8 @@ button:active {
 
 #notificationBadge {
 	position: absolute;
-	bottom: 18px;
-	left: 216px;
+	bottom: 16px;
+	left: 314px;
 	z-index: -1;
 }
 

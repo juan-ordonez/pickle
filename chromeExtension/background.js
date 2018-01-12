@@ -466,7 +466,6 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                      $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {
                     
                   chrome.storage.local.set({"general" : data});
-                    chrome.extension.sendMessage({handshake:"login"});
                   });
 
                   });
@@ -504,6 +503,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
                   chrome.storage.local.set({"currentGroup" : "general"}, function () {
                       console.log(id);
+                      chrome.extension.sendMessage({handshake:"login"});
                   });
 
 
@@ -516,7 +516,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
               });     
           });
           chrome.tabs.remove(tabs[i].id);
-          // chrome.browserAction.setPopup({popup : "popup"});
+          chrome.browserAction.setPopup({popup : "newsfeed.html"});
         }
       }
     });

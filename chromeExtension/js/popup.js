@@ -23,15 +23,6 @@ $(document).on("click", ".hidePost", function(){
 	});
 });
 
-//Populate friend profile page
-if (window.location.href == chrome.extension.getURL("userProfile.html")) {
-	 chrome.storage.local.get(["previousPage", "previousUrl", "profileName"], function(result){
-	 	$("#"+result.previousPage).addClass("active");
-	 	$(".backBtn").prop("href", result.previousUrl);
-	 	$("#topNav h1").text(result.profileName);
-	 });
-	 
-}
 
 //Populate group details page
 if (window.location.href == chrome.extension.getURL("groupDetails.html")) {
@@ -125,6 +116,13 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
 // 		}
 // 	});
 // }
+
+$('#newComment').bind('input propertychange', function() {
+
+	var message = $("#newComment").val();
+	chrome.storage.local.set({"messageBackup" : message});
+
+});
 
 if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 

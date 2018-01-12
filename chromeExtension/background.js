@@ -17,16 +17,13 @@ var postsHTML;
 var groupsHTML;
 var commentsJSON;
 var notificationsJSON;
-var popup = "newsfeed.html";
-
 
 chrome.storage.local.get(['accessToken'], function(result) {
 
   var token = result['accessToken'];
 
   if (token) {
-    chrome.browserAction.setPopup({popup : popup});
-
+    chrome.browserAction.setPopup({popup : "newsfeed.html"});
   }
 
 
@@ -102,12 +99,12 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
 
 
-            $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+            // $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
 
-               profilePostsHTML = $("#posts").html();
-               chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
-               console.log("updating profile");
-            });
+            //    profilePostsHTML = $("#posts").html();
+            //    chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
+            //    console.log("updating profile");
+            // });
 
             $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
                var json = {};
@@ -206,11 +203,12 @@ chrome.notifications.onClicked.addListener(function (id) {
 function getUserData() {
 
 
-  chrome.storage.local.get(['accessToken', 'userName', 'userEmail', 'session', 'picture', 'userID'], function(data) {
+  chrome.storage.local.get(['accessToken', 'userName', 'userEmail', 'session', 'picture', 'userID', 'defaultPopup'], function(data) {
     
+  var popup = data['defaultPopup'];
+
   if (data['accessToken'] != null) { 
 
-    
     session = data['accessToken'];
     
     $.get("http://localhost:5000/user/" + session, function(data) {
@@ -218,8 +216,8 @@ function getUserData() {
       if (json.status == false) {
         chrome.browserAction.setPopup({popup : "register.html"});
     
-      } else {
-          chrome.browserAction.setPopup({popup : popup});
+      } else { 
+          // chrome.browserAction.setPopup({popup : popup});
           userName = json.name;
           userEmail = json.email;
           friendsArray = json.friends;
@@ -388,52 +386,14 @@ chrome.runtime.onMessage.addListener(
 
 });
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) { 
-    if (request.type == "popupNewsfeed") {
-      popup = "newsfeed.html";
-    }
-
-    else if (request.type == "popupComments") {
-      popup = "popup.html";
-    }
-
-    else if (request.type == "popupNotifications") {
-      popup = "notifications.html";
-    }
-
-    else if (request.type == "popupAccount") {
-      popup = "account.html";
-    }
-
-    else if (request.type == "loadUser") {
-      // chrome.extension.sendMessage({type : "userLoading", profileName : request.profileName});
-      chrome.storage.local.set({"profileName" : request.profileName});
-      // chrome.extension.sendMessage({type : "userLoading"});
-      $("body").load("http://pickle-server-183401.appspot.com/loadPostsUser/ #posts", {"id" : userID.toString(), "profileID" : request.profileID}, function () {
-        userPostsHTML = $("#posts").html();
-        chrome.storage.local.set({"userPostsHTML" : userPostsHTML});
-        chrome.extension.sendMessage({type : "userLoaded"});
-      });
-    }
-
-    // else if (request.type == "profileClick") {
-    //   var previousPage = request.previousPage;
-    //   chrome.storage.local.set({"previousPage" : previousPage});
-
-    // }
-});
-
-
 
 function onFacebookLogin(){
-
-  
 
 chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
   var token = result['accessToken'];
   var id = result['userID'];
+  var popup = result['defaultPopup'];
   // console.log(!token);
   if (!token) {
     console.log("LOGIN");
@@ -484,10 +444,10 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                   });
 
 
-                  $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+            //       $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
 
-                   profilePostsHTML = $("#posts").html();
-                  chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
+            //        profilePostsHTML = $("#posts").html();
+            //       chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
 
               
             // });
@@ -528,12 +488,12 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
               });     
           });
           chrome.tabs.remove(tabs[i].id);
-          chrome.browserAction.setPopup({popup : popup});
+          // chrome.browserAction.setPopup({popup : "popup"});
         }
       }
     });
   } else {
-    chrome.browserAction.setPopup({popup : popup});
+    // chrome.browserAction.setPopup({popup : "popup"});
   }
 
   
@@ -633,11 +593,11 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           // console.log(data);
           // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
 
-          $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
-                 profilePostsHTML = $("#posts").html();
-                 console.log("profile newsfeed updated");
-                 chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
-          });
+          // $("body").load("http://localhost:5000/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
+          //        profilePostsHTML = $("#posts").html();
+          //        console.log("profile newsfeed updated");
+          //        chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
+          // });
           
           var d1 = $.Deferred(),
           d2 = $.Deferred();

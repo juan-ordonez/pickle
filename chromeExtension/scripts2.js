@@ -22,6 +22,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   var domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
   pageTitle = activeTab.title;
 
+  //Populate drawer
   if ($("#groupsHTML")) {
     chrome.storage.local.get(['groupsHTML'], function (result) {
       var groupsHTML = result['groupsHTML']
@@ -37,13 +38,38 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   }
 
   //Populate active tab card in newsfeed
-  if ($("#activePageCard")) {
+  if (window.location.href == chrome.extension.getURL("newsfeed.html")) {
     $("#activePageTitle").text(pageTitle.trimToLength(80));
     $("#activePageUrl").text(domain);
     $(document).on("click", "#viewComments", function(){
       window.location.href = chrome.extension.getURL('popup.html');
     });
   }
+
+if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.location.href == chrome.extension.getURL("popup.html")) {
+  //Initialize textareas for comments
+  chrome.storage.local.get(['friendsArray'], function (result) {
+    var friendsData = [];
+    for (i=0; i < result.friendsArray.length; i++){
+      friendsData.push({ id:result.friendsArray[i][0], name:result.friendsArray[i][1], 'avatar':result.friendsArray[i][2], 'type':'contact' });
+    }
+    $('textarea.mention').mentionsInput({
+      onDataRequest:function (mode, query, callback) {
+        var data = friendsData;
+
+        data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+
+        callback.call(this, data);
+
+      }
+    });
+
+    chrome.storage.local.get(['messageBackup'], function(result) {
+      $("#newComment").val(result['messageBackup'])
+    });
+
+  });
+}
 
   //Submit comments
   if (document.getElementById("submitComment")) {
@@ -471,29 +497,30 @@ chrome.runtime.onMessage.addListener(
   });
 
 $(document).on("click", "#newsfeedNav", function(){
-  chrome.extension.sendMessage({type : "popupNewsfeed"});
+  chrome.storage.local.set({"defaultPopup" : "newsfeed.html"});
+  chrome.browserAction.setPopup({popup : "newsfeed.html"});
 });
 
 if ($("#newsfeedNav").hasClass("active")) {
   $(document).on("click", ".backBtn", function(){
-    chrome.extension.sendMessage({type : "popupNewsfeed"});
+    chrome.storage.local.set({"defaultPopup" : "newsfeed.html"});
+    chrome.browserAction.setPopup({popup : "newsfeed.html"});
   });
 }
 
-$(document).on("click", "#commentsNav", function(){
-  chrome.extension.sendMessage({type : "popupComments"});
-});
+// $(document).on("click", "#viewComments", function(){
+//   chrome.storage.local.set({"defaultPopup" : "popup.html"});
+//   chrome.browserAction.setPopup({popup : "popup.html"});
+// });
 
 $(document).on("click", "#notificationsNav", function(){
-  chrome.extension.sendMessage({type : "popupNotifications"});
-});
-
-$(document).on("click", "#accountNav", function(){
-  chrome.extension.sendMessage({type : "popupAccount"});
+  chrome.storage.local.set({"defaultPopup" : "notifications.html"});
+  chrome.browserAction.setPopup({popup : "notifications.html"});
 });
 
 $(document).on("click", "#notifications a, .cardNewsfeed a", function(){
-  chrome.extension.sendMessage({type : "popupComments"});
+  chrome.storage.local.set({"defaultPopup" : "popup.html"});
+  chrome.browserAction.setPopup({popup : "popup.html"});
 });
 
 $(document).on("click", "#confirmLeaveGroup", function(){
@@ -630,6 +657,9 @@ function yippIt(e) {
 
 function logout(e) {
   
+  $(".container").hide();
+  $(".logoutSpinner").show();
+
   e.preventDefault();
 
   chrome.storage.local.get(['session', 'userID', 'notificationsJSON'], function(response) {
@@ -750,7 +780,7 @@ function connect(message) {
           $("#general").find("span").show();
         }
         if (currentGroup == "general") {
-          $(".fa-cog").hide();
+          $(".fa-chevron-right").hide();
         }
         
         
@@ -773,20 +803,21 @@ function connect(message) {
           }
         }
 
-        var friendsData = [];
-        for (i=0; i < result.friendsArray.length; i++){
-          friendsData.push({ id:result.friendsArray[i][0], name:result.friendsArray[i][1], 'avatar':result.friendsArray[i][2], 'type':'contact' });
-        }
+        // var friendsData = [];
+        // for (i=0; i < result.friendsArray.length; i++){
+        //   friendsData.push({ id:result.friendsArray[i][0], name:result.friendsArray[i][1], 'avatar':result.friendsArray[i][2], 'type':'contact' });
+        // }
 
-        $('textarea.mention').mentionsInput({
-          onDataRequest:function (mode, query, callback) {
-            var data = friendsData;
+        // $('textarea.mention').mentionsInput({
+        //   onDataRequest:function (mode, query, callback) {
+        //     var data = friendsData;
 
-            data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+        //     data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
 
-            callback.call(this, data);
-          }
-        });
+        //     callback.call(this, data);
+
+        //   }
+        // });
 
       });
     // If background is not done loading, keep asking

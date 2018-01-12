@@ -317,6 +317,10 @@ button:active {
 	color: #424242;
 }
 
+#topNav .navbar-brand {
+	margin: 0;
+}
+
 .activePageBtns {
 	background-color: #EEEEEE;
 	color: #424242;
@@ -694,6 +698,12 @@ button:active {
 .loadingSpinner.newsfeed {
 	position: absolute;
 	top: 400px;
+	left: 180px;
+}
+
+.logoutSpinner {
+	position: absolute;
+	top: 290px;
 	left: 180px;
 }
 

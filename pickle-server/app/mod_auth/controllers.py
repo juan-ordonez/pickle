@@ -288,9 +288,12 @@ def comment():
                 #         feed.tags.append(taggedUser)
                     publicFriends.add(taggedUser.id)
 
-                for session in taggedUser.friendSession:
-                    if session.authToken:
+                taggedSessions = Session.query.filter_by(id=tag).all()
+                for session in taggedSessions:
+                    if session.authToken and session.id != user.id:
                         posts.add(session.authToken)
+                
+                for session in taggedUser.friendSession:
                     if session.id not in publicFriends and session.id not in tags:
                         friendGeneral = Group.query.filter_by(id=session.id).first()
                         if friendGeneral:
@@ -309,13 +312,19 @@ def comment():
 
 
     friends = set([])
+    friendsOfFriendsSet = set([])
     for session in user.friendSession:
         if session.authToken and session.id != user.id:
             friends.add(session.authToken)
+        friendOfFriend = User.query.filter_by(id=session.id).first()
+        for friendsession in friendOfFriend.friendSession:
+            if friendsession.authToken and friendsession.id not in friendsOfFriendsSet:
+                friendsOfFriendsSet.add(friendsession.id)
+
     if feed:
-        return json.dumps([json.dumps(list(friends)), json.dumps(list(posts)), groupId, user.id, comment.id, feed.id])
+        return json.dumps([json.dumps(list(friends)), json.dumps(list(posts)), groupId, user.id, comment.id, feed.id, json.dumps(list(friendsOfFriendsSet))])
     else:
-        return json.dumps([json.dumps(list(friends)), json.dumps(list(posts)), groupId, user.id, comment.id, None])
+        return json.dumps([json.dumps(list(friends)), json.dumps(list(posts)), groupId, user.id, comment.id, None, json.dumps(list(friendsOfFriendsSet))])
 
 
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
@@ -909,6 +918,14 @@ def friendsOfFriends():
             if generalFriend:
                 generalFriend.comments.append(comment)
                 generalFriend.posts.append(feed)
+            else:
+                newGroup = Group("General", str(datetime.now()))
+                newGroup.id = member.id
+                db.session.add(newGroup)
+                newGroup.users.append(member)
+                newGroup.comments.append(comment)
+                newGroup.posts.append(feed)
+
             # for session in member.friendSession:
             #     friendUser = User.query.filter_by(id=session.id).first()
             #     if friendUser not in added and friendUser != user:

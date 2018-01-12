@@ -162,10 +162,10 @@ $(document).on("click", "#createGroupBtn", function(event){
 
   chrome.storage.local.get(['userID'], function(data) {
 
-    $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : ''}, function(groupID) {
+    $.post("http://pickle-server-183401.appspot.com/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : ''}, function(groupID) {
       chrome.storage.local.set({"currentGroup" : groupID}, function () {
         
-        $.post("http://localhost:5000/loadGroupData/", {"id" : data['userID']}, function (data) {
+        $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : data['userID']}, function (data) {
                     
                   chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
                   console.log(JSON.parse(data));
@@ -173,7 +173,7 @@ $(document).on("click", "#createGroupBtn", function(event){
             });
 
 
-        $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
+        $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
               chrome.storage.local.set({groupsHTML : $("#groups").html()});
               console.log(groupsHTML);
               window.location.replace("newsfeed.html");
@@ -207,16 +207,16 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
 
 
       console.log(ids);
-      $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
+      $.post("http://pickle-server-183401.appspot.com/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {
         chrome.storage.local.set({"currentGroup" : groupID}, function () {
           
-          $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
+          $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
                 chrome.storage.local.set({groupsHTML : $("#groups").html()});
                 console.log(groupsHTML);
                 window.location.replace("newsfeed.html");
             
               });
-          $.post("http://localhost:5000/loadGroupData/", {"id" : data['userID']}, function (data) {
+          $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : data['userID']}, function (data) {
                     
                   chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
                   console.log(JSON.parse(data));
@@ -532,10 +532,10 @@ $(document).on("click", "#confirmLeaveGroup", function(){
 
   chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
     var id = result['userID'];
-      $.post("http://localhost:5000/leaveGroup/", {"id" : id, "currentGroup" : result['currentGroup']}, function(data) {
+      $.post("http://pickle-server-183401.appspot.com/leaveGroup/", {"id" : id, "currentGroup" : result['currentGroup']}, function(data) {
         
         chrome.storage.local.set({"currentGroup" : "general"}, function () {
-          $("body").load("http://localhost:5000/groupNames/ #groups", {"id" : id}, function () {
+          $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : id}, function () {
               chrome.storage.local.set({groupsHTML : $("#groups").html()});
               console.log(groupsHTML);
               window.location.replace("newsfeed.html");
@@ -679,7 +679,7 @@ function logout(e) {
   
     if (session) {
       console.log(notificationsJSON);
-      $.post("http://localhost:5000/postNotificationsDict/", {"id" : userID, "json" : JSON.stringify(notificationsJSON)});
+      $.post("http://pickle-server-183401.appspot.com/postNotificationsDict/", {"id" : userID, "json" : JSON.stringify(notificationsJSON)});
 
       //Log user out
       $.get("https://pickle-server-183401.appspot.com/logout/" + session, function(data){

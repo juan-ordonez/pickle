@@ -1,6 +1,6 @@
 entrypoint: gunicorn -c gunicorn.conf.py -b :$PORT app:app
 env: flex
-runtime: custom
+runtime: python
 #[START cloudsql_settings]
 beta_settings:
     # If using Cloud SQL, uncomment and set this value to the Cloud SQL

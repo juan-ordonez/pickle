@@ -496,13 +496,20 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
               
             });
 
+                  var l1 = $.Deferred(),
+                      l2 = $.Deferred();
+
                   $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
                     groupsHTML = $("#groups").html();
+                    l1.resolve();
               
                   })
 
                   chrome.storage.local.set({"currentGroup" : "general"}, function () {
-                      console.log(id);
+                      l2.resolve();
+                  });
+
+                  $.when(l1, l2).done(function (){
                       chrome.extension.sendMessage({handshake:"login"});
                   });
 

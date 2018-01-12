@@ -163,35 +163,49 @@ def getTimeLabel(commentDatetime):
     return timeLabel
 
 
-def friendsOfFriends(members, user, group1, comment, feed):
+def friendsOfFriendsHelper(groupID, userID, comment, feed):
+    
+    user = User.query.filter_by(id=userID).first()
+    comment = Comment.query.filter_by(id=comment).first()
+    feed = Feed.query.filter_by(id=feed).first()
+    userFriends = set()
+    for session in user.friendSession:
+        friendUser = User.query.filter_by(id=session.id).first()
+        if friendUser not in userFriends:
+            userFriends.add(friendUser)
+    if groupID == "general":
+        members = userFriends
+    else:
+        group1 = Group.query.filter_by(id=user.id).first()
+        members = group1.users
+
+
     added = set()
     for member in members:
+        print len(members)
         if member != user:
             added.add(member)
             generalFriend = Group.query.filter_by(id=member.id).first()
             if generalFriend:
                 generalFriend.comments.append(comment)
                 generalFriend.posts.append(feed)
-            for session in member.friendSession:
-                friendUser = User.query.filter_by(id=session.id).first()
-                if friendUser not in added and friendUser != user:
-                    friendGeneral = Group.query.filter_by(id=friendUser.id).first()
-                    if friendGeneral:
-                        friendGeneral.comments.append(comment)
-                        friendGeneral.posts.append(feed)
+            # for session in member.friendSession:
+            #     friendUser = User.query.filter_by(id=session.id).first()
+            #     if friendUser not in added and friendUser != user:
+            #         added.add(friendUser)
+            #         friendGeneral = Group.query.filter_by(id=friendUser.id).first()
+            #         if friendGeneral:
+            #             friendGeneral.comments.append(comment)
+            #             friendGeneral.posts.append(feed)
 
-            # if group1:
-            #     group1ID = group1.id
-            # else:
-            #     group1ID = "general"
-            # if member.notificationsDictString:
-            #     notificationsJSON = json.loads(member.notificationsDictString)
-            #     if group1ID not in notificationsJSON.keys():
-            #         notificationsJSON[group1ID] = 1
-            #     else:
-            #         notificationsJSON[group1ID] += 1
-            #     member.notificationsDictString = json.dumps(notificationsJSON)
-            # else:
-            #     notificationsDictString = {}
-            #     notificationsDictString[group1ID] = 1
-            #     member.notificationsDictString = json.dumps(notificationsDictString)
+            if member.notificationsDictString:
+                notificationsJSON = json.loads(member.notificationsDictString)
+                if groupID not in notificationsJSON.keys():
+                    notificationsJSON[groupID] = 1
+                else:
+                    notificationsJSON[groupID] += 1
+                member.notificationsDictString = json.dumps(notificationsJSON)
+            else:
+                notificationsDictString = {}
+                notificationsDictString[groupID] = 1
+                member.notificationsDictString = json.dumps(notificationsDictString)

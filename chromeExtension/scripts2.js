@@ -161,8 +161,10 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
     console.log(users);
 
 
-  chrome.storage.local.get(['userID'], function(data) {
+  chrome.storage.local.get(['userID', 'userName'], function(data) {
     ids.push(data['userID']);
+    users.push(data['userName']);
+
 
       console.log(ids);
       $.post("http://localhost:5000/createGroup/", {"id" : data['userID'], "name" : '', "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : 'direct'}, function(groupID) {

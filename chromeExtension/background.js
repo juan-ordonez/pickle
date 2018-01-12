@@ -274,6 +274,7 @@ function getUserData() {
             //   d2.resolve();
             // });
             var friendIds = friendsArray.map(function(value,index) { return value[0]; });
+            console.log(friendIds);
             $("body").load("http://localhost:5000/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "direct" : ''}, function () {
               friendsHTMLGroup = $("#friends").html();
               d2.resolve();
@@ -629,6 +630,10 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
       var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : store['currentGroup']}, function(data) {
           var feeds = JSON.parse(JSON.parse(data)[1]);
+          var groupID = JSON.parse(data)[2];
+          var userID = JSON.parse(data)[3];
+          var comment = JSON.parse(data)[4];
+          var feed = JSON.parse(data)[5];
           data = JSON.parse(JSON.parse(data)[0]);
           // console.log(data);
           // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
@@ -638,6 +643,11 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           //        console.log("profile newsfeed updated");
           //        chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
           // });
+        if (feed != null) {
+          $.post("http://localhost:5000/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(){
+            console.log("friendsOfFriends");
+          });
+        }
           
           var d1 = $.Deferred(),
           d2 = $.Deferred();

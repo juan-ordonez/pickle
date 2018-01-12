@@ -47,7 +47,7 @@ from oauth2client.client import GoogleCredentials
 from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
 import ast
 from selenium import webdriver
-from helpers import canonical, getTimeLabel, getPostDescription, friendsOfFriends
+from helpers import canonical, getTimeLabel, getPostDescription, friendsOfFriendsHelper
 
 credentials = GoogleCredentials.get_application_default()
 
@@ -243,10 +243,7 @@ def comment():
             feed = None
 
 
-        userFriends = []
-        for session in user.friendSession:
-            friendUser = User.query.filter_by(id=session.id).first()
-            userFriends.append(friendUser)
+        
 
         
         groupId = request.form['groupID']
@@ -257,10 +254,7 @@ def comment():
             group1.comments.append(comment)
         general.comments.append(comment)
         if feed:
-            if not group1:
-                members = userFriends
-            else:
-                members = group1.users
+            if group1:
                 group1.posts.append(feed)
             general.posts.append(feed)
             # friendsOfFriends(members, user, group1, comment, feed)
@@ -271,7 +265,7 @@ def comment():
         # if feed:
         #     user.newsfeed.append(feed)
         #     feed.tags.append(user)
-        # publicFriends.add(user.id)
+        publicFriends.add(user.id)
 
         #Add post and comment to friends of user (excluding those tagged in comment)
         # for session in user.friendSession:
@@ -285,24 +279,25 @@ def comment():
         #Add post and comment to users tagged in comment
         if len(tags) > 0:
             for tag in tags:
-                # taggedUser = User.query.filter_by(id=tag).first()
+                taggedUser = User.query.filter_by(id=tag).first()
                 # comment.mentions.append(taggedUser)
-                # if taggedUser.id not in publicFriends:
-                #     taggedUser.commentsTaggedIn.append(comment)
+                if taggedUser.id not in publicFriends:
+                    taggedUser.commentsTaggedIn.append(comment)
                 #     if feed:
                 #         taggedUser.newsfeed.append(feed)
                 #         feed.tags.append(taggedUser)
-                #     publicFriends.add(taggedUser.id)
+                    publicFriends.add(taggedUser.id)
 
                 for session in taggedUser.friendSession:
                     if session.authToken:
                         posts.add(session.authToken)
-                    # if session.id not in publicFriends and session.id not in tags:
-                    #     friend = User.query.filter_by(id=session.id).first()
-                    #     friend.commentsTaggedIn.append(comment)
-                    #     if feed:
-                    #         friend.newsfeed.append(feed)
-                    #     publicFriends.add(session.id)
+                    if session.id not in publicFriends and session.id not in tags:
+                        friendGeneral = Group.query.filter_by(id=session.id).first()
+                        if friendGeneral:
+                            friendGeneral.comments.append(comment)
+                            if feed:
+                                friendGeneral.posts.append(feed)
+                        publicFriends.add(session.id)
 
 
 
@@ -317,8 +312,10 @@ def comment():
     for session in user.friendSession:
         if session.authToken and session.id in tags:
             friends.add(session.authToken)
-
-    return json.dumps([json.dumps(list(friends)), json.dumps(list(posts))])
+    if feed:
+        return json.dumps([json.dumps(list(friends)), json.dumps(list(posts)), groupId, user.id, comment.id, feed.id])
+    else:
+        return json.dumps([json.dumps(list(friends)), json.dumps(list(posts)), groupId, user.id, comment.id, None])
 
 
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
@@ -752,7 +749,8 @@ def createGroup():
         user = User.query.filter_by(id=friend).first()
         group.users.append(user)
     user = User.query.filter_by(id=request.form['id']).first()
-    group.users.append(user)
+    if user not in group.users:
+        group.users.append(user)
     db.session.commit()
 
     return group.id
@@ -767,8 +765,10 @@ def groupNames():
     user = User.query.filter_by(id=request.form['id']).first()
     for group in user.groups:
         if group.id != user.id:
-            if user.name in group.name and len(group.name.split(',')) > 1:
-                name = ",".join(group.name.split(',').remove(user.name))
+            if user.name in group.name and group.direct:
+                split = group.name.split(',')
+                split.remove(user.name)
+                name = ",".join(split)
             else:
                 name = group.name
             if group.direct:
@@ -865,16 +865,30 @@ def leaveGroup():
     group = Group.query.filter_by(id=request.form['currentGroup']).first()
     for member in group.users:
         if member != user:
-            sessions = Session.query.filter_by(id=member.id).first()
-            for session in sessions:
-                ids.add(session.authToken)
-
-
-    group.users.remove(user)
+            session = Session.query.filter_by(id=member.id).first()
+            ids.add(session.authToken)
+    if group.direct:
+        group.users = []
+    else:
+        group.users.remove(user)
     db.session.commit()
 
     info['ids'] = list(ids)
     return json.dumps(info)
+
+
+
+@mod_auth.route('/friendsOfFriends/', methods=['GET','POST'])
+@crossdomain(origin='*')
+@flask_optimize.optimize('json')
+def friendsOfFriends():
+    groupID = request.form['groupID']
+    userID = request.form['userID']
+    comment = request.form['comment']
+    feed = request.form['feed']
+    friendsOfFriendsHelper(groupID, userID, comment, feed)
+    return "done"
+    
 
 
     

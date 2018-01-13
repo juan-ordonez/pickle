@@ -545,8 +545,16 @@ $(document).on("click", "#confirmLeaveGroup", function(){
 
   chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
     var id = result['userID'];
-      $.post("http://pickle-server-183401.appspot.com/leaveGroup/", {"id" : id, "currentGroup" : result['currentGroup']}, function(data) {
+    var currentGroup = result['currentGroup'];
+      $.post("http://pickle-server-183401.appspot.com/leaveGroup/", {"id" : id, "currentGroup" : currentGroup}, function(data) {
         
+        chrome.storage.local.get(['notificationsJSON'], function(data) {
+          var notifJSON = data['notificationsJSON'];
+          notifJSON[currentGroup] = 0;
+          delete notifJSON[currentGroup];
+          chrome.storage.local.set({"notificationsJSON" : notifJSON});
+        })
+
         chrome.storage.local.set({"currentGroup" : "general"}, function () {
           $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : id}, function () {
               chrome.storage.local.set({groupsHTML : $("#groups").html()});

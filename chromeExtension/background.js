@@ -60,24 +60,22 @@ chrome.gcm.onMessage.addListener(function(payload) {
           userID = json.id;
           picture = json.picture;
           notifications = json.notifications;
-          if (type == "notification") {
-          notifications = notifications + 1;
-
-          
-          chrome.browserAction.setBadgeText({text: notifications.toString()});
-        }
 
         chrome.storage.local.get(['notificationsJSON'], function(data) {
           notificationsJSON = data['notificationsJSON'];
+
           if (!(groupID in notificationsJSON)) {
             notificationsJSON[groupID] = 1;
 
           }
           else {
             notificationsJSON[groupID] += 1;
-          chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
-
+            chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
           }
+
+          //Update extension icon badge
+          updateBadge(notificationsJSON);
+
         })
 
 
@@ -157,6 +155,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               var comment = payload.data.comment;
               var commentUrl = payload.data.url;
               var tags = payload.data.tags;
+              console.log(tags.indexOf(userID));
               var notificationTitle = poster + " posted to " + groupName; 
 
               if (groupName.charAt(0) == '@') {
@@ -165,6 +164,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               
               //Create notification only if user is not directly tagged
               if (tags.indexOf(userID) == -1) {
+                console.log("User not tagged!");
                 chrome.notifications.create({   
                   type: 'basic', 
                   iconUrl: 'iconBig.png', 
@@ -292,12 +292,10 @@ function getUserData() {
 
           if (notifications == 0){
             $("#numNotifications").hide();
-            chrome.browserAction.setBadgeText({text: ""});
           } else {
             if (document.getElementById("numNotifications")) {
               document.getElementById("numNotifications").innerHTML = notifications;
               $("#numNotifications").show();
-              chrome.browserAction.setBadgeText({text: notifications.toString()});
             }
           }
 
@@ -517,8 +515,8 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                   });
 
                   $.get("http://pickle-server-183401.appspot.com/getNotificationsDict/", {"id" : userID.toString()}, function (data) {
-                  console.log(data);
                   chrome.storage.local.set({"notificationsJSON" : data});
+                  updateBadge(data);
               
             });
 
@@ -838,4 +836,18 @@ String.prototype.trimToLength = function(m) {
     ? jQuery.trim(this).substring(0, m).split(" ").slice(0, -1).join(" ") + "..."
     : this;
 };
+
+//This function updates the extension icon badge for notifications
+function updateBadge(notificationsJSON) {
+  var total = 0;
+  Object.keys(notificationsJSON).forEach(function(key) {
+    total += notificationsJSON[key];
+  });
+  if (total == 0) {
+    chrome.browserAction.setBadgeText({text: ""});
+  }
+  else {
+  chrome.browserAction.setBadgeText({text: total.toString()});
+  }
+}
 

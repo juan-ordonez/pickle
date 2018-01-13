@@ -814,7 +814,7 @@ def getNotificationsDict():
     user = User.query.filter_by(id=request.args.get('id')).first()
 
     notif = {}
-    if not user.notificationsDictString or user.name=="Josh Goldman":
+    if not user.notificationsDictString:
         for group in user.groups:
             notif[group.id] = 0
         return notif

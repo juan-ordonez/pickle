@@ -61,17 +61,6 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
 		$(".drawerLink").removeClass("active");
 		$(this).addClass("active");
 		$(".groupTitle").text($(this).text());
-		var id = $(this)[0].id;
-		chrome.storage.local.set({"currentGroup" : id}, function () {
-			console.log(id);
-
-		});
-		chrome.storage.local.get(['notificationsJSON'], function(data) {
-			var notifJSON = data['notificationsJSON'];
-			notifJSON[id] = 0;
-			chrome.storage.local.set({"notificationsJSON" : notifJSON});
-		})
-		console.log(window.location.href);
 		toggleDrawer();
 		if (newsfeed) {
 			window.location.replace("newsfeed.html");

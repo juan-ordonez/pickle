@@ -126,6 +126,21 @@ $(document).on("click", "#notificationsBell", function(){
 
 });
 
+//Update active group in chrome storage and clear group notifications
+$(document).on("click", ".drawerLink", function(){
+  var id = $(this)[0].id;
+  chrome.storage.local.set({"currentGroup" : id}, function () {
+
+  });
+  chrome.storage.local.get(['notificationsJSON'], function(data) {
+    var notifJSON = data['notificationsJSON'];
+    notifJSON[id] = 0;
+    consolde.log(notifJSON);
+    chrome.storage.local.set({"notificationsJSON" : notifJSON});
+    updateBadge(notifJSON);
+  })
+});
+
 //Clicking on user names
 // $(document).on("click", ".userProfile", function(){
 //   var previousPage = $("#bottomNav .active").attr('id');
@@ -447,7 +462,6 @@ if (window.location.href == chrome.extension.getURL('notifications.html')) {
       $("#notificationsContainer .cardList").show();
 
   });
-  chrome.browserAction.setBadgeText({text: ""});
   chrome.storage.local.set({"notifications" : 0});
 }
 
@@ -778,16 +792,19 @@ function connect(message) {
             if (notificationsJSON[key] == 0) {
               span.hide();
             } else {
-              span[0].innerHTML = notificationsJSON[key];
+              // span[0].innerHTML = notificationsJSON[key];
+              span.text(notificationsJSON[key]);
               span.show();
             }
-            console.log(span);
+            // console.log(span);
         });
 
         if (total == 0) {
           $("#general").find("span").hide();
+
         } else {
-          $("#general").find("span")[0].innerHTML = total;
+          // $("#general").find("span")[0].innerHTML = total;
+          $("#general").find("span").text(total);
           $("#general").find("span").show();
         }
         if (currentGroup == "general") {
@@ -803,13 +820,11 @@ function connect(message) {
 
         if (notifications == 0){
           $("#numNotifications").hide();
-          chrome.browserAction.setBadgeText({text: ""});
         } else {
           if (document.getElementById("numNotifications")) {
             document.getElementById("numNotifications").innerHTML = notifications;
             $("#numNotifications").show();
             if (notifications != 0) {
-            chrome.browserAction.setBadgeText({text: notifications.toString()});
           }
           }
         }
@@ -875,7 +890,16 @@ function scrollable(container) {
   }
 }
 
-chrome.storage.local.get(["currentGroup"], function (data) {
-  console.log(data['currentGroup']);
-});
-
+//This function updates the extension icon badge for notifications
+function updateBadge(notificationsJSON) {
+  var total = 0;
+  Object.keys(notificationsJSON).forEach(function(key) {
+    total += notificationsJSON[key];
+  });
+  if (total == 0) {
+    chrome.browserAction.setBadgeText({text: ""});
+  }
+  else {
+  chrome.browserAction.setBadgeText({text: total.toString()});
+  }
+}

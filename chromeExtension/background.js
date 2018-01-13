@@ -112,6 +112,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
             console.log("updating newsfeed");
             // getUserData();
           });
+
           //Update notification badges
           var commentID = payload.data.commentID;
           chrome.storage.local.get(['lastComment'], function(result) {
@@ -502,8 +503,6 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                     var groupsIDs = JSON.parse(array);
                     groupsIDs.forEach(function(element) {
                       console.log(element);
-                      
-
 
                       $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
 
@@ -520,6 +519,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                      $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {
                     
                   chrome.storage.local.set({"general" : data});
+                  chrome.extension.sendMessage({handshake:"login"});
                   });
 
                   });
@@ -564,7 +564,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                   });
 
                   $.when(l1, l2).done(function (){
-                      chrome.extension.sendMessage({handshake:"login"});
+                      // chrome.extension.sendMessage({handshake:"login"});
                   });
 
 
@@ -582,7 +582,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
       }
     });
   } else {
-    // chrome.browserAction.setPopup({popup : "popup"});
+    // chrome.browserAction.setPopup({popup : "newsfeed.html"});
   }
 
   

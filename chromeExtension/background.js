@@ -665,8 +665,11 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           //        chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
           // });
         if (feed != null) {
-          $.post("http://pickle-server-183401.appspot.com/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(){
+          $.post("http://localhost:5000/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(friendsData){
             console.log("friendsOfFriends");
+            var feeds = JSON.parse(friendsData);
+            var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "url" : url, "tags" : tags}, "registration_ids": feeds});
+            notify(feeds, feedJSON);
           });
         }
           
@@ -724,9 +727,6 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             //   chrome.storage.local.set({"outgoing-general" : outgoingGeneral});
             // });
           });
-
-          var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "url" : url, "tags" : tags}, "registration_ids": feeds});
-          notify(feeds, feedJSON);
 
           var genJSON = JSON.stringify({ "data": {"type" : "postGeneral"}, "registration_ids": friendsof});
           notify(friendsof, genJSON);

@@ -135,7 +135,6 @@ $(document).on("click", ".drawerLink", function(){
   chrome.storage.local.get(['notificationsJSON'], function(data) {
     var notifJSON = data['notificationsJSON'];
     notifJSON[id] = 0;
-    consolde.log(notifJSON);
     chrome.storage.local.set({"notificationsJSON" : notifJSON});
     updateBadge(notifJSON);
   })

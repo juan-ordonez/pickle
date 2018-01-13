@@ -252,6 +252,20 @@ chrome.gcm.onMessage.addListener(function(payload) {
           chrome.storage.local.set(dict);
         });
       }
+
+      //update notification badges
+      chrome.storage.local.get(['notificationsJSON'], function(data) {
+        notificationsJSON = data['notificationsJSON'];
+        if (!(groupID in notificationsJSON)) {
+          notificationsJSON[groupID] = 1;
+        }
+        else {
+          notificationsJSON[groupID] += 1;
+          chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+        }
+        //Update extension icon badge
+        updateBadge(notificationsJSON);
+      });
     });
 
   }

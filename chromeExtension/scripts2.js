@@ -702,6 +702,7 @@ function logout(e) {
         window.location.replace("register.html");
         });
       //Set icon to inactive state
+      chrome.browserAction.setBadgeText({text: ""});
       chrome.browserAction.setIcon({path:"iconInactive128.png"});
     }
   chrome.storage.local.clear();

@@ -61,24 +61,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
           picture = json.picture;
           notifications = json.notifications;
 
-        chrome.storage.local.get(['notificationsJSON'], function(data) {
-          notificationsJSON = data['notificationsJSON'];
-
-          if (!(groupID in notificationsJSON)) {
-            notificationsJSON[groupID] = 1;
-
-          }
-          else {
-            notificationsJSON[groupID] += 1;
-            chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
-          }
-
-          //Update extension icon badge
-          updateBadge(notificationsJSON);
-
-        })
-
-
           if (type == "leave") {
             $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {
                     
@@ -124,13 +106,32 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
         if (type == "postGeneral") {
           $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
-               var json = {};
-               json["general"] = groupsHTML;
-               chrome.storage.local.set(json);
-               console.log("updating newsfeed");
-               // getUserData();
-            });
-
+            var json = {};
+            json["general"] = groupsHTML;
+            chrome.storage.local.set(json);
+            console.log("updating newsfeed");
+            // getUserData();
+          });
+          //Update notification badges
+          var commentID = payload.data.commentID;
+          chrome.storage.local.get(['lastComment'], function(result) {
+            //Account for multiple gcm messages
+            if(commentID != result['lastComment']) {
+              chrome.storage.local.set({"lastComment" : commentID});
+              chrome.storage.local.get(['notificationsJSON'], function(data) {
+                notificationsJSON = data['notificationsJSON'];
+                if (!(groupID in notificationsJSON)) {
+                  notificationsJSON[groupID] = 1;
+                }
+                else {
+                  notificationsJSON[groupID] += 1;
+                  chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+                }
+                //Update extension icon badge
+                updateBadge(notificationsJSON);
+              });
+            }
+          });
         }
 
           if (type == "post") {
@@ -153,30 +154,52 @@ chrome.gcm.onMessage.addListener(function(payload) {
               var poster = payload.data.poster;
               var groupName = payload.data.currentGroupName;
               var comment = payload.data.comment;
+              var commentID = payload.data.commentID;
               var commentUrl = payload.data.url;
               var tags = payload.data.tags;
-              console.log(tags.indexOf(userID));
-              var notificationTitle = poster + " posted to " + groupName; 
 
-              if (groupName.charAt(0) == '@') {
-                notificationTitle = poster;
-              }
-              
-              //Create notification only if user is not directly tagged
-              if (tags.indexOf(userID) == -1) {
-                console.log("User not tagged!");
-                chrome.notifications.create({   
-                  type: 'basic', 
-                  iconUrl: 'iconBig.png', 
-                  title: notificationTitle, 
-                  message: comment
+              chrome.storage.local.get(['lastComment'], function(result) {
+                //Account for multiple gcm messages
+                if(commentID != result['lastComment']) {
 
-                  }, function (notif) {
-                    dict = {};
-                    dict[notif] = commentUrl;
-                    chrome.storage.local.set(dict);
+                  chrome.storage.local.set({"lastComment" : commentID});
+                  var notificationTitle = poster + " posted to " + groupName; 
+
+                  if (groupName.charAt(0) == '@') {
+                    notificationTitle = poster;
+                  }
+                  
+                  //Create notification only if user is not directly tagged
+                  if (tags.indexOf(userID) == -1) {
+                    console.log("User not tagged!");
+                    chrome.notifications.create({   
+                      type: 'basic', 
+                      iconUrl: 'iconBig.png', 
+                      title: notificationTitle, 
+                      message: comment
+
+                      }, function (notif) {
+                        dict = {};
+                        dict[notif] = commentUrl;
+                        chrome.storage.local.set(dict);
+                      });
+                  }
+
+                  //update notification badges
+                  chrome.storage.local.get(['notificationsJSON'], function(data) {
+                    notificationsJSON = data['notificationsJSON'];
+                    if (!(groupID in notificationsJSON)) {
+                      notificationsJSON[groupID] = 1;
+                    }
+                    else {
+                      notificationsJSON[groupID] += 1;
+                      chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+                    }
+                    //Update extension icon badge
+                    updateBadge(notificationsJSON);
                   });
-              }
+                }
+              });
 
           }
          
@@ -204,28 +227,35 @@ chrome.gcm.onMessage.addListener(function(payload) {
     var profilePic = payload.data.pic;
     var user = payload.data.first;
     var comment = payload.data.comment;
+    var commentID = payload.data.commentID;
     //Added a variable for the page title to create the notification
     var page = payload.data.pageTitle;
     var commentUrl = payload.data.url;
     var notification = payload.data.status;
 
-      chrome.notifications.create({   
-      type: 'basic', 
-      iconUrl: 'iconBig.png', 
-      //Added the page name to the notification (to be shown in the title of the notification) 
-      title: user+' '+notification+' '+page, 
-      //Show the actual comment in the message
-      message: comment
+    chrome.storage.local.get(['lastComment'], function(result) {
+      //Account for multiple gcm messages
+      if(commentID != result['lastComment']) {
+        chrome.storage.local.set({"lastComment" : commentID});
+        chrome.notifications.create({   
+        type: 'basic', 
+        iconUrl: 'iconBig.png', 
+        //Added the page name to the notification (to be shown in the title of the notification) 
+        title: user+' '+notification+' '+page, 
+        //Show the actual comment in the message
+        message: comment
 
-      }, function (notif) {
-        dict = {};
-        dict[notif] = commentUrl;
-        chrome.storage.local.set(dict);
-      });
-
-    }
+        }, function (notif) {
+          dict = {};
+          dict[notif] = commentUrl;
+          chrome.storage.local.set(dict);
+        });
+      }
+    });
 
   }
+
+}
     
   
   
@@ -324,7 +354,7 @@ function getUserData() {
             //   d2.resolve();
             // });
             var friendIds = friendsArray.map(function(value,index) { return value[0]; });
-            console.log(friendIds);
+            // console.log(friendIds);
             $("body").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "direct" : ''}, function () {
               friendsHTMLGroup = $("#friends").html();
               d2.resolve();
@@ -666,7 +696,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           $.post("http://localhost:5000/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(friendsData){
             console.log("friendsOfFriends");
             var feeds = JSON.parse(friendsData);
-            var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "url" : url, "tags" : tags}, "registration_ids": feeds});
+            var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "commentID" : comment, "url" : url, "tags" : tags}, "registration_ids": feeds});
             notify(feeds, feedJSON);
           });
         }
@@ -726,14 +756,14 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             // });
           });
 
-          var genJSON = JSON.stringify({ "data": {"type" : "postGeneral"}, "registration_ids": friendsof});
+          var genJSON = JSON.stringify({ "data": {"type" : "postGeneral", "commentID" : comment}, "registration_ids": friendsof});
           notify(friendsof, genJSON);
 
           //If comment is public, then notification should say that user tagged the recipient
           if (checked) {
             var array = data.slice();
             console.log("PUBLIC");
-            var json = JSON.stringify({"data" : {"status" : "tagged you on", "pic" : picture, "first" : userName, "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
+            var json = JSON.stringify({"data" : {"status" : "tagged you on", "pic" : picture, "first" : userName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
           
             $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
               // console.log("notify", data, json);

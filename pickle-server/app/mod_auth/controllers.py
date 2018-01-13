@@ -892,7 +892,7 @@ def leaveGroup():
 
 @mod_auth.route('/friendsOfFriends/', methods=['GET','POST'])
 @crossdomain(origin='*')
-@flask_optimize.optimize('json')
+@flask_optimize.optimize('text')
 def friendsOfFriends():
     groupID = request.form['groupID']
     userID = request.form['userID']
@@ -914,6 +914,7 @@ def friendsOfFriends():
 
 
     added = set()
+    sessionsSet = set()
     for member in members:
         if member != user:
             added.add(member)
@@ -928,6 +929,10 @@ def friendsOfFriends():
                 newGroup.users.append(member)
                 newGroup.comments.append(comment)
                 newGroup.posts.append(feed)
+            sessions = Session.query.filter_by(id=member.id).all()
+            for session in sessions:
+                if session.authToken:
+                    sessionsSet.add(session.authToken)
 
             # for session in member.friendSession:
             #     friendUser = User.query.filter_by(id=session.id).first()
@@ -950,8 +955,7 @@ def friendsOfFriends():
                 notificationsDictString[groupID] = 1
                 member.notificationsDictString = json.dumps(notificationsDictString)
     db.session.commit()
-    return "done"
-    
+    return json.dumps(list(sessionsSet))    
 
 
     

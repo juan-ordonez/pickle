@@ -520,13 +520,20 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
               
             });
 
+                  var l1 = $.Deferred(),
+                      l2 = $.Deferred();
+
                   $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
                     groupsHTML = $("#groups").html();
+                    l1.resolve();
               
                   })
 
                   chrome.storage.local.set({"currentGroup" : "general"}, function () {
-                      console.log(id);
+                      l2.resolve();
+                  });
+
+                  $.when(l1, l2).done(function (){
                       chrome.extension.sendMessage({handshake:"login"});
                   });
 
@@ -656,8 +663,11 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           //        chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
           // });
         if (feed != null) {
-          $.post("http://pickle-server-183401.appspot.com/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(){
+          $.post("http://localhost:5000/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(friendsData){
             console.log("friendsOfFriends");
+            var feeds = JSON.parse(friendsData);
+            var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "url" : url, "tags" : tags}, "registration_ids": feeds});
+            notify(feeds, feedJSON);
           });
         }
           
@@ -715,9 +725,6 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             //   chrome.storage.local.set({"outgoing-general" : outgoingGeneral});
             // });
           });
-
-          var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "url" : url, "tags" : tags}, "registration_ids": feeds});
-          notify(feeds, feedJSON);
 
           var genJSON = JSON.stringify({ "data": {"type" : "postGeneral"}, "registration_ids": friendsof});
           notify(friendsof, genJSON);

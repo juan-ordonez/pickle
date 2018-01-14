@@ -393,6 +393,19 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
       // $("#notificationsContainer .cardList").show();
 
   });
+
+  //Show hamburger badge if new notifications
+  chrome.storage.local.get(['notificationsJSON'], function(data) {
+    var notificationsJSON = data['notificationsJSON'];
+    var total = 0;
+    Object.keys(notificationsJSON).forEach(function(key) {
+      total += notificationsJSON[key];
+    });
+    if (total != 0) {
+      $(".hamburgerBadge").show();
+    }
+  });
+
   connect("first");
 }
 
@@ -755,40 +768,33 @@ function connect(message) {
           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(newUrl) {
               if (newUrl == url && commentsJSON != null) {
                 $("#commentsBody").html(commentsJSON[currentGroup]);
+                $(".loadingSpinner").hide();
+                scrollable($("#commentsBody"));
+                //Convert all urls into links
+                $('p').linkify();
+                $("body").linkify({
+                  target: "_blank"
+                });
 
               } else {
                 $.post("http://localhost:5000/loadComment/", {"userID" : userID.toString(), "url" : newUrl.toString()}, function (json) {
                   var groupsComments = JSON.parse(json);
                   chrome.storage.local.set({commentsJSON : groupsComments}, function() {
                     $("#commentsBody").html(groupsComments[currentGroup]);
+                    $(".loadingSpinner").hide();
+                    scrollable($("#commentsBody"));
+                    //Convert all urls into links
+                    $('p').linkify();
+                    $("body").linkify({
+                      target: "_blank"
+                    });
                   });
-
                 });
               }
 
           });
 
         });
-          
-
-
-      
-      $(function () {
-          $('[data-toggle="tooltip"]').tooltip()
-                      })
-      $(".loadingSpinner").hide();
-      scrollable($("#commentsBody"));
-      //Convert all urls into links
-      $('p').linkify();
-      $("body").linkify({
-        target: "_blank"
-      });
-      //Close tags dropdown when user scrolls
-      $(".containerComments").bind("scroll", function(){
-        if ($(".tagsDropdown .dropdown-menu").hasClass("show")) {
-          $(".tagsDropdown .dropdown-menu").removeClass("show");
-        }
-      });
 
         if (notificationsHTML != null) { 
           $("#notifications").html(notificationsHTML);
@@ -910,7 +916,7 @@ function appendComment(user, value, picture, all) {
 
 //makes a container scrollable after it reaches a certain height
 function scrollable(container) {
-  if (container.height() > 425) {
+  if (container.height() > 414) {
     container.removeClass("commentsNoScroll");
     container.addClass("commentsScroll");
     container.parent().scrollTop(container.parent()[0].scrollHeight);
@@ -927,6 +933,6 @@ function updateBadge(notificationsJSON) {
     chrome.browserAction.setBadgeText({text: ""});
   }
   else {
-  chrome.browserAction.setBadgeText({text: total.toString()});
+    chrome.browserAction.setBadgeText({text: total.toString()});
   }
 }

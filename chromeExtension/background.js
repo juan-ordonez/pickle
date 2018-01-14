@@ -359,7 +359,7 @@ function getUserData() {
                 d5 = $.Deferred();
             
 
-            $.post("http://pickle-server-183401.appspot.com/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
+            $.post("http://localhost:5000/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
               var groupsComments = JSON.parse(data);
               commentsJSON = groupsComments;
               d1.resolve();
@@ -450,6 +450,8 @@ chrome.tabs.onUpdated.addListener(function(activeInfo, load) {
   if (load.status == "complete") {
     logData();
   }
+
+  
   
   
 
@@ -689,7 +691,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
   $.when(d1).done(function () {
     chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription', 'currentGroup'], function(store) {
 
-      var comPost = $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+      var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : store['currentGroup']}, function(data) {
           var feeds = JSON.parse(JSON.parse(data)[0]);
           var groupID = JSON.parse(data)[2];

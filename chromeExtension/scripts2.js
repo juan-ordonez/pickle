@@ -671,7 +671,8 @@ function yippIt(e) {
   var currentGroupName = $("#"+currentGroup).text();
 
   //Send all comment data to background page
-  chrome.storage.local.get(['tags', 'public'], function (result) {
+  chrome.storage.local.get(['tags', 'public', 'userName', 'currentGroup'], function (result) {
+
     tags = result['tags'];
     all = result['public'];
     chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
@@ -747,13 +748,31 @@ function connect(message) {
         var currentGroup = result['currentGroup'];
         var notificationsJSON = result['notificationsJSON'];
 
+        chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
-      if (commentsJSON != null) {
-        $("#commentsBody").html(commentsJSON[currentGroup]);
-      } else {
-        
-        $("#commentsBody").html(' ');
-      }
+          var activeTab = arrayOfTabs[0];
+
+          $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(newUrl) {
+              if (newUrl == url && commentsJSON != null) {
+                $("#commentsBody").html(commentsJSON[currentGroup]);
+
+              } else {
+                $.post("http://localhost:5000/loadComment/", {"userID" : userID.toString(), "url" : newUrl.toString()}, function (json) {
+                  var groupsComments = JSON.parse(json);
+                  chrome.storage.local.set({commentsJSON : groupsComments}, function() {
+                    $("#commentsBody").html(groupsComments[currentGroup]);
+                  });
+
+                });
+              }
+
+          });
+
+        });
+          
+
+
+      
       $(function () {
           $('[data-toggle="tooltip"]').tooltip()
                       })

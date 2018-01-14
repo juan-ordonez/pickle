@@ -122,10 +122,7 @@ class Comment(db.Model):
 		self.url = url
 		self.time = time
 		self.public = False
-		hashed = hashlib.sha1()
-		unique = str(url) + str(string) + str(time)
-		hashed.update(unique.encode('utf-8'))
-		self.id = str(hashed)
+		self.id = str(uuid.uuid4())
 		self.numLikes = 0
 
 
@@ -166,10 +163,7 @@ class Notification(db.Model):
 		self.message = message
 		self.picture = picture
 		self.url = url
-		hashed = hashlib.sha1()
-		unique = str(name) + str(time) + str(message) + str(picture)
-		hashed.update(unique.encode('utf-8'))
-		self.id = str(hashed)
+		self.id = str(uuid.uuid4())
 
 
 
@@ -185,10 +179,7 @@ class URL(db.Model):
 	def __init__(self, time, string):
 		self.string = string
 		self.time = time
-		hashed = hashlib.sha1()
-		unique = str(string) + str(time)
-		hashed.update(unique.encode('utf-8'))
-		self.id = str(hashed)
+		self.id = str(uuid.uuid4())
 
 
 
@@ -219,10 +210,7 @@ class Feed(db.Model):
 		self.description = description
 		self.message = message
 		self.url = url
-		hashed = hashlib.sha1()
-		unique = poster_id + time + title + image + description + message + url
-		hashed.update(unique.encode('utf-8'))
-		self.id = str(hashed)
+		self.id = str(uuid.uuid4())
 
 
 class Group(db.Model):

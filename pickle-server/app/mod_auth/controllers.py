@@ -120,7 +120,7 @@ def register():
             user.updated = True
             group = Group.query.filter_by(id=user.id).first()
             if not group:
-                group = Group("General", str(datetime.now()))
+                group = Group("General", str(datetime.utcnow()))
                 group.id = user.id
                 db.session.add(group)
                 group.users.append(user)
@@ -133,7 +133,7 @@ def register():
             create.updated = True
             group = Group.query.filter_by(id=create.id).first()
             if not group:
-                group = Group("General", str(datetime.now()))
+                group = Group("General", str(datetime.utcnow()))
                 group.id = create.id
                 db.session.add(group)
                 group.users.append(create)
@@ -215,7 +215,7 @@ def logout(cookie):
 @flask_optimize.optimize('json')
 def comment():
     url = canonical(request.form['url'])
-    comment = Comment(request.form['string'], url, str(datetime.now()))
+    comment = Comment(request.form['string'], url, str(datetime.utcnow()))
     comment.public = request.form['public']
     user = User.query.filter_by(id=request.form['userId']).first()
     user.commentsWritten.append(comment)
@@ -236,7 +236,7 @@ def comment():
         if request.form['pageDescription'] and request.form['pageTitle'] and request.form['pageImage']:
             # feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
             #                 request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
-            feed = Feed(user.id, str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
+            feed = Feed(user.id, str(datetime.utcnow()), request.form['pageTitle'], request.form['pageImage'], 
                             request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
             db.session.add(feed)
         else:
@@ -317,9 +317,17 @@ def comment():
         if session.authToken and session.id != user.id:
             friends.add(session.authToken)
         friendOfFriend = User.query.filter_by(id=session.id).first()
+        friendGeneral = Group.query.filter_by(id=friendOfFriend.id).first()
+        if friendGeneral:
+            if comment and comment not in friendGeneral.comments:
+                friendGeneral.comments.append(comment)
+            if feed and feed not in friendGeneral.posts:
+                friendGeneral.posts.append(feed)
+
         for friendsession in friendOfFriend.friendSession:
             if friendsession.authToken and friendsession.id not in friendsOfFriendsSet:
                 friendsOfFriendsSet.add(friendsession.id)
+    db.session.commit()
 
     if feed:
         return json.dumps([json.dumps(list(friends)), json.dumps(list(posts)), groupId, user.id, comment.id, feed.id, json.dumps(list(friendsOfFriendsSet))])
@@ -340,6 +348,7 @@ def loadComment():
         if session.authToken:
             friends.add(session.id)
     jsonData = {}
+    jsonData["url"] = url
     groups = []
     for group in user.groups:
         if group.id == user.id:
@@ -483,7 +492,7 @@ def notification():
         
         #Create notification with page title field set to empty by default
 
-        notification = Notification(request.form['user'], str(datetime.now()), request.form['notification'], request.form['picture'], canonical(request.form['url']))
+        notification = Notification(request.form['user'], str(datetime.utcnow()), request.form['notification'], request.form['picture'], canonical(request.form['url']))
         #If the request from background.js contains a title page, update the field in notification
         if request.form['page']:
             page = request.form['page']
@@ -570,7 +579,7 @@ def friendsTokens():
 
 @mod_auth.route('/canonicalize/', methods=['POST'])
 @crossdomain(origin='*')
-@flask_optimize.optimize()
+@flask_optimize.optimize("text")
 def canonicalize():
     url = request.form['url']
     url = canonical(url)
@@ -590,11 +599,11 @@ def history():
     user = User.query.filter_by(id=userID).first()
 
     if user:
-        history = URL.query.filter_by(string=url).filter_by(time=datetime.now()).first()
+        history = URL.query.filter_by(string=url).filter_by(time=datetime.utcnow()).first()
         if history and history not in user.browsingData:
             user.browsingData.append(history)
         else:
-            history = URL(str(datetime.now()), url)
+            history = URL(str(datetime.utcnow()), url)
             user.browsingData.append(history)
             db.session.add(history)
         db.session.commit()
@@ -746,7 +755,7 @@ def loadPosts():
 def createGroup():
 
     name = request.form['name']
-    group = Group(name, str(datetime.now()))
+    group = Group(name, str(datetime.utcnow()))
     if request.form['direct']:
         group.direct = True 
     else:
@@ -923,7 +932,7 @@ def friendsOfFriends():
                 generalFriend.comments.append(comment)
                 generalFriend.posts.append(feed)
             else:
-                newGroup = Group("General", str(datetime.now()))
+                newGroup = Group("General", str(datetime.utcnow()))
                 newGroup.id = member.id
                 db.session.add(newGroup)
                 newGroup.users.append(member)

@@ -336,7 +336,7 @@ def comment():
 
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
 @crossdomain(origin='*')
-@flask_optimize.optimize('json')
+@flask_optimize.optimize("text")
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
     url = request.form['url']

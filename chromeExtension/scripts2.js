@@ -777,7 +777,7 @@ function connect(message) {
                 });
 
               } else {
-                $.post("http://localhost:5000/loadComment/", {"userID" : userID.toString(), "url" : newUrl.toString()}, function (json) {
+                $.post("http://pickle-server-183401.appspot.com/loadComment/", {"userID" : userID.toString(), "url" : newUrl.toString()}, function (json) {
                   var groupsComments = JSON.parse(json);
                   chrome.storage.local.set({commentsJSON : groupsComments}, function() {
                     $("#commentsBody").html(groupsComments[currentGroup]);

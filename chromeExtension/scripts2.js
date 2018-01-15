@@ -916,7 +916,7 @@ function appendComment(user, value, picture, all) {
 
 //makes a container scrollable after it reaches a certain height
 function scrollable(container) {
-  if (container.height() > 414) {
+  if (container.height() > 404) {
     container.removeClass("commentsNoScroll");
     container.addClass("commentsScroll");
     container.parent().scrollTop(container.parent()[0].scrollHeight);

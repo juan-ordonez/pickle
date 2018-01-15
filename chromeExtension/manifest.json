@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
 
-  "name": "Yipp",
+  "name": "Yipp Beta",
 
-  "description": "Leave messages for your friends on any website",
-  "version": "1.46",
+  "description": "Organize and share links with your peers",
+  "version": "1.47",
 
   "browser_action": {
     "default_icon": "iconActive128.png",

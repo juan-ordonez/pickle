@@ -363,7 +363,7 @@ function getUserData() {
                 d5 = $.Deferred();
             
 
-            $.post("http://localhost:5000/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
+            $.post("http://pickle-server-183401.appspot.com/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
               var groupsComments = JSON.parse(data);
               commentsJSON = groupsComments;
               d1.resolve();
@@ -524,7 +524,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                     groupsIDs.forEach(function(element) {
                       console.log(element);
 
-                      $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
+                      $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
 
                       var json = {};
                       json[element] = data;
@@ -536,7 +536,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                     });
                     
 
-                     $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {
+                     $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {
                     
                   chrome.storage.local.set({"general" : data});
                   chrome.extension.sendMessage({handshake:"login"});
@@ -695,7 +695,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
   $.when(d1).done(function () {
     chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription', 'currentGroup'], function(store) {
 
-      var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+      var comPost = $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : store['currentGroup']}, function(data) {
           var feeds = JSON.parse(JSON.parse(data)[0]);
           var groupID = JSON.parse(data)[2];
@@ -713,7 +713,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           //        chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
           // });
         if (feed != null) {
-          $.post("http://localhost:5000/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(friendsData){
+          $.post("http://pickle-server-183401.appspot.com/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(friendsData){
             console.log("friendsOfFriends");
             var feeds = JSON.parse(friendsData);
             var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle": pageTitle, "tags" : tags}, "registration_ids": feeds});

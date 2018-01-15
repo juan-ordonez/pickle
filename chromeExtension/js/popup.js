@@ -133,7 +133,7 @@ if (window.location.href == chrome.extension.getURL('popup.html') || window.loca
 		//If comments are scrolled all the way down
 		if($(".containerComments")[0].scrollHeight - $(".containerComments").scrollTop() == $(".containerComments").outerHeight()) {
 			//Move comments up after each textarea resize
-			var newContainerMargin = $("#formNewComments").height() - 18;
+			var newContainerMargin = $("#formNewComments").height() - 24;
 			$("#commentsBody").css("margin-bottom", newContainerMargin+"px");
 			//Scroll to bottom of page after each textarea resize
 			$(".containerComments").scrollTop($(".containerComments")[0].scrollHeight);

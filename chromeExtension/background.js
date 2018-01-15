@@ -217,7 +217,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
   if (type == "notification") {
 
-  if (userID != payload.data.poster) {
+  if (views.length == 0) {
   //console.log("popup is shut");
 
   chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
@@ -782,7 +782,8 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           //If comment is public, then notification should say that user tagged the recipient
           if (checked) {
             var array = data.slice();
-            var json = JSON.stringify({"data" : {"status" : "tagged you", "pic" : picture, "first" : userName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup, "currentGroupName": currentGroupName, "pageImage" : store['pageImage'], "poster" : userID}, "registration_ids": data });
+            console.log("PUBLIC");
+            var json = JSON.stringify({"data" : {"status" : "tagged you", "pic" : picture, "first" : userName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup, "currentGroupName": currentGroupName, "pageImage" : store['pageImage']}, "registration_ids": data });
           
             $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
               // console.log("notify", data, json);

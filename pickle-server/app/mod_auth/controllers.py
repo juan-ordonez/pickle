@@ -225,7 +225,6 @@ def comment():
     comment.mentions.append(user)
     posts = set([])
 
-
     if not comment.public:
         for tag in tags:
             taggedUser = User.query.filter_by(id=tag).first()
@@ -283,9 +282,9 @@ def comment():
                 # comment.mentions.append(taggedUser)
                 if taggedUser.id not in publicFriends:
                     taggedUser.commentsTaggedIn.append(comment)
-                #     if feed:
-                #         taggedUser.newsfeed.append(feed)
-                #         feed.tags.append(taggedUser)
+                    if feed:
+                        # taggedUser.newsfeed.append(feed)
+                        feed.tags.append(taggedUser)
                     publicFriends.add(taggedUser.id)
 
                 taggedSessions = Session.query.filter_by(id=tag).all()
@@ -337,7 +336,7 @@ def comment():
 
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
 @crossdomain(origin='*')
-@flask_optimize.optimize()
+@flask_optimize.optimize('text')
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
     url = request.form['url']
@@ -637,8 +636,8 @@ def loadPosts():
         #Get names of friends of user
         friends = []
         for session in user.friendSession:
-            if session.authToken:
-                friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
+            # if session.authToken:
+            friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
 
         #Get names of users tagged in post
         tags = []
@@ -646,6 +645,8 @@ def loadPosts():
         for tag in post.tags:
             if tag.id != poster.id:
                 tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
+
+        # print(friends)
 
         postDescription = getPostDescription(userName, posterName, tags, friends)
 

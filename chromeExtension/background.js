@@ -157,6 +157,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               var comment = payload.data.comment;
               var commentID = payload.data.commentID;
               var commentUrl = payload.data.url;
+              var pageTitle = payload.data.pageTitle;
               var tags = payload.data.tags;
 
               chrome.storage.local.get(['lastComment'], function(result) {
@@ -164,7 +165,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
                 if(commentID != result['lastComment']) {
 
                   chrome.storage.local.set({"lastComment" : commentID});
-                  var notificationTitle = poster + " posted to " + groupName; 
+                  var notificationTitle = poster + " @ " + groupName; 
 
                   if (groupName.charAt(0) == '@') {
                     notificationTitle = poster;
@@ -233,6 +234,8 @@ chrome.gcm.onMessage.addListener(function(payload) {
     var page = payload.data.pageTitle;
     var commentUrl = payload.data.url;
     var notification = payload.data.status;
+    var groupName = payload.data.currentGroupName;
+    var pageImage = payload.data.pageImage;
 
     chrome.storage.local.get(['lastComment'], function(result) {
       //Account for multiple gcm messages
@@ -240,9 +243,10 @@ chrome.gcm.onMessage.addListener(function(payload) {
         chrome.storage.local.set({"lastComment" : commentID});
         chrome.notifications.create({   
         type: 'basic', 
-        iconUrl: 'iconBig.png', 
+        iconUrl: 'iconBig.png',
+        imageUrl: pageImage, 
         //Added the page name to the notification (to be shown in the title of the notification) 
-        title: user+' '+notification+' '+page, 
+        title: groupName+": "+user+' '+notification, 
         //Show the actual comment in the message
         message: comment
 
@@ -520,7 +524,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                     groupsIDs.forEach(function(element) {
                       console.log(element);
 
-                      $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
+                      $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
 
                       var json = {};
                       json[element] = data;
@@ -532,7 +536,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                     });
                     
 
-                     $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {
+                     $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {
                     
                   chrome.storage.local.set({"general" : data});
                   chrome.extension.sendMessage({handshake:"login"});
@@ -712,7 +716,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           $.post("http://localhost:5000/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(friendsData){
             console.log("friendsOfFriends");
             var feeds = JSON.parse(friendsData);
-            var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "commentID" : comment, "url" : url, "tags" : tags}, "registration_ids": feeds});
+            var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle": pageTitle, "tags" : tags}, "registration_ids": feeds});
             notify(feeds, feedJSON);
           });
         }
@@ -772,14 +776,14 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             // });
           });
 
-          var genJSON = JSON.stringify({ "data": {"type" : "postGeneral", "commentID" : comment}, "registration_ids": friendsof});
+          var genJSON = JSON.stringify({ "data": {"type" : "postGeneral", "commentID" : comment, "pageTitle": pageTitle,}, "registration_ids": friendsof});
           notify(friendsof, genJSON);
 
           //If comment is public, then notification should say that user tagged the recipient
           if (checked) {
             var array = data.slice();
             console.log("PUBLIC");
-            var json = JSON.stringify({"data" : {"status" : "tagged you on", "pic" : picture, "first" : userName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
+            var json = JSON.stringify({"data" : {"status" : "tagged you", "pic" : picture, "first" : userName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup, "currentGroupName": currentGroupName, "pageImage" : store['pageImage']}, "registration_ids": data });
           
             $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
               // console.log("notify", data, json);

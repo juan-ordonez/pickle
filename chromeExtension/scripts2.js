@@ -19,6 +19,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   
   var activeTab = arrayOfTabs[0];
   url = activeTab.url;
+  console.log(url);
   var domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
   pageTitle = activeTab.title;
 
@@ -765,7 +766,7 @@ function connect(message) {
 
           var activeTab = arrayOfTabs[0];
 
-          $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(newUrl) {
+          $.post("http://localhost:5000/canonicalize/", {"url" : activeTab.url}, function(newUrl) {
               if (newUrl == url && commentsJSON != null) {
                 $("#commentsBody").html(commentsJSON[currentGroup]);
                 $(".loadingSpinner").hide();

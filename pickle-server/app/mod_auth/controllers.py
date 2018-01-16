@@ -336,10 +336,11 @@ def comment():
 
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
 @crossdomain(origin='*')
-@flask_optimize.optimize('text')
+# @flask_optimize.optimize()
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
     url = request.form['url']
+    print(url)
     
     #Get IDs of friends of user
     friends = set([])
@@ -578,7 +579,7 @@ def friendsTokens():
 
 @mod_auth.route('/canonicalize/', methods=['POST'])
 @crossdomain(origin='*')
-@flask_optimize.optimize("text")
+# @flask_optimize.optimize()
 def canonicalize():
     url = request.form['url']
     url = canonical(url)

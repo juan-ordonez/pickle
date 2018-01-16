@@ -353,7 +353,7 @@ function getUserData() {
 
           var activeTab = arrayOfTabs[0];
 
-          $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
+          $.post("http://localhost:5000/canonicalize/", {"url" : activeTab.url}, function(data) {
             url = data;
             // console.log(url);
             var d1 = $.Deferred(),
@@ -362,8 +362,8 @@ function getUserData() {
                 d4 = $.Deferred(),
                 d5 = $.Deferred();
             
-
-            $.post("http://pickle-server-183401.appspot.com/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
+            console.log(url);
+            $.post("http://localhost:5000/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
               var groupsComments = JSON.parse(data);
               commentsJSON = groupsComments;
               d1.resolve();

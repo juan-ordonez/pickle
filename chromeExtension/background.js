@@ -210,7 +210,9 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
               var l1 = $.Deferred(),
                   l2 = $.Deferred(),
-                  l3 = $.Deferred();
+                  l3 = $.Deferred(),
+                  l4 = $.Deferred(),
+                  l5 = $.Deferred();
 
             $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
               groupsHTML = $("#groups").html();
@@ -228,7 +230,25 @@ chrome.gcm.onMessage.addListener(function(payload) {
               l3.resolve();
             });
 
-            $.when(l1, l2, l3).done(function (){
+            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : request.groupID}, function (groupsHTML) {
+               var json = {};
+               json[groupID] = groupsHTML;
+               chrome.storage.local.set(json);
+               console.log("updating new group newsfeed");
+               l4.resolve();
+               // getUserData();
+            });
+
+            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
+              var json = {};
+              json["general"] = groupsHTML;
+              chrome.storage.local.set(json);
+              console.log("updating general feed");
+              l5.resolve();
+              // getUserData();
+            });
+
+            $.when(l1, l2, l3, l4, l5).done(function (){
               var poster = payload.data.poster;
               var groupName = payload.data.groupName;
 
@@ -546,7 +566,7 @@ chrome.runtime.onMessage.addListener(
           }
 
           $.when(l1, l2, l3).done(function (){
-            notifyNewGroup(request.groupName, request.ids, userName);
+            notifyNewGroup(request.groupName, groupID, request.ids, userName);
             sendResponse({newsfeed : "newsfeed.html"});
           });
         });
@@ -571,7 +591,7 @@ chrome.runtime.onMessage.addListener(
           l2.resolve();
         });
         $.when(l1, l2).done(function (){
-          notifyNewGroup(request.groupName, request.users, userName);
+          notifyNewGroup(request.groupName, request.groupID, request.users, userName);
           sendResponse({groupDetails : "groupDetails.html"});
         });
       });
@@ -939,10 +959,10 @@ function like(userName, userID, id, liked, picture, pageTitle){
 
 }
 
-function notifyNewGroup(groupName, newUsers, posterName) {
+function notifyNewGroup(groupName, groupID, newUsers, posterName) {
   $.post("http://localhost:5000/friendstokens/", {"friends" : "["+newUsers.toString()+"]"}, function (data) {
     var sessions = JSON.parse(data);
-    json = JSON.stringify({ "data": {"type" : "newGroup", "groupName" : groupName, "poster" : posterName}, "registration_ids": sessions });
+    json = JSON.stringify({ "data": {"type" : "newGroup", "groupName" : groupName, "groupID" : groupID, "poster" : posterName}, "registration_ids": sessions });
     notify(sessions, json);
   });
 }

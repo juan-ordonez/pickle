@@ -340,6 +340,7 @@ def comment():
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
     url = request.form['url']
+    print(url)
     
     #Get IDs of friends of user
     friends = set([])

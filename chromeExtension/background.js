@@ -381,8 +381,9 @@ function getUserData() {
           chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
           var activeTab = arrayOfTabs[0];
-          
+
           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(data) {
+            
             url = data;
             // console.log(url);
             var d1 = $.Deferred(),
@@ -392,7 +393,6 @@ function getUserData() {
                 d5 = $.Deferred(),
                 d6 = $.Deferred();
             
-
             $.post("http://pickle-server-183401.appspot.com/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
               var groupsComments = JSON.parse(data);
               commentsJSON = groupsComments;

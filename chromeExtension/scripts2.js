@@ -792,8 +792,6 @@ function connect(message) {
 
           var activeTab = arrayOfTabs[0];
 
-          console.log("connect + "+activeTab.url);
-
           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(newUrl) {
               if (newUrl == url && commentsJSON != null) {
                 $("#commentsBody").html(commentsJSON[currentGroup]);

@@ -336,7 +336,7 @@ def comment():
 
 @mod_auth.route('/loadComment/', methods=['GET','POST'])
 @crossdomain(origin='*')
-@flask_optimize.optimize("text")
+# @flask_optimize.optimize()
 def loadComment():
     user = User.query.filter_by(id=request.form['userID']).first()
     url = request.form['url']
@@ -541,12 +541,13 @@ def reset():
 @flask_optimize.optimize()
 def friendsList():
     friends = []
+    user = User.query.filter_by(id=request.form['id']).first()
+    ids = ast.literal_eval(str(request.form['friends']))
+   
     if request.form['direct']:
         direct = True
     else:
         direct = False
-    user = User.query.filter_by(id=request.form['id']).first()
-    ids = ast.literal_eval(str(request.form['friends']))
     for friend in ids:
         user = User.query.filter_by(id=friend).first()
         friends.append((friend, user.name))
@@ -559,6 +560,46 @@ def friendsList():
 
 
 
+#Renders template for list of users for adding new members to an existing group
+@mod_auth.route('/addMembersList/', methods=['GET','POST'])
+@crossdomain(origin='*')
+# @flask_optimize.optimize()
+def addMembersList():
+    
+    user = User.query.filter_by(id=request.form['id']).first()
+    ids = ast.literal_eval(str(request.form['friends']))
+    jsonData = {}
+
+    #For each group that the user is a member of
+    for group in user.groups:
+        currentMembers = []
+        friends = []
+        #Fetch current members of group
+        for i in group.users:
+            if i != user:
+                currentMembers.append(i.id)
+        #Fetch all friends of users and mark them if they are members of the group
+        for friend in ids:
+            user = User.query.filter_by(id=friend).first()
+            if friend in currentMembers:
+                friends.append((friend, user.name, "added"))
+            else:
+                friends.append((friend, user.name))
+
+        templateData = {
+                
+            'friends' : friends
+                
+        }
+
+
+        jsonData[group.id] = render_template('auth/addGroupMembers.html', **templateData)
+
+    return json.dumps(jsonData)
+
+
+
+
 @mod_auth.route('/friendstokens/', methods=['GET','POST'])
 @crossdomain(origin='*')
 @flask_optimize.optimize('json')
@@ -566,10 +607,10 @@ def friendsTokens():
     friends = set([])
     ids = ast.literal_eval(str(request.form['friends']))
     for friend in ids:
-        sessions = Session.query.filter_by(id=friend).first()
-        for session in sessions:
-            if session.authToken:
-                friends.add(session.authToken)
+        session = Session.query.filter_by(id=friend).first()
+        # for session in sessions:
+        if session.authToken:
+            friends.add(session.authToken)
     
 
     return json.dumps(list(friends))
@@ -578,7 +619,7 @@ def friendsTokens():
 
 @mod_auth.route('/canonicalize/', methods=['POST'])
 @crossdomain(origin='*')
-@flask_optimize.optimize("text")
+# @flask_optimize.optimize()
 def canonicalize():
     url = request.form['url']
     url = canonical(url)
@@ -776,6 +817,23 @@ def createGroup():
     db.session.commit()
 
     return group.id
+
+
+@mod_auth.route('/addGroupMembers/', methods=['POST', 'GET'])
+@crossdomain(origin='*')
+@flask_optimize.optimize()
+def addGroupMembers():
+
+    group = Group.query.filter_by(id=request.form['groupID']).first()
+    users = ast.literal_eval(str(request.form['users']))
+
+    for user in users:
+        newMember = User.query.filter_by(id=user).first()
+        group.users.append(newMember)
+
+    db.session.commit()
+
+    return "Members added"
 
 
 @mod_auth.route('/groupNames/', methods=['GET','POST'])

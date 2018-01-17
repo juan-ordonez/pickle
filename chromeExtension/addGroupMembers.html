@@ -1,0 +1,89 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+
+  <head>
+
+    <title>Add Group Members</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link href="https://use.fontawesome.com/releases/v5.0.0/css/all.css" rel="stylesheet">
+    <!-- Waves CSS -->
+    <link href="css/waves.min.css" rel="stylesheet">
+    <!-- Custome Styles CSS -->
+    <link href="css/style.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- dummy anchor to prevent autofocus-->
+      <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
+
+    <!-- Top navigation bar -->
+    <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center pr-3 pl-3">
+      <div>
+        <a href="groupDetails.html" class="backBtn"><i class="fas fa-chevron-left mr-2"></i></a>
+        <h1 class="navbar-brand">Add participants</h1>
+      </div>
+    </nav>
+
+    <!-- Bottom navigation bar -->
+    <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
+      <div class="d-flex justify-content-between" style="width: 375px;">
+        <a class="nav-link active" href="#" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
+        <!-- <a class="nav-link" href="popup.html" id="commentsNav"><i class="fa fa-comment fa-lg"></i></a> -->
+        <a class="nav-link" href="notifications.html" id="notificationsNav"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
+        <!-- <a class="nav-link" href="account.html" id="accountNav"><i class="fa fa-user-circle fa-lg"></i></a> -->
+        <div id="notificationBadge">
+          <span class="badge badge-primary" id="numNotifications"></span>
+        </div>
+      </div> 
+    </nav>
+
+    <div class="container pl-0 pr-0 pt-0">
+        
+        <i class="loadingSpinner fa fa-2x fa-spinner fa-spin" style="display:none;"></i>
+
+        <div id="currentGroupName" style="display:none;"></div>
+
+        <form id="createGroupForm">
+            <!-- <div class="form-group sticky-top">
+                <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" placeholder="Enter group name">
+            </div> -->
+            <p class="mt-2 mb-2 ml-3 mr-3"><small>SELECT PEOPLE</small></p>
+            <div class="friendList mt-2" style="margin-bottom: 60px;">
+            </div>
+            <button type="button" class="btn btn-primary btn-block" id="addMembersBtn">Add to group</button>
+        </form>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+
+    <!-- jQuery, Popper.js, Autosize.js, Waves.js, Bootstrap JS -->
+    <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="js/popper.js"></script>
+    <script type="text/javascript" src="js/autosize.min.js"></script>
+    <script type="text/javascript" src="js/waves.min.js"></script>
+    <script type="text/javascript" src="js/tether.min.js"></script>
+    <script src="js/linkify.min.js"></script>
+    <script src="js/linkify-jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <!--Custom scripts-->
+    <script type="text/javascript" src="scripts2.js"></script>
+    <!-- js for popup.html -->
+    <script src="js/popup.js"></script>
+
+  </body>
+
+</html>

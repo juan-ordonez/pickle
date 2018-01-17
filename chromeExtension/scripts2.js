@@ -21,6 +21,8 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   url = activeTab.url;
   var domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
   pageTitle = activeTab.title;
+  // chrome.storage.local.set({'currentUrl': url});
+  // console.log(url);
 
   //Populate drawer
   if ($("#groupsHTML")) {
@@ -158,43 +160,44 @@ $(document).on("click", ".groupDetailsBtn", function(){
   chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href, "currentGroupName" : currentGroupName});
 });
 
+//Ask background to create new group
 $(document).on("click", "#createGroupBtn", function(event){ 
   
   $("#createGroupForm").hide();
   $(".loadingSpinner").show();
 
   var name = $('#groupNameInput').val()
-  console.log(name);
   var ids = [];
   var users = [];
   $('.form-check-input:checkbox:checked').get().forEach(function(element) {
-      ids.push(element.id);
-      users.push($(element).parent().text().trim());
+    ids.push(element.id);
+    users.push($(element).parent().text().trim());
+  });
+
+  chrome.extension.sendMessage({type : "createGroup", groupName : name, ids : ids, users : users}, function(response){
+    window.location.replace(response.newsfeed);
+  });
+});
+
+//Ask background to add new members to existing group
+$(document).on("click", "#addMembersBtn", function(event){ 
+  
+  $("#createGroupForm").hide();
+  $(".loadingSpinner").show();
+
+  var users = [];
+  $('.form-check-input:checkbox:checked').get().forEach(function(element) {
+      users.push(element.id);
+  });
+
+  chrome.storage.local.get(['currentGroup', 'currentGroupName'], function(data) {
+
+    var groupName = data['currentGroupName'];
+    console.log(groupName);
+    chrome.extension.sendMessage({type : "addGroupMembers", groupID : data['currentGroup'], users : users, groupName : groupName}, function(response){
+      window.location.replace(response.groupDetails);
     });
-  console.log(ids);
-  console.log(users);
 
-  chrome.storage.local.get(['userID'], function(data) {
-
-    $.post("http://pickle-server-183401.appspot.com/createGroup/", {"id" : data['userID'], "name" : name, "ids" : JSON.stringify(ids), "users" : JSON.stringify(users), 'direct' : ''}, function(groupID) {
-      chrome.storage.local.set({"currentGroup" : groupID}, function () {
-        
-        $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : data['userID']}, function (data) {
-                    
-                  chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
-                  console.log(JSON.parse(data));
-                  
-            });
-
-
-        $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : data['userID'].toString()}, function () {
-              chrome.storage.local.set({groupsHTML : $("#groups").html()});
-              console.log(groupsHTML);
-              window.location.replace("newsfeed.html");
-          
-            });
-      });
-    });
   });
 });
 
@@ -481,8 +484,9 @@ if (window.location.href == chrome.extension.getURL('notifications.html')) {
 if (window.location.href == chrome.extension.getURL('groupDetails.html')) {
   chrome.storage.local.get(['currentGroup', 'groupInfo'], function(result) {
   var groupInfo = result['groupInfo'];
+  var currentGroup = result['currentGroup'];
   if (groupInfo != null) { 
-        $("#groupMembers").html(groupInfo[result['currentGroup']]);
+        $("#groupMembersList").html(groupInfo[currentGroup]);
       } else {
         $("#groupMembers").html(' ');
       }
@@ -514,6 +518,28 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
     $(".friendList").html(friendsHTML);
   });
 }
+
+//Populate group info page
+if (window.location.href == chrome.extension.getURL('groupDetails.html')) {
+  chrome.storage.local.get(['picture'], function(result) {
+  picture = result['picture'];
+  $("#accountProfilePicture").attr("src", picture);
+});
+}
+
+//Populate add members page
+if (window.location.href == chrome.extension.getURL("addGroupMembers.html")) {
+  chrome.storage.local.get(['currentGroup', 'addMembersHTML'], function(result) {
+  
+    var currentGroup = result['currentGroup'];
+    var addGroupMembers = result['addMembersHTML'];
+    console.log(addGroupMembers);
+
+    $(".friendList").html(addGroupMembers[currentGroup]);
+
+  });
+}
+
 // message listener for background communication
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -654,50 +680,51 @@ function comment(e) {
 
 function yippIt(e) {
   
-  //Get string of comment submitted by user
-  if (!$("#newComment").val()) {
-    var value = "Yipp Yipp!"
-  }
-  else {
-    var value = $("#newComment").val();
-  } 
+    //Get string of comment submitted by user
+    if (!$("#newComment").val()) {
+      var value = "Yipp Yipp!"
+    }
+    else {
+      var value = $("#newComment").val();
+    } 
 
-  //Get the following comment data
-  var ids = [];
-  var tags; // String with ids tagged in comment
-  var all; // Boolean for whether the comment is for all friends or not
+    //Get the following comment data
+    var ids = [];
+    var tags; // String with ids tagged in comment
+    var all; // Boolean for whether the comment is for all friends or not
 
-  $('textarea.mention').mentionsInput('val', function(taggedIds) {
-       if(jQuery.type(taggedIds)=="array"){
-        ids = taggedIds;
-        $(".mentions div").empty();
-      }
-  });
+    $('textarea.mention').mentionsInput('val', function(taggedIds) {
+         if(jQuery.type(taggedIds)=="array"){
+          ids = taggedIds;
+          $(".mentions div").empty();
+        }
+    });
 
-  chrome.storage.local.set({'tags': JSON.stringify(ids)});
-  chrome.storage.local.set({'public' : true});
+    chrome.storage.local.set({'tags': JSON.stringify(ids)});
+    chrome.storage.local.set({'public' : true});
 
-  //Get user name
-  var user = userName.split(" ")[0];
-  //Get current group
-  var currentGroup = $(".drawer .active").attr("id");
-  var currentGroupName = $("#"+currentGroup).text();
+    //Get user name
+    var user = userName.split(" ")[0];
+    //Get current group
+    var currentGroup = $(".drawer .active").attr("id");
+    var currentGroupName = $("#"+currentGroup).text();
 
-  //Send all comment data to background page
-  chrome.storage.local.get(['tags', 'public', 'userName', 'currentGroup'], function (result) {
+    //Send all comment data to background page
+    chrome.storage.local.get(['tags', 'public', 'userName', 'currentGroup'], function (result) {
 
-    tags = result['tags'];
-    all = result['public'];
-    chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
-      picture : picture, pageTitle : pageTitle, checked : true, currentGroup : currentGroup, currentGroupName: currentGroupName});
-  });
+      tags = result['tags'];
+      all = result['public'];
+      chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
+        picture : picture, pageTitle : pageTitle, checked : true, currentGroup : currentGroup, currentGroupName: currentGroupName});
+      console.log(url);
+    });
 
-  //Change styling of activeTab card
-  $("#activePageCard").addClass("inactive");
-  $("#submitYipp").prop("disabled", "true");
+    //Change styling of activeTab card
+    $("#activePageCard").addClass("inactive");
+    $("#submitYipp").prop("disabled", "true");
 
-  $("#newComment").val("");
-  chrome.storage.local.set({"messageBackup" : ""});
+    $("#newComment").val("");
+    chrome.storage.local.set({"messageBackup" : ""});
 
 }
 
@@ -764,6 +791,8 @@ function connect(message) {
         chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
           var activeTab = arrayOfTabs[0];
+
+          console.log("connect + "+activeTab.url);
 
           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(newUrl) {
               if (newUrl == url && commentsJSON != null) {

@@ -53,16 +53,28 @@
 
       <h1 class="currentGroupLabel mb-3"># General</h1>
 
-      <div class="card pt-2 pb-2 groupMembersCard" id="groupMembers">
+      <div class="card pt-2 pb-2 groupMembersCard">
         <small class="mb-2 pl-3 pr-3">Participants</small>
-
+        <a  href="addGroupMembers.html" role="button" class="btn btn-block btnTransparent d-flex jutify-content-start align-items-center" style="text-align: left; height: 56px;" id="addGroupMembers">
+          <div class="btnIcon mr-3">
+            <i class="fas fa-user-plus" style="color: #E91E63;" data-fa-transform="grow-4 right-3"></i>
+          </div>
+          Add people
+        </a>
+        <hr class="divider" id="groupMembersDivider">
+        <div id="groupMembersList"></div>
         <!-- <a href="#" class="groupMember d-flex justify-content-start align-items-center">
           <div class="thumbnail mr-3">
             <img src="https://scontent.xx.fbcdn.net/v/t1.0-1/c4.0.50.50/p50x50/16113996_10154442269603655_2333710094948453706_n.jpg?oh=3c802da5d71f76cf2f30238ec24ea967&oe=5A64A3C0">
           </div>
           Juan Ordonez
         </a> -->
-
+        <a href="#" class="groupMember d-flex justify-content-start align-items-center">
+          <div class="thumbnail mr-3">
+            <img id="accountProfilePicture">
+          </div>
+          You
+        </a>
       </div>
 
       <button id="leaveGroupBtn" type="button" class="mt-3 btn btn-outline-danger btn-lg btn-block" style="text-align: left" data-toggle="modal" data-target="#exitGroupModal"><i class="fas fa-sign-out-alt mr-3"></i>Leave group</button>
@@ -94,6 +106,7 @@
   <script type="text/javascript" src="js/autosize.min.js"></script>
   <script type="text/javascript" src="js/waves.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script src='js/fontawesome-all.min.js' type='text/javascript'></script>
   <script type="text/javascript" src="scripts2.js"></script>
   <!-- js for popup.html -->
   <script src="js/popup.js"></script>

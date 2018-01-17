@@ -159,7 +159,7 @@ button:active {
 	margin-bottom: 14px;
 }
 
-#createGroupBtn {
+#createGroupBtn, #addMembersBtn {
 	border-radius: 0;
 	border:none;
 	padding-top: 1rem;
@@ -327,6 +327,11 @@ button:active {
 	padding: 0;
 }
 
+.added {
+	color: #9E9E9E;
+	font-size: 0.8em;
+}
+
 .activePageBtns button {
 	background-color: transparent;
 	color: #424242;
@@ -339,7 +344,24 @@ button:active {
 	padding-left: 1rem;
 	padding-right: 1rem;
 	text-align: left;
+}
+
+.btn {
+	padding-left: 1rem;
+	padding-right: 1rem;
 }	
+
+.btnIcon {
+	width: 40px;
+	height: auto;
+	text-align: center;
+}
+
+.btnIcon i {
+	width: 50%!important;
+	margin: 0 auto!important;
+	float: none!important;
+}
 
 .btn-primary {
 	background-color: #E91E63;
@@ -387,21 +409,22 @@ button:active {
 }
 
 .btn-outline-secondary {
-	border-color: #CECECE;
-}
-
-.btnTagsPublic {
-	background-color: #2196F3;
-	color: #FFFFFF;
-}
-
-.btnTagsPrivate {
-	background-color: #424242;
-	color: #FFFFFF;
+	border-color: #CECECE;chrome-extension://kdciejogojohlnkojfkilofkpaofhjjc/addGroupMembers.html
 }
 
 .btn.dropdown-toggle {
 	box-shadow:none;
+}
+
+.btnTransparent {
+	border: none;
+	border-radius: 0;
+	color: #424242;
+	box-shadow: none!important;
+}
+
+.btnTransparent:hover {
+	color: #424242 !important;
 }
 
 .commentDetails {
@@ -541,6 +564,15 @@ button:active {
     color: #BDBDBD;
 }
 
+.divider {
+  height: 1px;
+  width:95%;
+  margin-top: 0;
+  margin-bottom: 0;
+  display:block; /* for use on default inline elements like span */
+  overflow: hidden;
+}
+
 .drawer {
 	position:absolute;
 	top: 50px;
@@ -553,6 +585,8 @@ button:active {
 	padding-right: 1rem;
 	padding-left: 1rem;
 	padding-bottom: 0.5rem;
+	overflow-y:scroll;
+	overflow-x: hidden;
 }
 
 .drawer .nav-link {
@@ -613,8 +647,8 @@ button:active {
 	height: 100%;
 	cursor: pointer;
 	padding: 8px;
-	padding-left: 36px;
-	padding-right: 36px;
+	padding-left: 16px;
+	padding-right: 16px;
 }
 
 #createDirectForm .dropdown-item .form-check-label {
@@ -630,6 +664,11 @@ button:active {
 	left:0;
 	background-color: #FFFFFF;
 	opacity: 0.7;
+}
+
+.friendList .form-check-input {
+	position: absolute;
+	right: 1rem;
 }
 
 .groupMember {

@@ -947,7 +947,8 @@ def leaveGroup():
     for member in group.users:
         if member != user:
             session = Session.query.filter_by(id=member.id).first()
-            ids.add(session.authToken)
+            if session:
+                ids.add(session.authToken)
     if group.direct:
         group.users = []
     else:

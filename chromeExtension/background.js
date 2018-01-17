@@ -208,28 +208,36 @@ chrome.gcm.onMessage.addListener(function(payload) {
           //Reload groups and create notification when user is added to a new group
           if (type == "newGroup") {
 
+              var l1 = $.Deferred(),
+                  l2 = $.Deferred(),
+                  l3 = $.Deferred();
+
             $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
               groupsHTML = $("#groups").html();
+              l1.resolve();
             });
 
             $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
               chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
+              l2.resolve();
             });
 
             var friendIds = friendsArray.map(function(value,index) { return value[0]; });
             $.post("http://localhost:5000/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
               chrome.storage.local.set({"addMembersHTML" : JSON.parse(data)});
+              l3.resolve();
             });
 
+            $.when(l1, l2, l3).done(function (){
+              var poster = payload.data.poster;
+              var groupName = payload.data.groupName;
 
-            var poster = payload.data.poster;
-            var groupName = payload.data.groupName;
-
-            chrome.notifications.create({   
-              type: 'basic', 
-              iconUrl: 'iconBig.png', 
-              title: poster + " added you to a group ", 
-              message: groupName
+              chrome.notifications.create({   
+                type: 'basic', 
+                iconUrl: 'iconBig.png', 
+                title: poster + " added you to a group ", 
+                message: groupName
+              });
             });
 
           }

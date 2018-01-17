@@ -216,21 +216,22 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
             $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
               groupsHTML = $("#groups").html();
+              chrome.storage.local.set({groupsHTML : groupsHTML});
               l1.resolve();
             });
 
-            $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
+            $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {
               chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
               l2.resolve();
             });
 
             var friendIds = friendsArray.map(function(value,index) { return value[0]; });
-            $.post("http://localhost:5000/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
+            $.post("http://pickle-server-183401.appspot.com/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
               chrome.storage.local.set({"addMembersHTML" : JSON.parse(data)});
               l3.resolve();
             });
 
-            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : request.groupID}, function (groupsHTML) {
+            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : payload.data.groupID}, function (groupsHTML) {
                var json = {};
                json[groupID] = groupsHTML;
                chrome.storage.local.set(json);
@@ -432,12 +433,12 @@ function getUserData() {
             // });
             var friendIds = friendsArray.map(function(value,index) { return value[0]; });
             // console.log(friendIds);
-            $("body").load("http://localhost:5000/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "direct" : ''}, function () {
+            $("body").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "direct" : ''}, function () {
               friendsHTMLGroup = $("#friends").html();
               d2.resolve();
             });
 
-            $("body").load("http://localhost:5000/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "direct" : 'direct'}, function () {
+            $("body").load("http://pickle-server-183401.appspot.com/friends/ #friends", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "direct" : 'direct'}, function () {
               friendsHTMLDirect = $("#friends").html();
               d3.resolve();
             });
@@ -447,12 +448,12 @@ function getUserData() {
               d4.resolve();
             });
 
-            $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
+            $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {
               chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
               d5.resolve();
             });
 
-            $.post("http://localhost:5000/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
+            $.post("http://pickle-server-183401.appspot.com/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
               chrome.storage.local.set({"addMembersHTML" : JSON.parse(data)});
               d6.resolve();
             });
@@ -559,7 +560,7 @@ chrome.runtime.onMessage.addListener(
           });
           var friendIds = friendsArray.map(function(value,index) { return value[0]; });
           if (friendIds) {
-            $.post("http://localhost:5000/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
+            $.post("http://pickle-server-183401.appspot.com/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
               chrome.storage.local.set({"addMembersHTML" : JSON.parse(data)});
               l3.resolve();
             });
@@ -576,17 +577,17 @@ chrome.runtime.onMessage.addListener(
 
     //Add new members to existing group upon receiving message from scripts2
     else if (request.type == "addGroupMembers") {
-      $.post("http://localhost:5000/addGroupMembers/", {"groupID" : request.groupID, "users" : JSON.stringify(request.users)}, function() {
+      $.post("http://pickle-server-183401.appspot.com/addGroupMembers/", {"groupID" : request.groupID, "users" : JSON.stringify(request.users)}, function() {
         var l1 = $.Deferred(),
             l2 = $.Deferred();
         var friendIds = friendsArray.map(function(value,index) { return value[0]; });
         if (friendIds) {
-          $.post("http://localhost:5000/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
+          $.post("http://pickle-server-183401.appspot.com/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
             chrome.storage.local.set({"addMembersHTML" : JSON.parse(data)});
             l1.resolve();
           });
         }
-        $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {   
+        $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {   
           chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
           l2.resolve();
         });
@@ -960,7 +961,7 @@ function like(userName, userID, id, liked, picture, pageTitle){
 }
 
 function notifyNewGroup(groupName, groupID, newUsers, posterName) {
-  $.post("http://localhost:5000/friendstokens/", {"friends" : "["+newUsers.toString()+"]"}, function (data) {
+  $.post("http://pickle-server-183401.appspot.com/friendstokens/", {"friends" : "["+newUsers.toString()+"]"}, function (data) {
     var sessions = JSON.parse(data);
     json = JSON.stringify({ "data": {"type" : "newGroup", "groupName" : groupName, "groupID" : groupID, "poster" : posterName}, "registration_ids": sessions });
     notify(sessions, json);

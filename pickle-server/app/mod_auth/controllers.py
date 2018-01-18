@@ -232,19 +232,10 @@ def comment():
             comment.mentions.append(taggedUser)
     else:
         publicFriends = set([])
-        if request.form['pageDescription'] and request.form['pageTitle'] and request.form['pageImage']:
-            # feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
-            #                 request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
-            feed = Feed(user.id, str(datetime.utcnow()), request.form['pageTitle'], request.form['pageImage'], 
-                            request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
-            db.session.add(feed)
-        else:
-            feed = None
+        feed = Feed(user.id, str(datetime.utcnow()), request.form['pageTitle'], request.form['pageImage'], 
+                        request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
+        db.session.add(feed)
 
-
-        
-
-        
         groupId = request.form['groupID']
         
         group1 = Group.query.filter_by(id=groupId).first()

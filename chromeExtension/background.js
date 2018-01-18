@@ -721,86 +721,74 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
 
   var d1 = $.Deferred();
   var storage = chrome.storage.local.get(['accessToken'], function(data) {
-    
-  if (data['accessToken'] != null) { 
+  var image = "", description = "", title = "";
 
+  if (data['accessToken'] != null) { 
     
     session = data['accessToken'];
 
       var fbPost = $.post("https://graph.facebook.com/v2.11/?id=" + encodeURIComponent(url) + "?scrape=true&access_token=" + session, function(api) {
         console.log(api);
         if (api.image != null) {
-          var image = api.image[0].url;
+          image = api.image[0].url;
           console.log(api.image);
-        } else {
-          var image = "";
-        }
+        } 
 
         if (api.description != null) {
-          var description = api.description;
+          description = api.description;
           console.log(api.description);
-        } else {
-          var description = "";
-        }
-
+        } 
         if (api.title != null) {
           console.log(api.title);
-          var title = api.title;
-        } else {
-          var title = "";
-        }
+          title = api.title;
+        } 
 
         var length = 80;
         var trimmedString = description.length > length ? description.substring(0, length - 3) + "..." : description;
         chrome.storage.local.set({"pageTitle" : title, "pageImage" : image, "pageDescription" : trimmedString});
-
-        var outgoingCurrentString = "outgoing-" + currentGroup;
-        var outgoingCurrent;
-        var outgoingGeneral;
-
-        chrome.storage.local.get([outgoingCurrentString], function(result) {
-
-          domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
-
-          // if (currentGroup != "general") {
-
-          // }
-
-          if (result[outgoingCurrentString]) {
-            outgoingCurrent = result[outgoingCurrentString];
-            outgoingCurrent.push('<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+image+'></a></div><div style="padding: 1rem;"><a href='+url+' class="notificationTab pageTitle"><h1>'+title+'</h1></a><p class="pageDescription">'+trimmedString+'</p><p class="pageDomain">'+domain+'</p></div></div>');
-            console.log(outgoingCurrent);
-          }
-          else {
-            outgoingCurrent = ['<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+image+'></a></div><div style="padding: 1rem;"><a href='+url+' class="notificationTab pageTitle"><h1>'+title+'</h1></a><p class="pageDescription">'+trimmedString+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
-            console.log(outgoingCurrent);
-          }
-
-          chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
-
-        });
-
-        //send message to scripts to append new yipp to newsfeed, if needed
-        chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
 
         d1.resolve();
       });
 
       fbPost.fail(
         function(jqXHR, textStatus, errorThrown) {
-          chrome.storage.local.set({"pageTitle" : pageTitle, "pageImage" : "", "pageDescription" : ""});
-          console.log("FAILED")
+          chrome.storage.local.set({"pageTitle" : pageTitle, "pageImage" : image, "pageDescription" : description});
+          console.log("FB SCRAPER FAILED");
           d1.resolve();
-             }
-         );
+        });
 
     }
   });
 
-$.when(d1).done(function () {
+  $.when(d1).done(function () {
+    
+    //Append outgoing post to chrome storage and send message to scripts to append it to DOM
+    var outgoingCurrentString = "outgoing-" + currentGroup;
+    var outgoingCurrent;
+    var outgoingGeneral;
+    chrome.storage.local.get([outgoingCurrentString], function(result) {
+      domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
+      if (result[outgoingCurrentString]) {
+        outgoingCurrent = result[outgoingCurrentString];
+        outgoingCurrent.push('<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+image+'></a></div><div class="pageInfo"><a href='+url+' class="notificationTab pageTitle"><h1>'+title+'</h1></a><p class="pageDescription">'+trimmedString+'</p><p class="pageDomain">'+domain+'</p></div></div>');
+        console.log(outgoingCurrent);
+      }
+      else {
+        outgoingCurrent = ['<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+image+'></a></div><div class="pageInfo"><a href='+url+' class="notificationTab pageTitle"><h1>'+title+'</h1></a><p class="pageDescription">'+trimmedString+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
+        console.log(outgoingCurrent);
+      }
+      chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
+    });
+    chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
+
+    //Send post to server for processing and reload all feeds when posting is complete
     chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription', 'currentGroup'], function(store) {
 
-      var comPost = $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+      console.log(store['pageTitle']);
+      console.log(store['pageImage']);
+      console.log(store['pageDescription']);
+
+      var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : store['currentGroup']}, function(data) {
           var feeds = JSON.parse(JSON.parse(data)[0]);
           var groupID = JSON.parse(data)[2];
@@ -809,14 +797,7 @@ $.when(d1).done(function () {
           var feed = JSON.parse(data)[5];
           var friendsof = JSON.parse(JSON.parse(data)[6]);
           data = JSON.parse(JSON.parse(data)[1]);
-          // console.log(data);
-          // data = ["eiB6FItN5Vw:APA91bExxxAVjVtcJMsj8Y61kygShgwnJ8uO-BwbG4JCYc98r6oDUY_a99LK6JuKcWklFTm9hljzQE-r_B15DSm5yDwfp6TmWcNXsKQoI4bpcwhmj_U8qg1oQBPdzcgd2SNIyx-9M8qn"];
 
-          // $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
-          //        profilePostsHTML = $("#posts").html();
-          //        console.log("profile newsfeed updated");
-          //        chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
-          // });
         if (feed != null) {
           $.post("http://pickle-server-183401.appspot.com/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(friendsData){
             console.log("friendsOfFriends");
@@ -827,10 +808,9 @@ $.when(d1).done(function () {
         }
           
           var d1 = $.Deferred(),
-          d2 = $.Deferred();
-          // var currentGroup = store['currentGroup'];
+              d2 = $.Deferred();
 
-          $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : currentGroup}, function (response, status, xhr) {
+          $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : currentGroup}, function (response, status, xhr) {
             var json = {};
             console.log(currentGroup);
             json[currentGroup] = response;
@@ -849,7 +829,7 @@ $.when(d1).done(function () {
             }
           });
 
-          $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (html) {
+          $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (html) {
             var json = {};
             json["general"] = html;
             chrome.storage.local.set(json);
@@ -886,7 +866,7 @@ $.when(d1).done(function () {
           var genJSON = JSON.stringify({ "data": {"type" : "postGeneral", "commentID" : comment, "pageTitle": pageTitle,}, "registration_ids": friendsof});
           notify(friendsof, genJSON);
 
-          //If comment is public, then notification should say that user tagged the recipient
+          //Send notification to tagged users
           if (checked) {
             var array = data.slice();
             console.log("PUBLIC");
@@ -897,16 +877,6 @@ $.when(d1).done(function () {
               notify(data, json);
             });
           }
-          //Else if comment is private, notification should say that the user sent a secret message to recipient                 
-          // else {
-          //   console.log("SECRET");
-          //   var array = data.slice();
-            
-          //   var json = JSON.stringify({"data": {"status" : "sent you a secret message on", "pic" : picture, "first" : userName.split(" ")[0], "comment" : value, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup}, "registration_ids": data });
-          //   $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "sent you a secret message on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
-          //     notify(data, json);
-          //   });
-          // }
 
         });
 

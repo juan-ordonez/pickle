@@ -777,12 +777,16 @@ button:active {
 }
 
 .pageImg {
-	height: 150px;
+	max-height: 150px;
 	overflow: hidden;
 }
 
 .pageImg img {
 	width: 100%;
+}
+
+.pageInfo {
+	padding: 8px 16px 8px 16px;
 }
 
 .pageTitle h1 {

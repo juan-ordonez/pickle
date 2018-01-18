@@ -463,6 +463,29 @@ $(document).on("click", "#loginButton", function(event){
   $(".btn-facebook").addClass("disableClick");
 });
 
+$(document).on("click", ".deletePost", function(){
+  var postID = $(this).parent().siblings("a")[0].id;
+  console.log(postID);
+  console.log("test0");
+  $.post("http://localhost:5000/deletePost/", {feed : postID}, function() {
+    $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : postID}, function (groupsHTML) {
+      var json = {};
+      json[postID] = groupsHTML;
+      chrome.storage.local.set(json);
+      console.log("updating newsfeed");
+      // getUserData();
+      });
+    $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
+      var json = {};
+      json["general"] = groupsHTML;
+      chrome.storage.local.set(json);
+      console.log("updating newsfeed");
+      // getUserData();
+      });
+
+  });
+});
+
 
 // populate notifications tab
 if (window.location.href == chrome.extension.getURL('notifications.html')) {

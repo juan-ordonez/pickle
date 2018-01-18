@@ -3,8 +3,8 @@
 
   "name": "Yipp Beta",
 
-  "description": "Organize and share links with your peers",
-  "version": "1.47",
+  "description": "Curate links from the Internet as a group",
+  "version": "1.48",
 
   "browser_action": {
     "default_icon": "iconActive128.png",

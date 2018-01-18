@@ -232,19 +232,10 @@ def comment():
             comment.mentions.append(taggedUser)
     else:
         publicFriends = set([])
-        if request.form['pageDescription'] and request.form['pageTitle'] and request.form['pageImage']:
-            # feed = Feed(user.name + " commented on a page", str(datetime.now()), request.form['pageTitle'], request.form['pageImage'], 
-            #                 request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
-            feed = Feed(user.id, str(datetime.utcnow()), request.form['pageTitle'], request.form['pageImage'], 
-                            request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
-            db.session.add(feed)
-        else:
-            feed = None
+        feed = Feed(user.id, str(datetime.utcnow()), request.form['pageTitle'], request.form['pageImage'], 
+                        request.form['pageDescription'], user.name.split(" ")[0] + ': ' + request.form['string'], url)
+        db.session.add(feed)
 
-
-        
-
-        
         groupId = request.form['groupID']
         
         group1 = Group.query.filter_by(id=groupId).first()
@@ -660,40 +651,43 @@ def loadPosts():
     posts = []
     user = User.query.filter_by(id=request.form['id']).first()
     groupID = request.form['groupID']
+    urls = set()
     if groupID == "general":
         print("THE GENERAL")
         groupFeed = Group.query.filter_by(id=user.id).first().posts
     else:
         groupFeed = Group.query.filter_by(id=groupID).first().posts      
     
-    for post in groupFeed.order_by(Feed.time):
-        parsed_uri = urlparse(post.url)
-        domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
-        poster = User.query.filter_by(id=post.poster_id).first()
+    for post in groupFeed.order_by(Feed.time.desc()):
+        if post.url not in urls:
+            urls.add(post.url)
+            parsed_uri = urlparse(post.url)
+            domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+            poster = User.query.filter_by(id=post.poster_id).first()
+            
+            #format usernames of user and poster
+            userName = "<a class='userProfile' href=# id="+user.id+">"+user.name+"</a>"
+            posterName = "<a class='userProfile' href=# id="+poster.id+">"+poster.name+"</a>"
+
+            #Get names of friends of user
+            friends = []
+            for session in user.friendSession:
+                # if session.authToken:
+                friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
+
+            #Get names of users tagged in post
+            tags = []
+
+            for tag in post.tags:
+                if tag.id != poster.id:
+                    tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
+
+            # print(friends)
+
+            postDescription = getPostDescription(userName, posterName, tags, friends)
+
+            posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
         
-        #format usernames of user and poster
-        userName = "<a class='userProfile' href=# id="+user.id+">"+user.name+"</a>"
-        posterName = "<a class='userProfile' href=# id="+poster.id+">"+poster.name+"</a>"
-
-        #Get names of friends of user
-        friends = []
-        for session in user.friendSession:
-            # if session.authToken:
-            friends.append("<a class='userProfile' href=# id="+session.id+">"+session.name+"</a>")
-
-        #Get names of users tagged in post
-        tags = []
-
-        for tag in post.tags:
-            if tag.id != poster.id:
-                tags.append("<a class='userProfile' href=# id="+tag.id+">"+tag.name+"</a>")
-
-        # print(friends)
-
-        postDescription = getPostDescription(userName, posterName, tags, friends)
-
-        posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
-    
 
     # posts = sorted(posts, reverse=True, key=lambda c : c[2])
     templateData = {
@@ -947,7 +941,8 @@ def leaveGroup():
     for member in group.users:
         if member != user:
             session = Session.query.filter_by(id=member.id).first()
-            ids.add(session.authToken)
+            if session:
+                ids.add(session.authToken)
     if group.direct:
         group.users = []
     else:
@@ -1024,7 +1019,22 @@ def friendsOfFriends():
                 notificationsDictString[groupID] = 1
                 member.notificationsDictString = json.dumps(notificationsDictString)
     db.session.commit()
-    return json.dumps(list(sessionsSet))    
+    return json.dumps(list(sessionsSet))
+
+
+
+@mod_auth.route('/deletePost/', methods=['GET','POST'])
+@crossdomain(origin='*')
+@flask_optimize.optimize('text')
+def deletePost():
+    postID = ast.literal_eval(request.form['feed'])[0]
+    print(postID)
+    feed = Feed.query.filter_by(id=postID).first()
+    if feed:
+        print("deleted")
+        db.session.delete(feed)
+        db.session.commit()
+    return "done"
 
 
     

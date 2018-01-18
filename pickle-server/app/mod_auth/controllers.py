@@ -666,7 +666,7 @@ def loadPosts():
     else:
         groupFeed = Group.query.filter_by(id=groupID).first().posts      
     
-    for post in groupFeed:
+    for post in groupFeed.order_by(Feed.time):
         parsed_uri = urlparse(post.url)
         domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
         poster = User.query.filter_by(id=post.poster_id).first()
@@ -695,7 +695,7 @@ def loadPosts():
         posts.append((urllib.quote(post.id), postDescription[0], post.time, post.title, post.image, post.description, post.message, post.url, domain, poster.picture, post.id, postDescription[3]))
     
 
-    posts = sorted(posts, reverse=True, key=lambda c : c[2])
+    # posts = sorted(posts, reverse=True, key=lambda c : c[2])
     templateData = {
         'posts' : posts
         

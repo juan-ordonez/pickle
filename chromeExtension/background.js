@@ -216,6 +216,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
             $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
               groupsHTML = $("#groups").html();
+              chrome.storage.local.set({groupsHTML : groupsHTML});
               l1.resolve();
             });
 
@@ -230,7 +231,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               l3.resolve();
             });
 
-            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : request.groupID}, function (groupsHTML) {
+            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : payload.data.groupID}, function (groupsHTML) {
                var json = {};
                json[groupID] = groupsHTML;
                chrome.storage.local.set(json);

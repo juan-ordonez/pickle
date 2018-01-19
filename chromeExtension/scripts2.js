@@ -466,25 +466,8 @@ $(document).on("click", "#loginButton", function(event){
 $(document).on("click", ".deletePost", function(){
   var postID = $(this).parent().siblings("a")[0].id;
   console.log(postID);
-  $.post("http://localhost:5000/deletePost/", {feed : postID}, function() {
-    chrome.storage.local.get(['currentGroup'], function(result) {
-      $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : result['currentGroup']}, function (groupsHTML) {
-        var json = {};
-        json[result['currentGroup']] = groupsHTML;
-        chrome.storage.local.set(json);
-        console.log("updating group newsfeed");
-        // getUserData();
-        });
-    });
-    $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
-      var json = {};
-      json["general"] = groupsHTML;
-      chrome.storage.local.set(json);
-      console.log("updating general newsfeed");
-      // getUserData();
-      });
-
-  });
+  chrome.extension.sendMessage({type : "deletePost", postID : postID});
+  
 });
 
 

@@ -1027,13 +1027,28 @@ def friendsOfFriends():
 @crossdomain(origin='*')
 def deletePost():
     postID = ast.literal_eval(request.form['feed'])[0]
-    print(postID)
+    generalSet = set()
+    memberSet = set()
     feed = Feed.query.filter_by(id=postID).first()
+    groupID = None
+    for group in feed.groups:
+        if group.name == "General":
+            for member in group.members:
+                sessions = set([session.authToken for session in Session.query.filter_by(id=member.id).all() if session.authToken])
+                generalSet.update(sessions)
+        else:
+            groupID = group.id
+            for member in group.members:
+                sessions = set([session.authToken for session in Session.query.filter_by(id=member.id).all() if session.authToken])
+                memberSet.update(sessions)
+
     if feed:
         print("deleted")
         db.session.delete(feed)
         db.session.commit()
-    return "done"
+    
+    return json.dumps([groupID, list(memberSet), list(generalSet)])
+
 
 
     

@@ -135,6 +135,42 @@ chrome.gcm.onMessage.addListener(function(payload) {
           });
         }
 
+
+          if (type == "deletePost") {
+            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
+               var json = {};
+               json[groupID] = groupsHTML;
+               chrome.storage.local.set(json);
+               console.log("updating newsfeed");
+               // getUserData();
+              });
+
+              $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
+               var json = {};
+               json["general"] = groupsHTML;
+               chrome.storage.local.set(json);
+               console.log("updating newsfeed");
+               // getUserData();
+              });
+
+
+          }
+
+          if (type == "deleteGeneral") {
+
+              $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
+               var json = {};
+               json["general"] = groupsHTML;
+               chrome.storage.local.set(json);
+               console.log("updating newsfeed");
+               // getUserData();
+              });
+
+
+          }
+
+
+
           if (type == "post") {
               $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
                var json = {};
@@ -599,6 +635,11 @@ chrome.runtime.onMessage.addListener(
       return true;
     }
 
+    else if (request.type == "deletePost") {
+      deletePost(request.postID);
+      
+    }
+
     else if (request.handshake == "first") {
         // chrome.storage.local.remove(['commentsHTML', 'friendsArray', 'notifications', 'friendsHTML']);
         
@@ -991,4 +1032,43 @@ function updateBadge(notificationsJSON) {
   else {
   chrome.browserAction.setBadgeText({text: total.toString()});
   }
+}
+
+function deletePost(postID) {
+  $.post("http://localhost:5000/deletePost/", {feed : postID}, function(groupData) {
+
+    var group = JSON.parse(groupData)[0];
+    var memberSet = JSON.parse(groupData)[0];
+    var generalSet = JSON.parse(groupData)[0];
+
+    if (group) {
+
+      var memberJSON = JSON.stringify({ "data": {"type" : "deletePost", "groupID" : group}, "registration_ids": memberSet });
+      notify(memberSet, memberJSON);
+
+  }
+
+    var generalJSON = JSON.stringify({ "data": {"type" : "deleteGeneral"}, "registration_ids": generalSet});
+    notify(generalSet, generalJSON);
+
+
+    chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
+      $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : result.userID.toString(), "groupID" : result['currentGroup']}, function (groupsHTML) {
+        var json = {};
+        json[result['currentGroup']] = groupsHTML;
+        chrome.storage.local.set(json);
+        console.log("updating group newsfeed");
+        // getUserData();
+        });
+    
+    $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : result.userID.toString(), "groupID" : "general"}, function (groupsHTML) {
+      var json = {};
+      json["general"] = groupsHTML;
+      chrome.storage.local.set(json);
+      console.log("updating general newsfeed");
+      // getUserData();
+      });
+
+    });
+  });
 }

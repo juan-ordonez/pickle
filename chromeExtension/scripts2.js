@@ -704,8 +704,18 @@ function comment(e) {
       chrome.storage.local.get(['tags', 'public'], function (result) {
         tags = result['tags'];
         all = result['public'];
+        chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+  
+        var activeTab = arrayOfTabs[0];
+        var url = activeTab.url;
+        var pageTitle = activeTab.title;
         chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
         picture : picture, pageTitle : pageTitle, checked : true, currentGroup : currentGroup, currentGroupName: currentGroupName });
+
+      });
+      
+
+
       });
     });
 
@@ -757,9 +767,18 @@ function yippIt(e) {
 
       tags = result['tags'];
       all = result['public'];
+      chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+  
+        var activeTab = arrayOfTabs[0];
+        var url = activeTab.url;
+        var pageTitle = activeTab.title;
+      
       chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
         picture : picture, pageTitle : pageTitle, checked : true, currentGroup : currentGroup, currentGroupName: currentGroupName});
       console.log(url);
+    });
+
+
     });
 
     //Change styling of activeTab card

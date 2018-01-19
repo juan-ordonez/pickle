@@ -121,7 +121,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               chrome.storage.local.set({"lastComment" : commentID});
               chrome.storage.local.get(['notificationsJSON'], function(data) {
                 notificationsJSON = data['notificationsJSON'];
-                if (!(groupID in notificationsJSON)) {
+                if (!(notificationsJSON[groupID])) {
                   notificationsJSON[groupID] = 1;
                 }
                 else {

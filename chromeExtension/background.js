@@ -1038,8 +1038,8 @@ function deletePost(postID) {
   $.post("http://localhost:5000/deletePost/", {feed : postID}, function(groupData) {
 
     var group = JSON.parse(groupData)[0];
-    var memberSet = JSON.parse(groupData)[0];
-    var generalSet = JSON.parse(groupData)[0];
+    var memberSet = JSON.parse(JSON.parse(groupData)[1]);
+    var generalSet = JSON.parse(JSON.parse(groupData)[2]);
 
     if (group) {
 

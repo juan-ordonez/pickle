@@ -880,9 +880,9 @@ def getNotificationsDict():
     if not user.notificationsDictString:
         for group in user.groups:
             notif[group.id] = 0
-        return notif
+        return json.dumps(notif)
     else:
-        return json.loads(user.notificationsDictString)
+        return user.notificationsDictString
 
 
 

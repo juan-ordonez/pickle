@@ -16,7 +16,7 @@ var permissions = [];
 var postsHTML;
 var groupsHTML;
 var commentsJSON;
-var notificationsJSON;
+var notificationsJSON={};
 
 chrome.storage.local.get(['accessToken'], function(result) {
 
@@ -126,8 +126,8 @@ chrome.gcm.onMessage.addListener(function(payload) {
                 }
                 else {
                   notificationsJSON[groupID] += 1;
-                  chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
                 }
+                chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
                 //Update extension icon badge
                 updateBadge(notificationsJSON);
               });
@@ -206,6 +206,21 @@ chrome.gcm.onMessage.addListener(function(payload) {
                   if (groupName.charAt(0) == '@') {
                     notificationTitle = poster;
                   }
+
+                  //update notification badges
+                  chrome.storage.local.get(['notificationsJSON'], function(data) {
+                    notificationsJSON = data['notificationsJSON'];
+                    // if (!(groupID in notificationsJSON)) {
+                    if (!(notificationsJSON[groupID])) {
+                      notificationsJSON[groupID] = 1;
+                    }
+                    else {
+                      notificationsJSON[groupID] += 1;
+                    }
+                    chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+                    //Update extension icon badge
+                    updateBadge(notificationsJSON);
+                  });
                   
                   //Create notification only if user is not directly tagged
                   if (tags.indexOf(userID) == -1) {
@@ -222,20 +237,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
                         chrome.storage.local.set(dict);
                       });
                   }
-
-                  //update notification badges
-                  chrome.storage.local.get(['notificationsJSON'], function(data) {
-                    notificationsJSON = data['notificationsJSON'];
-                    if (!(groupID in notificationsJSON)) {
-                      notificationsJSON[groupID] = 1;
-                    }
-                    else {
-                      notificationsJSON[groupID] += 1;
-                      chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
-                    }
-                    //Update extension icon badge
-                    updateBadge(notificationsJSON);
-                  });
                 }
               });
 
@@ -710,9 +711,9 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                   chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
                   });
 
-                  $.get("http://pickle-server-183401.appspot.com/getNotificationsDict/", {"id" : userID.toString()}, function (data) {
-                  chrome.storage.local.set({"notificationsJSON" : data});
-                  updateBadge(data);
+                  $.get("http://localhost:5000/getNotificationsDict/", {"id" : userID.toString()}, function (data) {
+                  chrome.storage.local.set({"notificationsJSON" : JSON.parse(data)});
+                  updateBadge(JSON.parse(data));
               
             });
 

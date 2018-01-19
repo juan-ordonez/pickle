@@ -1034,18 +1034,18 @@ def deletePost():
     memberSet = set()
     feed = Feed.query.filter_by(id=postID).first()
     groupID = None
-    for group in feed.groups:
-        if group.name == "General":
-            for member in group.users:
-                sessions = set([session.authToken for session in Session.query.filter_by(id=member.id).all() if session.authToken])
-                generalSet.update(sessions)
-        else:
-            groupID = group.id
-            for member in group.users:
-                sessions = set([session.authToken for session in Session.query.filter_by(id=member.id).all() if session.authToken])
-                memberSet.update(sessions)
-
     if feed:
+        for group in feed.groups:
+            if group.name == "General":
+                for member in group.users:
+                    sessions = set([session.authToken for session in Session.query.filter_by(id=member.id).all() if session.authToken])
+                    generalSet.update(sessions)
+            else:
+                groupID = group.id
+                for member in group.users:
+                    sessions = set([session.authToken for session in Session.query.filter_by(id=member.id).all() if session.authToken])
+                    memberSet.update(sessions)
+
         print("deleted")
         db.session.delete(feed)
         db.session.commit()

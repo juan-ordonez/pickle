@@ -1025,7 +1025,6 @@ def friendsOfFriends():
 
 @mod_auth.route('/deletePost/', methods=['GET','POST'])
 @crossdomain(origin='*')
-@flask_optimize.optimize('text')
 def deletePost():
     postID = ast.literal_eval(request.form['feed'])[0]
     print(postID)

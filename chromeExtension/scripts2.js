@@ -542,6 +542,15 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
   });
 }
 
+if (window.location.href == chrome.extension.getURL("register.html")) {
+  chrome.storage.local.get(['accessToken'], function(result) {
+    var token = result.accessToken;
+    if (token) {
+      window.location.replace("newsfeed.html");
+    }
+  });
+}
+
 //Populate group info page
 if (window.location.href == chrome.extension.getURL('groupDetails.html')) {
   chrome.storage.local.get(['picture'], function(result) {

@@ -72,7 +72,7 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
     });
   });
 
-  chrome.storage.local.get(['notificationsJSON'], function (result) {
+  chrome.storage.local.get(['notificationsJSON', 'currentGroup'], function (result) {
     var notificationsJSON = result['notificationsJSON'];
     var total = 0;
     Object.keys(notificationsJSON).forEach(function(key) {
@@ -94,7 +94,7 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
       $("#general").find("span").text(total);
       $("#general").find("span").show();
     }
-    if (currentGroup == "general") {
+    if (result['currentGroup'] == "general") {
       $(".fa-chevron-right").hide();
     }
   });

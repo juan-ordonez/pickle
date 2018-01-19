@@ -788,7 +788,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
       console.log(store['pageImage']);
       console.log(store['pageDescription']);
 
-      var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+      var comPost = $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : store['currentGroup']}, function(data) {
           var feeds = JSON.parse(JSON.parse(data)[0]);
           var groupID = JSON.parse(data)[2];
@@ -810,7 +810,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           var d1 = $.Deferred(),
               d2 = $.Deferred();
 
-          $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : currentGroup}, function (response, status, xhr) {
+          $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : currentGroup}, function (response, status, xhr) {
             var json = {};
             console.log(currentGroup);
             json[currentGroup] = response;
@@ -829,7 +829,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             }
           });
 
-          $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (html) {
+          $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (html) {
             var json = {};
             json["general"] = html;
             chrome.storage.local.set(json);

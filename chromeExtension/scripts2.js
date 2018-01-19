@@ -49,6 +49,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   }
 
 if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.location.href == chrome.extension.getURL("popup.html")) {
+  
   //Initialize textareas for comments
   chrome.storage.local.get(['friendsArray'], function (result) {
     var friendsData = [];
@@ -69,8 +70,35 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
     chrome.storage.local.get(['messageBackup'], function(result) {
       $("#newComment").val(result['messageBackup'])
     });
-
   });
+
+  chrome.storage.local.get(['notificationsJSON'], function (result) {
+    var notificationsJSON = result['notificationsJSON'];
+    var total = 0;
+    Object.keys(notificationsJSON).forEach(function(key) {
+        var span = $("#" + key).find("span");
+        total += notificationsJSON[key];
+        if (notificationsJSON[key] == 0) {
+          span.hide();
+        } else {
+          span.text(notificationsJSON[key]);
+          span.show();
+        }
+    });
+
+    if (total == 0) {
+      $("#general").find("span").hide();
+
+    } else {
+      // $("#general").find("span")[0].innerHTML = total;
+      $("#general").find("span").text(total);
+      $("#general").find("span").show();
+    }
+    if (currentGroup == "general") {
+      $(".fa-chevron-right").hide();
+    }
+  });
+
 }
 
   //Submit comments
@@ -467,7 +495,6 @@ $(document).on("click", ".deletePost", function(){
   var postID = $(this).parent().siblings("a")[0].id;
   console.log(postID);
   chrome.extension.sendMessage({type : "deletePost", postID : postID});
-  
 });
 
 
@@ -846,53 +873,6 @@ function connect(message) {
         }
         $("#notificationsContainer .loadingSpinner").hide();
         $("#notificationsContainer .cardList").show();
-        
-        // $("#posts").hide();
-        // if (postsHTML != null) { 
-        //   $("#posts").append(postsHTML);
-        //   $("#posts .postDescription").each(function(){
-        //     var htmlDescriptionNewsfeed = $(this).text();
-        //     $(this).empty();
-        //     $(this).html(htmlDescriptionNewsfeed);
-        //   });
-        //   $("#posts").show();
-        // } else {
-        //   $("#posts").html(' ');
-        // }
-
-        console.log(notificationsJSON);
-        var total = 0;
-        Object.keys(notificationsJSON).forEach(function(key) {
-            var span = $("#" + key).find("span");
-            total += notificationsJSON[key];
-            if (notificationsJSON[key] == 0) {
-              span.hide();
-            } else {
-              // span[0].innerHTML = notificationsJSON[key];
-              span.text(notificationsJSON[key]);
-              span.show();
-            }
-            // console.log(span);
-        });
-
-        if (total == 0) {
-          $("#general").find("span").hide();
-
-        } else {
-          // $("#general").find("span")[0].innerHTML = total;
-          $("#general").find("span").text(total);
-          $("#general").find("span").show();
-        }
-        if (currentGroup == "general") {
-          $(".fa-chevron-right").hide();
-        }
-        
-        
-        // if (friendsHTML != null) {
-        //   $("#friendListCheckboxes").html(friendsHTML);
-        // } else {
-        //   $("#friendListCheckboxes").html(' ');
-        // }
 
         if (notifications == 0){
           $("#numNotifications").hide();
@@ -904,22 +884,6 @@ function connect(message) {
           }
           }
         }
-
-        // var friendsData = [];
-        // for (i=0; i < result.friendsArray.length; i++){
-        //   friendsData.push({ id:result.friendsArray[i][0], name:result.friendsArray[i][1], 'avatar':result.friendsArray[i][2], 'type':'contact' });
-        // }
-
-        // $('textarea.mention').mentionsInput({
-        //   onDataRequest:function (mode, query, callback) {
-        //     var data = friendsData;
-
-        //     data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
-
-        //     callback.call(this, data);
-
-        //   }
-        // });
 
       });
     // If background is not done loading, keep asking

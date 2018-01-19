@@ -831,13 +831,13 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
 
       var comPost = $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : store['currentGroup']}, function(data) {
-          var feeds = JSON.parse(JSON.parse(data)[0]);
+          // var feeds = JSON.parse(JSON.parse(data)[0]);
           var groupID = JSON.parse(data)[2];
           var userID = JSON.parse(data)[3];
           var comment = JSON.parse(data)[4];
           var feed = JSON.parse(data)[5];
-          var friendsof = JSON.parse(JSON.parse(data)[6]);
-          data = JSON.parse(JSON.parse(data)[1]);
+          var friendsof = JSON.parse(JSON.parse(data)[6]); //friends of all friends of users
+          data = JSON.parse(JSON.parse(data)[1]); // users directly tagged
 
         if (feed != null) {
           $.post("http://pickle-server-183401.appspot.com/friendsOfFriends/", {"groupID" : groupID, "userID" : userID, "comment" : comment, "feed" : feed}, function(friendsData){

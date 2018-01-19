@@ -494,25 +494,7 @@ $(document).on("click", "#loginButton", function(event){
 $(document).on("click", ".deletePost", function(){
   var postID = $(this).parent().siblings("a")[0].id;
   console.log(postID);
-  $.post("http://localhost:5000/deletePost/", {feed : postID}, function() {
-    chrome.storage.local.get(['currentGroup'], function(result) {
-      $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : result['currentGroup']}, function (groupsHTML) {
-        var json = {};
-        json[result['currentGroup']] = groupsHTML;
-        chrome.storage.local.set(json);
-        console.log("updating group newsfeed");
-        // getUserData();
-        });
-    });
-    $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
-      var json = {};
-      json["general"] = groupsHTML;
-      chrome.storage.local.set(json);
-      console.log("updating general newsfeed");
-      // getUserData();
-      });
-
-  });
+  chrome.extension.sendMessage({type : "deletePost", postID : postID});
 });
 
 
@@ -568,6 +550,15 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
   chrome.storage.local.get(['friendsHTMLDirect'], function(result) {
     var friendsHTML = result.friendsHTMLDirect;
     $(".friendList").html(friendsHTML);
+  });
+}
+
+if (window.location.href == chrome.extension.getURL("register.html")) {
+  chrome.storage.local.get(['accessToken'], function(result) {
+    var token = result.accessToken;
+    if (token) {
+      window.location.replace("newsfeed.html");
+    }
   });
 }
 

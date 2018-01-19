@@ -316,7 +316,9 @@ def comment():
 
         for friendsession in friendOfFriend.friendSession:
             if friendsession.authToken and friendsession.id not in friendsOfFriendsSet:
-                friendsOfFriendsSet.add(friendsession.id)
+                friendsOfFriendsSet.add(friendsession.authToken)
+        if session.authToken:
+            friendsOfFriendsSet.add(session.authToken)
     db.session.commit()
 
     if feed:

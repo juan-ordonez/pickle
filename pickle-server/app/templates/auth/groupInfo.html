@@ -1,15 +1,15 @@
 {% for i in users %}
 <div class="groupMember d-flex justify-content-start align-items-center" id={{i[0]}}>
-  <div class="thumbnail mr-3">
-    <img src={{i[2]}}>
-  </div>
-  <div class="groupMemberName">{{i[1]}}</div>
-  <div class="dropdown show dropdownOptions ml-auto">    
-  <a class="optionsBtn" href="#" role="button" id="options-{{[i[0]]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></a>
-  <div class="dropdown-menu" aria-labelledby="options-{{i[0]}}">
-      <a id ="removeUserBtn" class="dropdown-item" href="#" data-toggle="modal" data-target="#removeUserModal"><small>Remove from group</small></a>
-  </div>
-</div>
+	<div class="thumbnail mr-3">
+	<img src={{i[2]}}>
+	</div>
+	<div class="groupMemberName">{{i[1]}}</div>
+	<div class="dropdown show dropdownOptions ml-auto">    
+	  <a class="optionsBtn" href="#" role="button" id="options-{{[i[0]]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></a>
+	  <div class="dropdown-menu" aria-labelledby="options-{{i[0]}}">
+	      <a id ="removeUserBtn" class="dropdown-item" href="#" data-toggle="modal" data-target="#removeUserModal"><small>Remove from group</small></a>
+	  </div>
+	</div>
 </div>
 
 {% endfor %}

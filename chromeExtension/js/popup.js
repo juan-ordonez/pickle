@@ -4,12 +4,12 @@ Waves.init();
 
 $('.btn').mouseup(function() { this.blur() });
 
-if (window.location.href == chrome.extension.getURL('settings.html')){
-	$(document).on("click", ".backBtn", function(){
-		//chrome.browserAction.setPopup({popup : "popup.html"});
-		window.location.href = chrome.extension.getURL(history.back());
-	});
-}
+// if (window.location.href == chrome.extension.getURL('settings.html')){
+// 	$(document).on("click", ".backBtn", function(){
+// 		//chrome.browserAction.setPopup({popup : "popup.html"});
+// 		window.location.href = chrome.extension.getURL(history.back());
+// 	});
+// }
 
 $(document).on("click", ".deletePost", function(){
 	$(this).parent().parent().parent().animate({ opacity: 0 }, function(){

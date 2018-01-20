@@ -64,11 +64,15 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
       if (groupsHTML != null) {
         $(".groupsDrawer").html(groupsHTML);
         chrome.storage.local.get(['currentGroup'], function(data) {
-          var group = $('#' + data['currentGroup']);
-          group.addClass("active");
-          $(".groupTitle").text(group.text());
+          var $group = $('#' + data['currentGroup']);
+          $group.addClass("active");
+          $(".groupTitle").text($group.text());
           if (data['currentGroup'] == "general") {
             $(".fa-chevron-right").hide();
+          }
+          else if ($group.parent().hasClass("directDrawer")){
+            $(".fa-chevron-right").hide();
+            $("#directOptionsDropdown").show();
           }
         });
 

@@ -69,17 +69,17 @@
           </div>
           Juan Ordonez
         </a> -->
-        <a href="#" class="groupMember d-flex justify-content-start align-items-center">
+        <div class="groupMember d-flex justify-content-start align-items-center">
           <div class="thumbnail mr-3">
             <img id="accountProfilePicture">
           </div>
           You
-        </a>
+        </div>
       </div>
 
       <button id="leaveGroupBtn" type="button" class="mt-3 btn btn-outline-danger btn-lg btn-block" style="text-align: left" data-toggle="modal" data-target="#exitGroupModal"><i class="fas fa-sign-out-alt mr-3"></i>Leave group</button>
 
-      <!-- Modal -->
+      <!-- Modal Leaving Groups -->
       <div class="modal fade" id="exitGroupModal" tabindex="-1" role="dialog" aria-labelledby="exitGroupModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -90,6 +90,22 @@
             <div class="modal-body">
               <a href="#" class="mr-3" data-dismiss="modal">CANCEL</a>
               <a href="#" id="confirmLeaveGroup">LEAVE</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Removing User -->
+      <div class="modal fade" id="removeUserModal" tabindex="-1" role="dialog" aria-labelledby="exitGroupModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"></h5>
+              <i class="fa fa-spinner fa-spin" style="display:none;"></i>
+            </div>
+            <div class="modal-body">
+              <a href="#" class="mr-3" data-dismiss="modal">CANCEL</a>
+              <a href="#" id="confirmRemoveUser">REMOVE</a>
             </div>
           </div>
         </div>

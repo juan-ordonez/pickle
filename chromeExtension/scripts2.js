@@ -34,6 +34,9 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
           var group = $('#' + data['currentGroup']);
           group.addClass("active");
           $(".groupTitle").text(group.text());
+          if (data['currentGroup'] == "general") {
+            $(".fa-chevron-right").hide();
+          }
         });
       }
     });
@@ -93,9 +96,6 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
       // $("#general").find("span")[0].innerHTML = total;
       $("#general").find("span").text(total);
       $("#general").find("span").show();
-    }
-    if (result['currentGroup'] == "general") {
-      $(".fa-chevron-right").hide();
     }
   });
 
@@ -524,7 +524,12 @@ if (window.location.href == chrome.extension.getURL('groupDetails.html')) {
       } else {
         $("#groupMembers").html(' ');
       }
-
+  });
+  $(document).on("click", "#removeUserBtn", function(){
+    var userToRemoveID = $(this).parents(".groupMember").attr("id");
+    var userToRemoveName = $(this).parents(".dropdownOptions").siblings(".groupMemberName").text();
+    $("#removeUserModal .modal-title").prop("id" ,userToRemoveID);
+    $("#removeUserModal .modal-title").text("Remove "+userToRemoveName+"?");
   });
 }
 

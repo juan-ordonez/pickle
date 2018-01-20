@@ -485,7 +485,7 @@ function getUserData() {
               d4.resolve();
             });
 
-            $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {
+            $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
               chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
               d5.resolve();
             });
@@ -706,7 +706,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                    notificationsHTML = $("#notifications").html();
                   chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
             });
-                $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {
+                $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
                     
                   chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
                   });

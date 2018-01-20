@@ -819,9 +819,7 @@ button:active {
 }
 
 .loadingSpinner.newsfeed {
-	position: absolute;
-	top: 400px;
-	left: 180px;
+
 }
 
 .logoutSpinner {

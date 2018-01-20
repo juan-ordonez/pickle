@@ -338,6 +338,21 @@ button:active {
 	color: #424242;
 }
 
+#topNav.urlInfo{
+	background-color: #1976D2;
+	color: #BBDEFB;
+}
+
+#topNav.urlInfo h1 {
+	color: #E3F2FD;
+	font-size: 0.8em;
+	padding:0;
+}
+
+#topNav.urlInfo a {
+	color: #E3F2FD;
+}
+
 #topNav .navbar-brand {
 	margin: 0;
 }

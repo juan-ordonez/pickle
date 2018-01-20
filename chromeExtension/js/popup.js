@@ -32,6 +32,7 @@ $(document).on("click", "#prepareYipp", function(){
 	$(".closeYippArea").show();
 	$(".closeYippArea").animate({opacity: 0.5});
 	$(".container").css({overflowY: 'hidden'});
+	$(".currentTabInfo small:first-child").text("Share page");
 });
 
 $(document).on("click", ".closeYippArea", function(){
@@ -43,6 +44,7 @@ $(document).on("click", ".closeYippArea", function(){
 		$(".closeYippArea").hide();
 	});
 	$(".container").css({overflowY: 'auto'});
+	$(".currentTabInfo small:first-child").text("Current page");
 });
 
 
@@ -125,7 +127,7 @@ if (window.location.href == chrome.extension.getURL('popup.html') || window.loca
 	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 		var activeTab = arrayOfTabs[0];
 		pageTitle = activeTab.title;
-		$("#topNav h1").text(pageTitle.trimToLength(32));
+		$("#topNav h1").text(pageTitle.trimToLength(50));
 	});
 
 	//Scroll to bottom of chat page each time popup is opened

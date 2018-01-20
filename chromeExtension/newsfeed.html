@@ -41,7 +41,8 @@
         </div>
     </div>
 
-    <div class="closeDrawerArea" style="display:none;"></div> 
+    <div class="closeDrawerArea" style="display:none;"></div>
+    <div class="closeYippArea hidden" style="display:none;"></div>  
 
     <!-- Top navigation bar -->
     <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center">
@@ -77,17 +78,18 @@
         </div>
         <div id="activePageCard" class="card mb-3" style="height:auto;">
             <div class="currentTabInfo">
-                <small>Current Tab</small>
+                <small><i class="fas fa-link mr-2"></i>Current Page</small>
                 <h1 id="activePageTitle" class="mb-0">Loading</h1>
                 <small id="activePageUrl">Loading</small>
             </div>
-            <div class="activePageInput">
-                <label class="sr-only" for="newComment">Write a comment</label>
-                <textarea class="form-control mention" rows="1" id="newComment" placeholder="Write a comment" maxlength="256"></textarea>
-            </div>
             <div class="activePageBtns d-flex flex-row justify-content-start">
-                <button class="btn" id="submitYipp">YIPP TO GROUP</button>
+                <button class="btn" id="prepareYipp">POST TO GROUP</button>
                 <button id="viewComments" class="btn">VIEW COMMENTS</button>
+            </div>
+            <div class="activePageInput" style="display:none;">
+                <button class="btn" id="submitYipp"><i class="fa fa-paper-plane"></i></button>
+                <label class="sr-only" for="newComment">Yipp Yipp!</label>
+                <textarea class="form-control mention" rows="1" id="newComment" placeholder="Yipp Yipp!" maxlength="256"></textarea>
             </div>
         </div>
 

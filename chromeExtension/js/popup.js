@@ -23,6 +23,28 @@ $(document).on("click", ".hidePost", function(){
 	});
 });
 
+$(document).on("click", "#prepareYipp", function(){
+	$(".activePageBtns").animate({opacity : 0}, 200, function(){
+		$(".activePageBtns").css({height : 0});
+		$(".activePageInput").fadeIn(200);
+		$(".activePageInput textarea").focus();
+	});
+	$(".closeYippArea").show();
+	$(".closeYippArea").animate({opacity: 0.5});
+	$(".container").css({overflowY: 'hidden'});
+});
+
+$(document).on("click", ".closeYippArea", function(){
+	$(".activePageInput").fadeOut(200, function(){
+		$(".activePageBtns").css({height : 48});
+		$(".activePageBtns").animate({opacity : 100}, 200);
+	});
+	$(".closeYippArea").animate({opacity: 0}, function(){
+		$(".closeYippArea").hide();
+	});
+	$(".container").css({overflowY: 'auto'});
+});
+
 
 //Populate group details page
 if (window.location.href == chrome.extension.getURL("groupDetails.html")) {
@@ -71,47 +93,31 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
 
 }
 
-// if (window.location.href == chrome.extension.getURL("createGroup.html")) {
-// 	$(document).on("change", ":checkbox", function(){
-// 		var checked = [];
-// 		$("input:checked").each(function(){
-// 		    checked.push($(this));
-// 		});
-// 		if (checked.length === 1) {
-// 			$("#createGroupBtn").removeAttr("disabled");
-// 		}
-// 		else if (checked.length === 0) {
-// 			$("#createGroupBtn").prop("disabled", "true");
-// 		}
-// 	});
-// }
-
-// if (window.location.href == chrome.extension.getURL("createDirect.html")) {
-// 	$(document).on("change", ":radio", function(){
-// 		console.log("CREATE");
-// 		var checked = [];
-// 		$("input:checked").each(function(){
-// 		    checked.push($(this));
-// 		});
-// 		if (checked.length === 1) {
-// 			console.log($("#createDirectBtn"));
-// 			$("#createDirectBtn").removeAttr("disabled");
-// 			$("#createDirectBtn").slideDown();
-// 		}
-// 		else if (checked.length === 0) {
-// 			$("#createDirectBtn").slideUp(function(){
-// 				$("#createDirectBtn").prop("disabled", "true");
-// 			});
-// 		}
-// 	});
-// }
-
 $('#newComment').bind('input propertychange', function() {
 
 	var message = $("#newComment").val();
 	chrome.storage.local.set({"messageBackup" : message});
 
 });
+
+if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
+	//Press enter to submit textarea, Shift+enter for new line
+	$("#newComment").keypress(function (e) {
+	    if(e.which == 13 && !e.shiftKey) {        
+	        //$(this).closest("form").submit();
+	        $("#submitYipp").trigger("click");
+	        e.preventDefault();
+	        return false;
+	    }
+	});
+
+	$(document).on("click", "#submitYipp", function(){
+    	$(".currentTabInfo").addClass("inactive");
+    	$("#submitYipp").prop("disabled", "true");
+    	$("#newComment").val("");
+		$(".closeYippArea").trigger("click");
+	});
+}
 
 if (window.location.href == chrome.extension.getURL('popup.html') || window.location.href == chrome.extension.getURL('popup.html#')) {
 

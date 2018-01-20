@@ -60,8 +60,8 @@ button:active {
 }*/
 
 #activePageCard {
-	background-color: #E91E63;
-	color: #FFFFFF;
+	background-color: #FFFFFF;
+	color: #BBDEFB;
 	border:none;
 	margin: -0.5rem;
 	margin-top: 21px;
@@ -72,10 +72,11 @@ button:active {
 	border-bottom-width: 1px;
 	box-shadow: none;
 	overflow: visible;
+	z-index: 2;
 }
 
 #activePageCard a {
-	color: #FFFFFF;
+	color: #BBDEFB;
 }
 
 #activePageCard textarea {
@@ -85,12 +86,13 @@ button:active {
 	padding-bottom: 12px;
 }
 
-#activePageCard.inactive {
-	background-color: #757575!important;
-}
-
 #activePageCard .mentions-autocomplete-list {
 	color: #424242;
+}
+
+#activePageTitle {
+	color: #E3F2FD;
+	font-weight: 500;
 }
 
 #activePageUrl {
@@ -302,6 +304,7 @@ button:active {
 #submitYipp {
 	position: absolute;
 	right: 8px;
+	bottom: 0;
 	z-index: 1;
 	color: #424242;
 	width: 48px;
@@ -340,8 +343,8 @@ button:active {
 }
 
 .activePageBtns {
-	background-color: #EEEEEE;
-	color: #424242;
+	background-color: #BBDEFB;
+	color: #0D47A1;
 	padding: 0;
 }
 
@@ -352,7 +355,7 @@ button:active {
 
 .activePageBtns button {
 	background-color: transparent;
-	color: #424242;
+	color: #0D47A1;
 	font-weight: 500;
 	margin: 0;
 	box-shadow:none!important;
@@ -366,8 +369,7 @@ button:active {
 
 .activePageInput {
 	width: 100%;
-	position: absolute;
-	bottom: 0;
+	z-index: 1;
 }
 
 .btn {
@@ -477,6 +479,19 @@ button:active {
 	left: 180px;
 }
 
+.currentTabInfo {
+	background-color: #1976D2;
+}
+
+.currentTabInfo.inactive {
+	background-color: #757575;
+}
+
+.currentTabInfo.inactive, .currentTabInfo.inactive a, .currentTabInfo.inactive #activePageTitle {
+	color: #BDBDBD !important;
+}
+
+
 .containerComments > .loadingSpinner {
 	position: absolute;
 	top: 190px;
@@ -576,6 +591,18 @@ button:active {
 	background-color: #000000;
 	z-index:10;
 	opacity: 0;
+}
+
+.closeYippArea {
+	position:absolute;
+	top: 0px;
+	left: 0px;
+	height: 600px;
+	width: 400px;
+	background-color: #000000;
+	z-index:1;
+	opacity: 0;
+	border: none;
 }
 
 .currentTabInfo {

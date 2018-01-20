@@ -313,7 +313,7 @@ chrome.runtime.onMessage.addListener(
             $(".yippContainer").first().animate({opacity: 1});
           });
           //Change styling of activeTab card
-          $("#activePageCard").removeClass("inactive");
+          $(".currentTabInfo").removeClass("inactive");
           $("#submitYipp").removeAttr("disabled");
         }
 
@@ -781,11 +781,6 @@ function yippIt(e) {
 
     });
 
-    //Change styling of activeTab card
-    $("#activePageCard").addClass("inactive");
-    $("#submitYipp").prop("disabled", "true");
-
-    $("#newComment").val("");
     chrome.storage.local.set({"messageBackup" : ""});
 
 }

@@ -396,6 +396,10 @@ if (window.location.href == chrome.extension.getURL('popup.html')) {
 // chrome.storage.local.remove(['outgoing-general', "outgoing-90281c92-b1de-4fd3-94bd-ab8b1de649eb"]);
 //Load newsfeed posts
 if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
+  
+  chrome.storage.local.set({"defaultPopup" : "newsfeed.html"});
+  chrome.browserAction.setPopup({popup : "newsfeed.html"});
+
   $("#posts").hide();
   chrome.storage.local.get(['currentGroup'], function(result) {
   var group = result['currentGroup'];
@@ -603,28 +607,6 @@ chrome.runtime.onMessage.addListener(
       connect("first");
     }
   });
-
-$(document).on("click", "#newsfeedNav", function(){
-  chrome.storage.local.set({"defaultPopup" : "newsfeed.html"});
-  chrome.browserAction.setPopup({popup : "newsfeed.html"});
-});
-
-if ($("#newsfeedNav").hasClass("active")) {
-  $(document).on("click", ".backBtn", function(){
-    chrome.storage.local.set({"defaultPopup" : "newsfeed.html"});
-    chrome.browserAction.setPopup({popup : "newsfeed.html"});
-  });
-}
-
-// $(document).on("click", "#viewComments", function(){
-//   chrome.storage.local.set({"defaultPopup" : "popup.html"});
-//   chrome.browserAction.setPopup({popup : "popup.html"});
-// });
-
-$(document).on("click", "#notificationsNav", function(){
-  chrome.storage.local.set({"defaultPopup" : "notifications.html"});
-  chrome.browserAction.setPopup({popup : "notifications.html"});
-});
 
 $(document).on("click", "#notifications a, .cardNewsfeed a", function(){
   chrome.storage.local.set({"defaultPopup" : "popup.html"});

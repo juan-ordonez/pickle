@@ -38,17 +38,15 @@
     </nav>
 
     <!-- Bottom navigation bar -->
-    <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
+<!--     <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
       <div class="d-flex justify-content-between" style="width: 375px;">
         <a class="nav-link" href="newsfeed.html" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
-        <!-- <a class="nav-link" href="popup.html" id="commentsNav"><i class="fa fa-comment fa-lg"></i></a> -->
         <a class="nav-link" href="notifications.html" id="notificationsNav"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
-        <!-- <a class="nav-link active" href="#" id="accountNav"><i class="fa fa-user-circle fa-lg"></i></a> -->
         <div id="notificationBadge">
           <span class="badge badge-primary" id="numNotifications"></span>
         </div>
       </div> 
-    </nav> 
+    </nav>  -->
 
     <i class="loadingSpinner logoutSpinner fa fa-2x fa-spinner fa-spin" style="display:none;"></i>
 
@@ -62,12 +60,26 @@
       </div>
 
       <div class="d-flex flex-column align-items-center">
+
         <div class="card mb-3 pr-3 pl-3 pt-3 pb-3">
+
+          <a  href="notifications.html" role="button" class="btn btn-block btnTransparent d-flex jutify-content-start align-items-center" style="text-align: left; margin-left: -16px; width: 384px; height: 56px" id="viewNotificationsBtn">
+            <div class="btnIcon mr-1">
+              <i class="fas fa-tag" style="color: #E91E63;" data-fa-transform="grow-4 right-3"></i>
+            </div>
+            Tags history
+            <div class="btnIcon ml-auto" style="color:#BDBDBD;">
+              <i class="fas fa-chevron-right"></i>
+            </div>
+          </a>
+          <hr class="divider mb-3" style="width: 100%;">
           <h5>Invite friends to Yipp!</h5>
           Super Secret URL:
           <a href="https://chrome.google.com/webstore/detail/yipp/lephjajphneoinokolflebmffpfmpplo" target="_blank" style="color:#E91E63; width:160px;"><span>https://bit.ly/joinyipp</span></a>
         </div>
+
         <a class="btn btn-outline-secondary btn-block" id="logoutButton" role="button">Logout</a>
+
       </div>
 
     </div>

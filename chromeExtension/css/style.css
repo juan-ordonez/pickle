@@ -11,7 +11,7 @@ body .container {
 	padding: 0.5rem;
 	padding-top: 1rem;
 	padding-bottom:0rem;
-	height: 502px;
+	height: 552px;
 	overflow-y: auto;
 	overflow-x: hidden;
 }
@@ -24,7 +24,7 @@ body .containerComments {
 	padding-top: 0;
 	padding-bottom:0;
 	width: 100%;
-	height: 414px;
+	height: 464px;
 	overflow-y: auto;
 	overflow-x:hidden;
 }
@@ -174,7 +174,7 @@ button:active {
 	padding-top: 1rem;
 	padding-bottom: 1rem;
 	position: fixed;
-	bottom:50px;
+	bottom:0px;
 }
 
 #createGroupBtn[disabled] {
@@ -203,7 +203,7 @@ button:active {
 #formNewComments {
 	width: 368px;
 	position: fixed;
-	bottom: 66px;
+	bottom: 16px;
 }
 
 #formNewComments .btn-outline-secondary {
@@ -348,6 +348,14 @@ button:active {
 	padding: 0;
 }
 
+.activePageBtns.inactive {
+	background-color: #BDBDBD;
+}
+
+.activePageBtns.inactive button {
+	color: #757575 !important;
+}
+
 .added {
 	color: #9E9E9E;
 	font-size: 0.8em;
@@ -435,7 +443,7 @@ button:active {
 }
 
 .btn-outline-secondary {
-	border-color: #CECECE;chrome-extension://kdciejogojohlnkojfkilofkpaofhjjc/addGroupMembers.html
+	border-color: #CECECE;
 }
 
 .btn.dropdown-toggle {
@@ -586,7 +594,7 @@ button:active {
 	position:absolute;
 	top: 50px;
 	left: 0px;
-	height: 500px;
+	height: 550px;
 	width: 400px;
 	background-color: #000000;
 	z-index:10;
@@ -617,7 +625,6 @@ button:active {
 
 .divider {
   height: 1px;
-  width:95%;
   margin-top: 0;
   margin-bottom: 0;
   display:block; /* for use on default inline elements like span */
@@ -628,7 +635,7 @@ button:active {
 	position:absolute;
 	top: 50px;
 	left: -200px;
-	height: 500px;
+	height: 550px;
 	width: 200px;
 	background-color: #EEEEEE;
 	color: #424242;

@@ -112,7 +112,7 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
 	});
 
 	$(document).on("click", "#submitYipp", function(){
-    	$(".currentTabInfo").addClass("inactive");
+    	$(".currentTabInfo, .activePageBtns").addClass("inactive");
     	$("#submitYipp").prop("disabled", "true");
     	$("#newComment").val("");
 		$(".closeYippArea").trigger("click");

@@ -121,11 +121,11 @@ chrome.gcm.onMessage.addListener(function(payload) {
               chrome.storage.local.set({"lastComment" : commentID});
               chrome.storage.local.get(['notificationsJSON'], function(data) {
                 notificationsJSON = data['notificationsJSON'];
-                if (!(notificationsJSON[groupID])) {
-                  notificationsJSON[groupID] = 1;
+                if (!(notificationsJSON['general'])) {
+                  notificationsJSON['general'] = 1;
                 }
                 else {
-                  notificationsJSON[groupID] += 1;
+                  notificationsJSON['general'] += 1;
                 }
                 chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
                 //Update extension icon badge
@@ -172,6 +172,16 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
 
           if (type == "post") {
+              
+              var poster = payload.data.poster;
+              var groupName = payload.data.currentGroupName;
+              var groupID = payload.data.groupID;
+              var comment = payload.data.comment;
+              var commentID = payload.data.commentID;
+              var commentUrl = payload.data.url;
+              var pageTitle = payload.data.pageTitle;
+              var tags = payload.data.tags;
+
               $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
                var json = {};
                json[groupID] = groupsHTML;
@@ -188,14 +198,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
                // getUserData();
               });
 
-              var poster = payload.data.poster;
-              var groupName = payload.data.currentGroupName;
-              var comment = payload.data.comment;
-              var commentID = payload.data.commentID;
-              var commentUrl = payload.data.url;
-              var pageTitle = payload.data.pageTitle;
-              var tags = payload.data.tags;
-
               chrome.storage.local.get(['lastComment'], function(result) {
                 //Account for multiple gcm messages
                 if(commentID != result['lastComment']) {
@@ -210,7 +212,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
                   //update notification badges
                   chrome.storage.local.get(['notificationsJSON'], function(data) {
                     notificationsJSON = data['notificationsJSON'];
-                    // if (!(groupID in notificationsJSON)) {
                     if (!(notificationsJSON[groupID])) {
                       notificationsJSON[groupID] = 1;
                     }
@@ -330,6 +331,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
     var commentUrl = payload.data.url;
     var notification = payload.data.status;
     var groupName = payload.data.currentGroupName;
+    var groupID = payload.data.groupID;
     var pageImage = payload.data.pageImage;
 
     chrome.storage.local.get(['lastComment'], function(result) {
@@ -355,7 +357,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
       //update notification badges
       chrome.storage.local.get(['notificationsJSON'], function(data) {
         notificationsJSON = data['notificationsJSON'];
-        if (!(groupID in notificationsJSON)) {
+        if (!(notificationsJSON[groupID])) {
           notificationsJSON[groupID] = 1;
         }
         else {
@@ -432,17 +434,6 @@ function getUserData() {
               chrome.storage.local.set({"currentGroup" : "general"});
             }
           });
-
-
-          if (notifications == 0){
-            $("#numNotifications").hide();
-          } else {
-            if (document.getElementById("numNotifications")) {
-              document.getElementById("numNotifications").innerHTML = notifications;
-              $("#numNotifications").show();
-            }
-          }
-
           
           chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 
@@ -831,7 +822,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
       console.log(store['pageDescription']);
 
       var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
-        "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : store['currentGroup']}, function(data) {
+        "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : currentGroup}, function(data) {
           // var feeds = JSON.parse(JSON.parse(data)[0]);
           var groupID = JSON.parse(data)[2];
           var userID = JSON.parse(data)[3];
@@ -845,6 +836,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             console.log("friendsOfFriends");
             var feeds = JSON.parse(friendsData);
             var feedJSON = JSON.stringify({ "data": {"type" : "post", "groupID" : currentGroup, "poster": userName, "currentGroupName": currentGroupName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle": pageTitle, "tags" : tags}, "registration_ids": feeds});
+            console.log(currentGroup);
             notify(feeds, feedJSON);
           });
         }

@@ -24,24 +24,6 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
   // chrome.storage.local.set({'currentUrl': url});
   // console.log(url);
 
-  //Populate drawer
-  if ($("#groupsHTML")) {
-    chrome.storage.local.get(['groupsHTML'], function (result) {
-      var groupsHTML = result['groupsHTML']
-      if (groupsHTML != null) {
-        $(".groupsDrawer").html(groupsHTML);
-        chrome.storage.local.get(['currentGroup'], function(data) {
-          var group = $('#' + data['currentGroup']);
-          group.addClass("active");
-          $(".groupTitle").text(group.text());
-          if (data['currentGroup'] == "general") {
-            $(".fa-chevron-right").hide();
-          }
-        });
-      }
-    });
-  }
-
   //Populate active tab card in newsfeed
   if (window.location.href == chrome.extension.getURL("newsfeed.html")) {
     $("#activePageTitle").text(pageTitle.trimToLength(80));
@@ -75,29 +57,49 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
     });
   });
 
-  chrome.storage.local.get(['notificationsJSON', 'currentGroup'], function (result) {
-    var notificationsJSON = result['notificationsJSON'];
-    var total = 0;
-    Object.keys(notificationsJSON).forEach(function(key) {
-        var span = $("#" + key).find("span");
-        total += notificationsJSON[key];
-        if (notificationsJSON[key] == 0) {
-          span.hide();
-        } else {
-          span.text(notificationsJSON[key]);
-          span.show();
-        }
+  //Populate drawer
+  if ($("#groupsHTML")) {
+    chrome.storage.local.get(['groupsHTML'], function (result) {
+      var groupsHTML = result['groupsHTML']
+      if (groupsHTML != null) {
+        $(".groupsDrawer").html(groupsHTML);
+        chrome.storage.local.get(['currentGroup'], function(data) {
+          var group = $('#' + data['currentGroup']);
+          group.addClass("active");
+          $(".groupTitle").text(group.text());
+          if (data['currentGroup'] == "general") {
+            $(".fa-chevron-right").hide();
+          }
+        });
+
+        //Get notification badges
+        chrome.storage.local.get(['notificationsJSON', 'currentGroup'], function (result) {
+          var notificationsJSON = result['notificationsJSON'];
+          // delete notificationsJSON["3bd49e79-c546-4ead-9c9b-19c3c39d05ad"];
+          // chrome.storage.local.set({notificationsJSON : notificationsJSON});
+          var total = 0;
+          Object.keys(notificationsJSON).forEach(function(key) {
+              var span = $("#" + key).find("span");
+              total += notificationsJSON[key];
+              if (notificationsJSON[key] == 0) {
+                span.hide();
+              } else {
+                span.text(notificationsJSON[key]);
+                span.show();
+              }
+          });
+          console.log(total);
+          if (total == 0) {
+            $("#general").find("span").hide();
+          } else {
+            $("#general span").text(total);
+            console.log($("#general").text());
+            $("#general span").show();
+          }
+        });
+      }
     });
-
-    if (total == 0) {
-      $("#general").find("span").hide();
-
-    } else {
-      // $("#general").find("span")[0].innerHTML = total;
-      $("#general").find("span").text(total);
-      $("#general").find("span").show();
-    }
-  });
+  }
 
 }
 
@@ -313,7 +315,7 @@ chrome.runtime.onMessage.addListener(
             $(".yippContainer").first().animate({opacity: 1});
           });
           //Change styling of activeTab card
-          $(".currentTabInfo").removeClass("inactive");
+          $(".currentTabInfo, .activePageBtns").removeClass("inactive");
           $("#submitYipp").removeAttr("disabled");
         }
 
@@ -780,7 +782,7 @@ function yippIt(e) {
       
       chrome.extension.sendMessage({type : "comment", userID : userID, url : url, value : value, tags : tags, all : all, 
         picture : picture, pageTitle : pageTitle, checked : true, currentGroup : currentGroup, currentGroupName: currentGroupName});
-      console.log(url);
+      console.log(currentGroup);
     });
 
 

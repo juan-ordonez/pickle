@@ -820,6 +820,8 @@ function yippIt(e) {
 
     });
 
+    $("#newComment").val("");
+
     chrome.storage.local.set({"messageBackup" : ""});
 
 }

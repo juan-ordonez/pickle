@@ -32,7 +32,7 @@ $(document).on("click", "#prepareYipp", function(){
 	$(".closeYippArea").show();
 	$(".closeYippArea").animate({opacity: 0.5});
 	$(".container").css({overflowY: 'hidden'});
-	$(".currentTabInfo small:first-child").text("Share page");
+	$(".currentTabInfo small:first-child").html('<i class="fas fa-link mr-2"></i>Share page');
 });
 
 $(document).on("click", ".closeYippArea", function(){
@@ -44,7 +44,7 @@ $(document).on("click", ".closeYippArea", function(){
 		$(".closeYippArea").hide();
 	});
 	$(".container").css({overflowY: 'auto'});
-	$(".currentTabInfo small:first-child").text("Current page");
+	$(".currentTabInfo small:first-child").html('<i class="fas fa-link mr-2"></i>Current page');
 });
 
 
@@ -116,7 +116,6 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
 	$(document).on("click", "#submitYipp", function(){
     	$(".currentTabInfo, .activePageBtns").addClass("inactive");
     	$("#submitYipp").prop("disabled", "true");
-    	$("#newComment").val("");
 		$(".closeYippArea").trigger("click");
 	});
 }

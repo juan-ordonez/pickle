@@ -618,16 +618,27 @@ $(document).on("click", "#confirmRemoveUser", function(){
   $(".modal-body a").addClass("disableClick");
 
   var removeID = $(this).closest(".modal-body").siblings(".modal-header").find(".modal-title")[0].id;
-  chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
+  chrome.storage.local.get(['currentGroup', 'userID', 'friendsArray'], function(result) {
     var currentGroup = result['currentGroup'];
     var userID = result['userID']
+    var friendIds = result['friendsArray'].map(function(value,index) { return value[0]; });
     $.post("http://pickle-server-183401.appspot.com/leaveGroup/", {"id" : removeID, "currentGroup" : currentGroup}, function(data) {
+      var l1 = $.Deferred(),
+            l2 = $.Deferred();
       $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID}, function (data) {
                     
                   chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
-                  window.location.replace("groupDetails.html");
+                  l1.resolve();
+                  
                   
             });
+      $.post("http://pickle-server-183401.appspot.com/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
+            chrome.storage.local.set({"addMembersHTML" : JSON.parse(data)});
+            l2.resolve();
+          });
+      $.when(l1, l2).done(function() {
+        window.location.replace("groupDetails.html");
+      });
 
       var json = JSON.stringify({ "data": {"type" : "leave"}, 
             "registration_ids": JSON.parse(data)['ids'] });

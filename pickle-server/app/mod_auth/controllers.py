@@ -244,9 +244,10 @@ def comment():
             group1.comments.append(comment)
         general.comments.append(comment)
         if feed:
-            if group1:
+            if group1 and feed not in group1.posts:
                 group1.posts.append(feed)
-            general.posts.append(feed)
+            if feed not in general.posts:
+                general.posts.append(feed)
             # friendsOfFriends(members, user, group1, comment, feed)
 
         
@@ -288,7 +289,7 @@ def comment():
                         friendGeneral = Group.query.filter_by(id=session.id).first()
                         if friendGeneral:
                             friendGeneral.comments.append(comment)
-                            if feed:
+                            if feed and feed not in friendGeneral.posts:
                                 friendGeneral.posts.append(feed)
                         publicFriends.add(session.id)
 
@@ -986,9 +987,10 @@ def friendsOfFriends():
         if member != user:
             added.add(member)
             generalFriend = Group.query.filter_by(id=member.id).first()
-            if generalFriend:
-                generalFriend.comments.append(comment)
+            if generalFriend and feed not in generalFriend.posts:
                 generalFriend.posts.append(feed)
+            if generalFriend and feed not in generalFriend.comments:
+                generalFriend.comments.append(comment)
             else:
                 newGroup = Group("General", str(datetime.utcnow()))
                 newGroup.id = member.id

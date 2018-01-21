@@ -613,6 +613,41 @@ $(document).on("click", "#notifications a, .cardNewsfeed a", function(){
   chrome.browserAction.setPopup({popup : "popup.html"});
 });
 
+$(document).on("click", "#confirmRemoveUser", function(){
+    $(".fa-spinner").show();
+  $(".modal-body a").addClass("disableClick");
+
+  var removeID = $(this).closest(".modal-body").siblings(".modal-header").find(".modal-title")[0].id;
+  chrome.storage.local.get(['currentGroup', 'userID'], function(result) {
+    var currentGroup = result['currentGroup'];
+    var userID = result['userID']
+    $.post("http://pickle-server-183401.appspot.com/leaveGroup/", {"id" : removeID, "currentGroup" : currentGroup}, function(data) {
+      $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID}, function (data) {
+                    
+                  chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
+                  window.location.replace("groupDetails.html");
+                  
+            });
+
+      var json = JSON.stringify({ "data": {"type" : "leave"}, 
+            "registration_ids": JSON.parse(data)['ids'] });
+      $.ajax({
+        url:"https://gcm-http.googleapis.com/gcm/send",
+        type:"POST",
+        data:json,
+        beforeSend: function(request) {
+            request.setRequestHeader("Authorization", "key=AAAAdyBIfuc:APA91bGa18Wj2BtOaqRPwHj6CNk5uAyDEU26dU07RoYCQuRe7PXoPTBdH-hv999B7giiqTd6FGlAx9lwKhqeJTFRtmDy-b7y6MGPwsYm3IQGwfFWGF8q7B_VEGp8yu7_P7YyvpGE4HLv");
+        },
+        contentType:"application/json; charset=utf-8",
+        dataType:"json",
+        success: function(){}
+
+    });
+
+  });
+});
+});
+
 $(document).on("click", "#confirmLeaveGroup", function(){
     
   $(".fa-spinner").show();

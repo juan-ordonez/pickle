@@ -16,7 +16,7 @@ var permissions = [];
 var postsHTML;
 var groupsHTML;
 var commentsJSON;
-var notificationsJSON={};
+var notificationsJSON = {};
 
 chrome.storage.local.get(['accessToken'], function(result) {
 
@@ -751,7 +751,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
 
 function comment(userID, url, value, tags, all, picture, pageTitle, checked, currentGroup, currentGroupName) {
-
+  console.log(picture);
   var d1 = $.Deferred();
   var storage = chrome.storage.local.get(['accessToken'], function(data) {
   var image = "", description = "", title = "";
@@ -805,10 +805,12 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
       chrome.storage.local.get([outgoingCurrentString], function(result) {
         domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
         if (result[outgoingCurrentString]) {
+          console.log(picture);
           outgoingCurrent = result[outgoingCurrentString];
           outgoingCurrent.push('<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+store['pageImage']+'></a></div><div class="pageInfo"><a href='+url+' class="notificationTab pageTitle"><h1>'+store['pageTitle']+'</h1></a><p class="pageDescription">'+store['pageDescription']+'</p><p class="pageDomain">'+domain+'</p></div></div>');
         }
         else {
+          console.log(picture);
           outgoingCurrent = ['<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+store['pageImage']+'></a></div><div class="pageInfo"><a href='+url+' class="notificationTab pageTitle"><h1>'+store['pageTitle']+'</h1></a><p class="pageDescription">'+store['pageDescription']+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
         }
         chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});

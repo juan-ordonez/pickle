@@ -732,6 +732,8 @@ function comment(e) {
       var currentGroupName = $("#"+currentGroup).text();
       //Get user name
       var user = result['userName'].split(" ")[0];
+      var picture = result['picture'];
+      var userID = result['userID'];
       console.log(user);
       //Append comment to current window
       appendComment(user, value, picture, all);
@@ -790,11 +792,13 @@ function yippIt(e) {
     chrome.storage.local.set({'public' : true});
 
     //Send all comment data to background page
-    chrome.storage.local.get(['tags', 'public', 'userName', 'currentGroup'], function (result) {
+    chrome.storage.local.get(['tags', 'public', 'userName', 'currentGroup', 'picture', 'userID'], function (result) {
 
       var user = result['userName'];
       var currentGroup = result['currentGroup'];
       var currentGroupName = $("#"+currentGroup).text();
+      var picture = result['picture'];
+      var userID = result['userID'];
       tags = result['tags'];
       all = result['public'];
       chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {

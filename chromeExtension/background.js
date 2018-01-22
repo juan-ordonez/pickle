@@ -105,11 +105,12 @@ chrome.gcm.onMessage.addListener(function(payload) {
       }
 
         if (type == "postGeneral") {
+          console.log("message postGeneral");
           $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
             var json = {};
             json["general"] = groupsHTML;
             chrome.storage.local.set(json);
-            console.log("updating newsfeed");
+            console.log("updating General newsfeed");
             // getUserData();
           });
 
@@ -173,6 +174,8 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
           if (type == "post") {
               
+              console.log("message post");
+
               var poster = payload.data.poster;
               var groupName = payload.data.currentGroupName;
               var groupID = payload.data.groupID;
@@ -181,6 +184,9 @@ chrome.gcm.onMessage.addListener(function(payload) {
               var commentUrl = payload.data.url;
               var pageTitle = payload.data.pageTitle;
               var tags = payload.data.tags;
+
+              console.log(groupID)
+              console.log(commentID)
 
               $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
                var json = {};
@@ -199,6 +205,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               });
 
               chrome.storage.local.get(['lastComment'], function(result) {
+                console.log(result['lastComment']);
                 //Account for multiple gcm messages
                 if(commentID != result['lastComment']) {
 
@@ -476,7 +483,7 @@ function getUserData() {
               d4.resolve();
             });
 
-            $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
+            $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {
               chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
               d5.resolve();
             });
@@ -697,12 +704,12 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                    notificationsHTML = $("#notifications").html();
                   chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
             });
-                $.post("http://localhost:5000/loadGroupData/", {"id" : userID.toString()}, function (data) {
+                $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {
                     
                   chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
                   });
 
-                  $.get("http://localhost:5000/getNotificationsDict/", {"id" : userID.toString()}, function (data) {
+                  $.get("http://pickle-server-183401.appspot.com/getNotificationsDict/", {"id" : userID.toString()}, function (data) {
                   chrome.storage.local.set({"notificationsJSON" : JSON.parse(data)});
                   updateBadge(JSON.parse(data));
               
@@ -817,7 +824,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
       });
       chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
 
-      var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+      var comPost = $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : currentGroup}, function(data) {
           // var feeds = JSON.parse(JSON.parse(data)[0]);
           var groupID = JSON.parse(data)[2];
@@ -1023,7 +1030,7 @@ function updateBadge(notificationsJSON) {
 }
 
 function deletePost(postID) {
-  $.post("http://localhost:5000/deletePost/", {feed : postID}, function(groupData) {
+  $.post("http://pickle-server-183401.appspot.com/deletePost/", {feed : postID}, function(groupData) {
 
     var group = JSON.parse(groupData)[0];
     var memberSet = JSON.parse(JSON.parse(groupData)[1]);

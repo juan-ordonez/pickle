@@ -537,27 +537,33 @@ button:active {
 
 .containerComments > .loadingSpinner {
 	position: absolute;
-	top: 190px;
+	top: 210px;
 	left: 180px;
 }
 
 .emptyCommentState {
 	text-align: center;
-	color: #757575;
+	color: #9E9E9E;
 	margin-top: 70px;
 }
 
 .emptyGroupState {
 	text-align: center;
-	color: #757575;
+	color: #9E9E9E;
 	margin-top: 30px;
 }
 
-.emptyGroupState h1, .emptyCommentState h1 {
+.emptyFriendsState {
+	text-align: center;
+	color: #9E9E9E;
+	margin-top: 20px;
+}
+
+.emptyGroupState h1, .emptyCommentState h1, .emptyFriendsState h1 {
 	font-size: 1.3em;
 }
 
-.emptyGroupState img, .emptyCommentState img {
+.emptyGroupState img, .emptyCommentState img, .emptyFriendsState img {
 	width: 225px;
 }
 

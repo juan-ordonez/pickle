@@ -558,6 +558,9 @@ if (window.location.href == chrome.extension.getURL("createGroup.html")) {
   chrome.storage.local.get(['friendsHTMLGroup'], function(result) {
     var friendsHTML = result.friendsHTMLGroup;
     $(".friendList").html(friendsHTML);
+    if ($(".friendList").height() < 193) {
+      $(".emptyFriendsState").show();
+    }
   });
 }
 
@@ -565,6 +568,9 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
   chrome.storage.local.get(['friendsHTMLDirect'], function(result) {
     var friendsHTML = result.friendsHTMLDirect;
     $(".friendList").html(friendsHTML);
+    if ($(".friendList").height() < 193) {
+      $(".emptyFriendsState").show();
+    }
   });
 }
 
@@ -594,6 +600,10 @@ if (window.location.href == chrome.extension.getURL("addGroupMembers.html")) {
     console.log(addGroupMembers);
 
     $(".friendList").html(addGroupMembers[currentGroup]);
+
+    if ($(".friendList").height() < 193) {
+      $(".emptyFriendsState").show();
+    }
 
   });
 }

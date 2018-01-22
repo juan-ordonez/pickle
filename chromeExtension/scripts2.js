@@ -79,6 +79,7 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
         //Get notification badges
         chrome.storage.local.get(['notificationsJSON', 'currentGroup'], function (result) {
           var notificationsJSON = result['notificationsJSON'];
+          console.log(notificationsJSON);
           // delete notificationsJSON["3bd49e79-c546-4ead-9c9b-19c3c39d05ad"];
           // chrome.storage.local.set({notificationsJSON : notificationsJSON});
           var total = 0;
@@ -318,9 +319,13 @@ chrome.runtime.onMessage.addListener(
 
       if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
         $(".container").append('<div class="alert alert-danger alert-dismissible fade show animated bounceInUp" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Oh crap!</strong> That page failed to post. Please try submitting again.</div>');
+        $(document).on("click", ".close", function(){
+          window.location.replace("newsfeed.html");
+        });
       }
     }
 });
+
 
 //Listen for incoming new comments or notifications
 chrome.gcm.onMessage.addListener(function(payload) {

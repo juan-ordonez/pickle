@@ -532,17 +532,23 @@ button:active {
 	left: 180px;
 }
 
+.emptyCommentState {
+	text-align: center;
+	color: #757575;
+	margin-top: 70px;
+}
+
 .emptyGroupState {
 	text-align: center;
 	color: #757575;
 	margin-top: 30px;
 }
 
-.emptyGroupState h1 {
+.emptyGroupState h1, .emptyCommentState h1 {
 	font-size: 1.3em;
 }
 
-.emptyGroupState img {
+.emptyGroupState img, .emptyCommentState img {
 	width: 225px;
 }
 

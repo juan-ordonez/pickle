@@ -395,6 +395,17 @@ button:active {
 	z-index: 1;
 }
 
+.alert {
+	position: fixed;
+	bottom: 0;
+	z-index: 1000;
+	margin: 8px;
+	opacity: 0.95;
+	background-color: #E91E63;
+	color: #FFFFFF;
+	border:none;
+}
+
 .btn {
 	padding-left: 1rem;
 	padding-right: 1rem;
@@ -519,6 +530,20 @@ button:active {
 	position: absolute;
 	top: 190px;
 	left: 180px;
+}
+
+.emptyGroupState {
+	text-align: center;
+	color: #757575;
+	margin-top: 30px;
+}
+
+.emptyGroupState h1 {
+	font-size: 1.3em;
+}
+
+.emptyGroupState img {
+	width: 225px;
 }
 
 .open > .dropdown-toggle.btn-outline-secondary:focus {

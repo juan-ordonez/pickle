@@ -285,26 +285,6 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
-    // if (request.type == "userLoaded") {
-    //   if (window.location.href == chrome.extension.getURL('userProfile.html')) {
-    //     $("#posts").hide(); 
-    //     chrome.storage.local.get(['userPostsHTML'], function(result) {
-    //     userPostsHTML = result['userPostsHTML'];
-    //     if (userPostsHTML != null) {
-    //           $("#posts").html(userPostsHTML);
-    //           $("#posts .postDescription").each(function(){
-    //             var htmlDescriptionUser = $(this).text();
-    //             $(this).empty();
-    //             $(this).html(htmlDescriptionUser);
-    //           });
-    //           $("#posts").show();
-    //         } else {
-    //           $("#posts").html(' ');
-    //         }
-    //     });
-    //   }
-    // }
-
     // When user Yipps from the newsfeed, append yipp to newsfeed
     if(request.type == "cardInfoReady"){
 
@@ -331,6 +311,13 @@ chrome.runtime.onMessage.addListener(
       console.log("Current Yipp Posted!");
       if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
         window.location.replace("newsfeed.html");
+      }
+    }
+
+    else if(request.type == "commentError") {
+
+      if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
+        $(".container").append('<div class="alert alert-danger alert-dismissible fade show animated bounceInUp" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Oh crap!</strong> That page failed to post. Please try submitting again.</div>');
       }
     }
 });
@@ -407,13 +394,20 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
 
   if (group != null) { 
       chrome.storage.local.get([group, outgoingGroup], function(data) {
-        postsHTML = data[group];
-        $("#posts").append(postsHTML);
-        $("#posts .postDescription").each(function(){
-          var htmlDescriptionNewsfeed = $(this).text();
-          $(this).empty();
-          $(this).html(htmlDescriptionNewsfeed);
-        });
+        
+        if (data[group]) {
+          postsHTML = data[group];
+          $("#posts").append(postsHTML);
+          $("#posts .postDescription").each(function(){
+            var htmlDescriptionNewsfeed = $(this).text();
+            $(this).empty();
+            $(this).html(htmlDescriptionNewsfeed);
+          });
+        }
+
+        else {
+          $(".emptyGroupState").show();
+        }
         
         if (data[outgoingGroup]) {
           var outgoingPosts = data[outgoingGroup];
@@ -731,14 +725,17 @@ function comment(e) {
     chrome.storage.local.set({'tags': JSON.stringify(ids)});
     chrome.storage.local.set({'public' : true});
     all = true;
-
-    //Get user name
-    var user = userName.split(" ")[0];
     
-    chrome.storage.local.get(['currentGroup'], function(result) {
+    chrome.storage.local.get(['currentGroup', 'userName'], function(result) {
       //Get current group
       var currentGroup = result['currentGroup'];
       var currentGroupName = $("#"+currentGroup).text();
+      //Get user name
+      var user = result['userName'].split(" ")[0];
+      console.log(user);
+      //Append comment to current window
+      appendComment(user, value, picture, all);
+
         //Send all comment data to background page
       chrome.storage.local.get(['tags', 'public'], function (result) {
         tags = result['tags'];
@@ -757,9 +754,6 @@ function comment(e) {
 
       });
     });
-
-    //Append comment to current window
-    appendComment(user, value, picture, all);
   }
 
   $("#newComment").val("");
@@ -795,15 +789,12 @@ function yippIt(e) {
     chrome.storage.local.set({'tags': JSON.stringify(ids)});
     chrome.storage.local.set({'public' : true});
 
-    //Get user name
-    var user = userName.split(" ")[0];
-    //Get current group
-    var currentGroup = $(".drawer .active").attr("id");
-    var currentGroupName = $("#"+currentGroup).text();
-
     //Send all comment data to background page
     chrome.storage.local.get(['tags', 'public', 'userName', 'currentGroup'], function (result) {
 
+      var user = result['userName'];
+      var currentGroup = result['currentGroup'];
+      var currentGroupName = $("#"+currentGroup).text();
       tags = result['tags'];
       all = result['public'];
       chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {

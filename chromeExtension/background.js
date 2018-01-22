@@ -764,7 +764,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
         console.log(api);
         if (api.image != null) {
           image = api.image[0].url;
-          console.log(api.image);
+          console.log(image);
         } 
 
         if (api.description != null) {
@@ -794,32 +794,26 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
   });
 
   $.when(d1).done(function () {
-    
-    //Append outgoing post to chrome storage and send message to scripts to append it to DOM
-    var outgoingCurrentString = "outgoing-" + currentGroup;
-    var outgoingCurrent;
-    var outgoingGeneral;
-    chrome.storage.local.get([outgoingCurrentString], function(result) {
-      domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
-      if (result[outgoingCurrentString]) {
-        outgoingCurrent = result[outgoingCurrentString];
-        outgoingCurrent.push('<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+image+'></a></div><div class="pageInfo"><a href='+url+' class="notificationTab pageTitle"><h1>'+title+'</h1></a><p class="pageDescription">'+trimmedString+'</p><p class="pageDomain">'+domain+'</p></div></div>');
-        console.log(outgoingCurrent);
-      }
-      else {
-        outgoingCurrent = ['<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+image+'></a></div><div class="pageInfo"><a href='+url+' class="notificationTab pageTitle"><h1>'+title+'</h1></a><p class="pageDescription">'+trimmedString+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
-        console.log(outgoingCurrent);
-      }
-      chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
-    });
-    chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
 
     //Send post to server for processing and reload all feeds when posting is complete
     chrome.storage.local.get(['pageTitle', 'pageImage', 'pageDescription', 'currentGroup'], function(store) {
 
-      console.log(store['pageTitle']);
-      console.log(store['pageImage']);
-      console.log(store['pageDescription']);
+      //Append outgoing post to chrome storage and send message to scripts to append it to DOM
+      var outgoingCurrentString = "outgoing-" + currentGroup;
+      var outgoingCurrent;
+      var outgoingGeneral;
+      chrome.storage.local.get([outgoingCurrentString], function(result) {
+        domain = url.match(/^[\w-]+:\/{2,}\[?([\w\.:-]+)\]?(?::[0-9]*)?/)[1];
+        if (result[outgoingCurrentString]) {
+          outgoingCurrent = result[outgoingCurrentString];
+          outgoingCurrent.push('<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+store['pageImage']+'></a></div><div class="pageInfo"><a href='+url+' class="notificationTab pageTitle"><h1>'+store['pageTitle']+'</h1></a><p class="pageDescription">'+store['pageDescription']+'</p><p class="pageDomain">'+domain+'</p></div></div>');
+        }
+        else {
+          outgoingCurrent = ['<div class="card cardNewsfeed mb-3"><p class="postDescription"><i class="fa fa-spinner fa-spin mr-2"></i>Yipping this page</p><div class="message d-flex flex-nowrap align-items-start"><div class="thumbnail"><img src='+picture+'></div><p class="chatBubble mb-0">'+value+'</p></div><div class="pageImg d-flex align-items-center"><a href='+url+' class="notificationTab"><img src='+store['pageImage']+'></a></div><div class="pageInfo"><a href='+url+' class="notificationTab pageTitle"><h1>'+store['pageTitle']+'</h1></a><p class="pageDescription">'+store['pageDescription']+'</p><p class="pageDomain">'+domain+'</p></div></div>'];
+        }
+        chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
+      });
+      chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
 
       var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : currentGroup}, function(data) {
@@ -851,16 +845,6 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             chrome.storage.local.set(json);
             console.log("group newsfeed updated");
             d1.resolve();
-            //If posting fails, remove pending post from container with outgoing posts 
-            if (status == "error") {
-              console.log("Error: Yipp not posted");
-              var outgoingCurrentString = "outgoing-" + currentGroup;
-              chrome.storage.local.get([outgoingCurrentString], function(result) {
-                var outgoingCurrent = result[outgoingCurrentString];
-                outgoingCurrent.shift();
-                chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
-              });
-            }
           });
 
           $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (html) {
@@ -915,7 +899,16 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
         });
 
       comPost.fail(function(jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR.responseText);
+        //If posting fails, remove pending post from container with outgoing posts  
+        console.log(jqXHR.responseText);   
+        var outgoingCurrentString = "outgoing-" + currentGroup;
+        chrome.storage.local.get([outgoingCurrentString], function(result) {
+          var outgoingCurrent = result[outgoingCurrentString];
+          outgoingCurrent.shift();
+          chrome.storage.local.set({[outgoingCurrentString] : outgoingCurrent});
+        });
+        chrome.extension.sendMessage({type : "commentError"});
+
       });
 
     });

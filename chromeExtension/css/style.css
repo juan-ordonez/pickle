@@ -29,6 +29,13 @@ body .containerComments {
 	overflow-x:hidden;
 }
 
+body .containerLogin {
+	padding: 2rem 0rem 2rem 0rem;
+	height: 600px;
+	overflow: hidden !important;
+	color: #757575;
+}
+
 h1 {
 	font-size: 1.1em;
 	font-weight: 400;
@@ -230,7 +237,7 @@ button:active {
 	color: #BDBDBD; 
 	display:none;
 	position: absolute;
-	top: 220px;
+	top: 270px;
 }
 
 #logoutButton {
@@ -443,6 +450,8 @@ button:active {
   color: #FFFFFF !important;
   background-color: #3B5998;
   border-color: #3B5998;
+  position: absolute;
+  bottom: 40px;
 }
 
 .btn-facebook:hover {
@@ -617,6 +626,33 @@ button:active {
 	left: 180px;
 	top: 150px;
 	color: #424242;
+}
+
+.carousel img {
+	padding: 0px 60px 0px 60px;
+}
+
+.carousel p {
+	padding: 0px 60px 0px 60px;
+}
+
+.carousel-control-prev, .carousel-control-next {
+	color: #9E9E9E!important;
+}
+
+.carousel-indicators {
+	color: #E0E0E0;
+	position: absolute;
+	bottom: -30px;
+}
+
+.carousel-indicators i {
+	margin: 0px 3px 0px 3px;
+}
+
+.carousel-indicators .active {
+	color: #9E9E9E;
+	background: transparent;
 }
 
 .chatBubble {
@@ -979,6 +1015,12 @@ button:active {
 .yippLogo {
 	font-family: 'Pacifico', cursive;
 	color: #E91E63 !important;
+}
+
+.yippLogoLogin {
+	font-family: 'Pacifico', cursive;
+	color: #E91E63 !important;
+	font-size: 3em;
 }
 
 .z-depth-1, #tagFriendsNav, .dropdown-menu, .drawer {

@@ -495,9 +495,10 @@ $(document).on("click", "#loginButton", function(event){
   chrome.windows.create({'url': url, focused : false, width : 750, height : 750, type : "popup"}, function(tab) {
           // Tab opened.
   });
-  $("#loginPicture").css("visibility", "hidden");
+  $("#loginCarousel").css("visibility", "hidden");
   $("#loginSpinner").show();
   $(".btn-facebook").addClass("disableClick");
+  $(".btn-facebook").css("visibility", "hidden");
 });
 
 $(document).on("click", ".deletePost", function(){

@@ -77,8 +77,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               console.log("updating notifications");
               // getUserData()
             });
-
-            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
+            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : payload.data.groupID}, function (groupsHTML) {
                var json = {};
                json[groupID] = groupsHTML;
                chrome.storage.local.set(json);
@@ -882,6 +881,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
             console.log("PUBLIC");
             var json = JSON.stringify({"data" : {"status" : "tagged you", "pic" : picture, "first" : userName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup, "currentGroupName": currentGroupName, "pageImage" : store['pageImage']}, "registration_ids": data });
           
+
             $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {
               // console.log("notify", data, json);
               notify(data, json);

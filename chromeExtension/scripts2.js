@@ -495,9 +495,10 @@ $(document).on("click", "#loginButton", function(event){
   chrome.windows.create({'url': url, focused : false, width : 750, height : 750, type : "popup"}, function(tab) {
           // Tab opened.
   });
-  $("#loginPicture").css("visibility", "hidden");
+  $("#loginCarousel").css("visibility", "hidden");
   $("#loginSpinner").show();
   $(".btn-facebook").addClass("disableClick");
+  $(".btn-facebook").css("visibility", "hidden");
 });
 
 $(document).on("click", ".deletePost", function(){
@@ -557,6 +558,9 @@ if (window.location.href == chrome.extension.getURL("createGroup.html")) {
   chrome.storage.local.get(['friendsHTMLGroup'], function(result) {
     var friendsHTML = result.friendsHTMLGroup;
     $(".friendList").html(friendsHTML);
+    if ($(".friendList").height() < 193) {
+      $(".emptyFriendsState").show();
+    }
   });
 }
 
@@ -564,6 +568,9 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
   chrome.storage.local.get(['friendsHTMLDirect'], function(result) {
     var friendsHTML = result.friendsHTMLDirect;
     $(".friendList").html(friendsHTML);
+    if ($(".friendList").height() < 193) {
+      $(".emptyFriendsState").show();
+    }
   });
 }
 
@@ -593,6 +600,10 @@ if (window.location.href == chrome.extension.getURL("addGroupMembers.html")) {
     console.log(addGroupMembers);
 
     $(".friendList").html(addGroupMembers[currentGroup]);
+
+    if ($(".friendList").height() < 193) {
+      $(".emptyFriendsState").show();
+    }
 
   });
 }
@@ -731,7 +742,7 @@ function comment(e) {
     chrome.storage.local.set({'public' : true});
     all = true;
     
-    chrome.storage.local.get(['currentGroup', 'userName'], function(result) {
+    chrome.storage.local.get(['currentGroup', 'userName', 'picture', 'userID'], function(result) {
       //Get current group
       var currentGroup = result['currentGroup'];
       var currentGroupName = $("#"+currentGroup).text();
@@ -739,7 +750,6 @@ function comment(e) {
       var user = result['userName'].split(" ")[0];
       var picture = result['picture'];
       var userID = result['userID'];
-      console.log(user);
       //Append comment to current window
       appendComment(user, value, picture, all);
 
@@ -892,27 +902,37 @@ function connect(message) {
 
           $.post("https://pickle-server-183401.appspot.com/canonicalize/", {"url" : activeTab.url}, function(newUrl) {
               if (newUrl == url && commentsJSON != null) {
-                $("#commentsBody").html(commentsJSON[currentGroup]);
                 $(".loadingSpinner").hide();
-                scrollable($("#commentsBody"));
-                //Convert all urls into links
-                $('p').linkify();
-                $("body").linkify({
-                  target: "_blank"
-                });
+                if (commentsJSON[currentGroup].length > 1) {
+                  $("#commentsBody").html(commentsJSON[currentGroup]);
+                  scrollable($("#commentsBody"));
+                  //Convert all urls into links
+                  $('p').linkify();
+                  $("body").linkify({
+                    target: "_blank"
+                  });
+                }
+                else {
+                  $(".emptyCommentState").show();
+                }
 
               } else {
                 $.post("http://pickle-server-183401.appspot.com/loadComment/", {"userID" : userID.toString(), "url" : newUrl.toString()}, function (json) {
                   var groupsComments = JSON.parse(json);
                   chrome.storage.local.set({commentsJSON : groupsComments}, function() {
-                    $("#commentsBody").html(groupsComments[currentGroup]);
                     $(".loadingSpinner").hide();
-                    scrollable($("#commentsBody"));
-                    //Convert all urls into links
-                    $('p').linkify();
-                    $("body").linkify({
-                      target: "_blank"
-                    });
+                    if (groupsComments[currentGroup].length > 1) {
+                      $("#commentsBody").html(groupsComment[currentGroup]);
+                      scrollable($("#commentsBody"));
+                      //Convert all urls into links
+                      $('p').linkify();
+                      $("body").linkify({
+                        target: "_blank"
+                      });
+                    }
+                    else {
+                      $(".emptyCommentState").show();
+                    }
                   });
                 });
               }
@@ -952,14 +972,8 @@ function connect(message) {
 
 //Append html of new comment to body of existing comments
 function appendComment(user, value, picture, all) {
-  //create css class for private comments
-  var css = "";
-  var tagsIcon = "fa-tag";
-  if (all !== true) {
-    css = "private";
-    tagsIcon = "fa-user-secret";
-  }
-  $("#commentsBody").append('<div class="commentGroup temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble '+css+'"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><div class="commentDetails d-flex justify-content-start align-items-center"><small class="mb-0">Now</small></div></div>');
+  $(".emptyCommentState").hide();
+  $("#commentsBody").append('<div class="commentGroup temporaryComment"><div class="d-flex flex-nowrap align-items-center"><div class="thumbnail align-self-start"><img src='+picture+'></div><div class="chatBubble"><strong>'+user+'</strong> '+value+' </div><div class="likeButton"><a href="#"><i class="fa fa-heart"></i> 0</a></div></div><div class="commentDetails d-flex justify-content-start align-items-center"><small class="mb-0">Now</small></div></div>');
   //Show reply button if user is not in reply mode
   if ($("#topNav").hasClass("replying") || $("#topNav").hasClass("replyingPrivate")) {
     $(".commentDetails").children().hide();

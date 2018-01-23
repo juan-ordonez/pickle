@@ -1,28 +1,26 @@
-
-    <div id="comments">
-    {% for i in comments %}
-        <div class="commentGroup" id={{i[5]}}>
-            <div class="d-flex flex-nowrap align-items-center">
-                <div class="thumbnail align-self-start">
-                    <a class="userProfile" href="#" id="{{i[8]}}">
-                        <p style="display:none;">{{i[3]}}</p>
-                        <img src={{i[4]}}>
-                    </a>
-                </div>
-                <div class="chatBubble">
-                    <a id="{{i[8]}}" class="userProfile" href="#"><strong>{{i[3]}}</strong></a> {{i[0]}} 
-                </div>
-                <div class="likeButton">
-                    {% if i[7] %}
-                    <a href="#" class="active"><i class="fa fa-heart"></i> {{i[1]}}</a>
-                    {% else %}
-                    <a href="#"><i class="fa fa-heart"></i> {{i[1]}}</a>
-                    {% endif %}
-                </div>
+{% for i in comments %}
+    <div class="commentGroup" id={{i[5]}}>
+        <div class="d-flex flex-nowrap align-items-center">
+            <div class="thumbnail align-self-start">
+                <a class="userProfile" href="#" id="{{i[8]}}">
+                    <p style="display:none;">{{i[3]}}</p>
+                    <img src={{i[4]}}>
+                </a>
             </div>
-            <div class="commentDetails d-flex justify-content-start align-items-center">
-                <p class="mb-0"><small>{{i[6]}}</small></p>
+            <div class="chatBubble">
+                <a id="{{i[8]}}" class="userProfile" href="#"><strong>{{i[3]}}</strong></a> {{i[0]}} 
+            </div>
+            <div class="likeButton">
+                {% if i[7] %}
+                <a href="#" class="active"><i class="fa fa-heart"></i> {{i[1]}}</a>
+                {% else %}
+                <a href="#"><i class="fa fa-heart"></i> {{i[1]}}</a>
+                {% endif %}
             </div>
         </div>
-    {% endfor %}
-</div>
+        <div class="commentDetails d-flex justify-content-start align-items-center">
+            <p class="mb-0"><small>{{i[6]}}</small></p>
+        </div>
+    </div>
+{% endfor %}
+

@@ -114,10 +114,24 @@ chrome.gcm.onMessage.addListener(function(payload) {
               //Account for multiple gcm messages
               if(commentID != result['lastComment']) {
                 chrome.storage.local.set({"lastComment" : commentID});
+
+                //update notification badges
+                chrome.storage.local.get(['notificationsJSON'], function(data) {
+                  notificationsJSON = data['notificationsJSON'];
+                  if (!(notificationsJSON[groupID])) {
+                    notificationsJSON[groupID] = 1;
+                  }
+                  else {
+                    notificationsJSON[groupID] += 1;
+                    chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+                  }
+                  //Update extension icon badge
+                  updateBadge(notificationsJSON);
+                });
+
                 chrome.notifications.create({   
                 type: 'basic', 
-                iconUrl: 'iconBig.png',
-                imageUrl: pageImage, 
+                iconUrl: 'iconBig.png', 
                 //Added the page name to the notification (to be shown in the title of the notification) 
                 title: groupName+": "+user+' '+notification, 
                 //Show the actual comment in the message
@@ -130,19 +144,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
                 });
               }
 
-              //update notification badges
-              chrome.storage.local.get(['notificationsJSON'], function(data) {
-                notificationsJSON = data['notificationsJSON'];
-                if (!(notificationsJSON[groupID])) {
-                  notificationsJSON[groupID] = 1;
-                }
-                else {
-                  notificationsJSON[groupID] += 1;
-                  chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
-                }
-                //Update extension icon badge
-                updateBadge(notificationsJSON);
-              });
             });
           }
 
@@ -879,7 +880,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
           if (checked) {
             var array = data.slice();
             console.log("PUBLIC");
-            var json = JSON.stringify({"data" : {"status" : "tagged you", "pic" : picture, "first" : userName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup, "currentGroupName": currentGroupName, "pageImage" : store['pageImage']}, "registration_ids": data });
+            var json = JSON.stringify({"data" : {"status" : "tagged you", "pic" : picture, "first" : userName, "comment" : value, "commentID" : comment, "url" : url, "pageTitle" : pageTitle, "type" : "notification", "groupID" : currentGroup, "currentGroupName": currentGroupName}, "registration_ids": data });
           
 
             $.post("http://pickle-server-183401.appspot.com/notification/", {"picture" : picture, "user" : userName.split(" ")[0], "notification" : "tagged you on", "cookies" : tags, "url" : url, "page" : pageTitle}, function(notif) {

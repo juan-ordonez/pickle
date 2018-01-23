@@ -19,6 +19,8 @@
     <link href="https://use.fontawesome.com/releases/v5.0.0/css/all.css" rel="stylesheet">
     <!-- Waves CSS -->
     <link href="css/waves.min.css" rel="stylesheet">
+    <!-- animate CSS -->
+    <link href="css/animate.css" rel="stylesheet">
     <!-- Mentions Input -->
     <link href="js/jquery-mentions-input/jquery.mentionsInput.css" rel="stylesheet">
     <!-- Custome Styles CSS -->
@@ -54,20 +56,6 @@
       </div>
     </nav>
 
-    <!-- Bottom navigation bar -->
-    <!-- <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
-        <div class="d-flex justify-content-between" style="width: 375px;">
-          <a class="nav-link active" href="#" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
-          <a class="nav-link" href="notifications.html" id="notificationsNav"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
-          <div id="notificationBadge">
-            <span class="badge badge-primary" id="numNotifications"></span>
-          </div>
-        </div> 
-    </nav> -->
-
-    <!-- <div class="tab-content">
-
-      <div class="tab-pane active" id="comments" role="tabpanel"> -->
         <div class="groupTitleContainer d-flex justify-content-start align-items-center">
           <small><a href="#" class="groupTitle"></a></small>
           <a href="groupDetails.html" class="groupDetailsBtn ml-auto"><i class="fas fa-chevron-right"></i></a>
@@ -86,65 +74,20 @@
           <i class="loadingSpinner fa fa-2x fa-spinner fa-spin"></i>
           <!-- Form for adding new comments -->
           <form id="formNewComments" class="form-inline d-flex align-items-end inverted">
-<!--                 <div class="input-group-btn dropup">
-                  
-                  <button type="button" id="btnTags" class="btn btnTagsPublic dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-tag"></i>
-                  </button>
 
-                  <div id="friendsListDropdown" class="dropdown-menu">
-                    <div id="tagFriendsNav" class="sticky-top">
-                      <div class="d-flex justify-content-between">
-                        <p class="ml-3 mr-3 mt-1 mb-1"><strong>Tag friends</strong></p>
-                        <button id="privacyBtn" type="button" class="btn mr-3 mb-2"><i class="fa fa-users mr-2" id="privacyIcon"></i><i class="fa fa-caret-down" id="privacyCaret"></i></button>
-                      </div>
-                      <div id ="privacySettings" style="display:none;">
-              
-                        <small>Who can see this?</small>
-
-                        <div class="form-check">
-                          <label class="form-check-label">
-                            <input class="form-check-input" type="radio" name="privacyRadios" id="publicMessage" value="option1" checked>
-                            All friends
-                          </label>
-                        </div>
-                        <div class="form-check">
-                          <label class="form-check-label">
-                            <input class="form-check-input" type="radio" name="privacyRadios" id="privateMessage" value="option2">
-                            Only tagged friends
-                          </label>
-                        </div>
-
-                      </div>
-                    </div>
-
-                    <div id="friendListCheckboxes" class="mt-2">
-                    </div>
-                  </div>
-
-                </div> -->
             <label class="sr-only" for="newComment">Add a comment</label>
             <textarea class="form-control comments mention" id="newComment" rows='1' placeholder="Add a comment" maxlength="256"></textarea>
             <button type="submit" class="btn btn-primary ml-2" id="submitComment"><i class="fa fa-paper-plane"></i></button>
           </form>
 
         </div>
-      <!-- </div> 
 
-        <div class="tab-pane" id="otherPages" role="tabpanel">
-        <div class="container">
-          <p><strong>Other comments on this website</strong></p>
-
-          <i class="loadingSpinner fa-spinner fa-spin mt-5"></i>
-          <div class="cardList" style="display:none;">
-            <div class="cardListGroup" id="others">
-  
-            </div>
-          </div>
-        </div>
-      </div> 
-
-    </div> -->
+    <div class="alert alert-info alertTop alert-dismissible fade show animated bounceInDown" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Comments shown here are tied to the web page you are currently browsing.
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 

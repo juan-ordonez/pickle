@@ -403,14 +403,40 @@ button:active {
 }
 
 .alert {
-	position: fixed;
-	bottom: 0;
-	z-index: 1000;
+	z-index: 10000;
 	margin: 8px;
-	opacity: 0.95;
-	background-color: #E91E63;
 	color: #FFFFFF;
 	border:none;
+	padding-right: 25px;
+}
+
+.alertTop {
+	position: fixed;
+	top: 90px;
+}
+
+.alertBottom {
+	position: fixed;
+	bottom: 0;
+}
+
+.alert-danger {
+	background-color: #E91E63;
+	opacity: 0.95;
+}
+
+.alert-info {
+	background-color: #2196F3;
+	opacity: 0.95;
+}
+
+.alert .close:hover {
+	cursor: pointer;
+	color: transparent;
+}
+
+.alert .close {
+	box-shadow: none !important;
 }
 
 .btn {
@@ -1016,6 +1042,12 @@ button:active {
     margin: 0 auto;
     height: 100%;
     width: auto;
+}
+
+.tutorialBanner {
+	height: 37px;
+	background-color: #F8BBD0;
+	color: #424242;
 }
 
 .yippLogo {

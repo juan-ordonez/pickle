@@ -117,6 +117,7 @@ def register():
             email = data['email']
 
         if user:
+            new = False
             user.updated = True
             group = Group.query.filter_by(id=user.id).first()
             if not group:
@@ -129,6 +130,7 @@ def register():
 
 
         else:
+            new = True
             create = User(data['id'], data['name'], email, data['picture'])
             create.updated = True
             group = Group.query.filter_by(id=create.id).first()
@@ -172,8 +174,10 @@ def register():
 
     db.session.commit()
 
-
-    return json.dumps(request.json)
+    if new:
+        return "true"
+    else:
+        return "false"
 
 
 @mod_auth.route('/user/<cookie>', methods=['GET'])

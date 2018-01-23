@@ -662,9 +662,11 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                 userEmail = api.email;
                 picture = api.picture.data.url;
                 $.post('http://pickle-server-183401.appspot.com/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : api.friends.data, "picture" : picture, "authToken" : accessToken})}, function() {
+                  console.log("callback1")
 
                   $.post("http://pickle-server-183401.appspot.com/getGroups/", {"id" : userID.toString()}, function(array) {
                     var groupsIDs = JSON.parse(array);
+                    console.log("callback2");
                     groupsIDs.forEach(function(element) {
 
                       $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
@@ -675,12 +677,37 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
                     });
 
+                    var l1 = $.Deferred(),
+                      l2 = $.Deferred(),
+                      l3 = $.Deferred();
+
+                  $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
+                    groupsHTML = $("#groups").html();
+                    l1.resolve();
+                    console.log("callback3");
+              
+                  })
+
+                  chrome.storage.local.set({"currentGroup" : "general"}, function () {
+                      l2.resolve();
+                      console.log("callback4");
+                  });
+
+                  
+
                     
                     
-                    $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {   
+                    $.post("http://localhost:5000/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {   
                       chrome.storage.local.set({"general" : data});
-                      chrome.extension.sendMessage({handshake:"login"});
+                      l3.resolve();
+                      console.log("callback6");
+                      
                     });
+
+                    $.when(l1, l2, l3).done(function (){
+                      chrome.extension.sendMessage({handshake:"login"});
+                      console.log("callback7");
+                  });
 
                   });
               
@@ -701,23 +728,6 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
               
                   });
 
-                  var l1 = $.Deferred(),
-                      l2 = $.Deferred(),
-                      l3 = $.Deferred();
-
-                  $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
-                    groupsHTML = $("#groups").html();
-                    l1.resolve();
-              
-                  })
-
-                  chrome.storage.local.set({"currentGroup" : "general"}, function () {
-                      l2.resolve();
-                  });
-
-                  $.when(l1, l2, l3).done(function (){
-                      // chrome.extension.sendMessage({handshake:"login"});
-                  });
 
 
                   var senderIds = ["511642730215"];

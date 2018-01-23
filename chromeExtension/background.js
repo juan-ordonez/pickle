@@ -100,12 +100,14 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
             var profilePic = payload.data.pic;
             var user = payload.data.first;
+            console.log(user);
             var comment = payload.data.comment;
             var commentID = payload.data.commentID;
             //Added a variable for the page title to create the notification
             var page = payload.data.pageTitle;
             var commentUrl = payload.data.url;
             var notification = payload.data.status;
+            console.log(notification);
             var groupName = payload.data.currentGroupName;
             var groupID = payload.data.groupID;
             var pageImage = payload.data.pageImage;
@@ -130,11 +132,14 @@ chrome.gcm.onMessage.addListener(function(payload) {
                   updateBadge(notificationsJSON);
                 });
 
+                var notificationTitle = user+' '+notification
+                console.log(notificationTitle)
+
                 chrome.notifications.create({   
                 type: 'basic', 
                 iconUrl: 'iconBig.png', 
                 //Added the page name to the notification (to be shown in the title of the notification) 
-                title: groupName+": "+user+' '+notification, 
+                title: notificationTitle, 
                 //Show the actual comment in the message
                 message: comment
 

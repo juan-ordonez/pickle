@@ -78,15 +78,6 @@ chrome.gcm.onMessage.addListener(function(payload) {
               // getUserData()
             });
 
-
-
-            // $("body").load("http://pickle-server-183401.appspot.com/loadPostsProfile/ #posts", {"id" : userID.toString()}, function () {
-
-            //    profilePostsHTML = $("#posts").html();
-            //    chrome.storage.local.set({"profilePostsHTML" : profilePostsHTML});
-            //    console.log("updating profile");
-            // });
-
             $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
                var json = {};
                json[groupID] = groupsHTML;
@@ -102,7 +93,59 @@ chrome.gcm.onMessage.addListener(function(payload) {
                console.log("updating newsfeed");
                // getUserData();
             });
-      }
+
+            chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+              var activeTab = arrayOfTabs[0];
+              url = activeTab.url;
+            });
+
+            var profilePic = payload.data.pic;
+            var user = payload.data.first;
+            var comment = payload.data.comment;
+            var commentID = payload.data.commentID;
+            //Added a variable for the page title to create the notification
+            var page = payload.data.pageTitle;
+            var commentUrl = payload.data.url;
+            var notification = payload.data.status;
+            var groupName = payload.data.currentGroupName;
+            var groupID = payload.data.groupID;
+            var pageImage = payload.data.pageImage;
+
+            chrome.storage.local.get(['lastComment'], function(result) {
+              //Account for multiple gcm messages
+              if(commentID != result['lastComment']) {
+                chrome.storage.local.set({"lastComment" : commentID});
+                chrome.notifications.create({   
+                type: 'basic', 
+                iconUrl: 'iconBig.png',
+                imageUrl: pageImage, 
+                //Added the page name to the notification (to be shown in the title of the notification) 
+                title: groupName+": "+user+' '+notification, 
+                //Show the actual comment in the message
+                message: comment
+
+                }, function (notif) {
+                  dict = {};
+                  dict[notif] = commentUrl;
+                  chrome.storage.local.set(dict);
+                });
+              }
+
+              //update notification badges
+              chrome.storage.local.get(['notificationsJSON'], function(data) {
+                notificationsJSON = data['notificationsJSON'];
+                if (!(notificationsJSON[groupID])) {
+                  notificationsJSON[groupID] = 1;
+                }
+                else {
+                  notificationsJSON[groupID] += 1;
+                  chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+                }
+                //Update extension icon badge
+                updateBadge(notificationsJSON);
+              });
+            });
+          }
 
         if (type == "postGeneral") {
           console.log("message postGeneral");
@@ -315,72 +358,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
   
     }
 
-  });
-
-
-  if (type == "notification") {
-
-  if (views.length == 0) {
-  //console.log("popup is shut");
-
-  chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
-
-       var activeTab = arrayOfTabs[0];
-       url = activeTab.url;
-   });
-    
-    var profilePic = payload.data.pic;
-    var user = payload.data.first;
-    var comment = payload.data.comment;
-    var commentID = payload.data.commentID;
-    //Added a variable for the page title to create the notification
-    var page = payload.data.pageTitle;
-    var commentUrl = payload.data.url;
-    var notification = payload.data.status;
-    var groupName = payload.data.currentGroupName;
-    var groupID = payload.data.groupID;
-    var pageImage = payload.data.pageImage;
-
-    chrome.storage.local.get(['lastComment'], function(result) {
-      //Account for multiple gcm messages
-      if(commentID != result['lastComment']) {
-        chrome.storage.local.set({"lastComment" : commentID});
-        chrome.notifications.create({   
-        type: 'basic', 
-        iconUrl: 'iconBig.png',
-        imageUrl: pageImage, 
-        //Added the page name to the notification (to be shown in the title of the notification) 
-        title: groupName+": "+user+' '+notification, 
-        //Show the actual comment in the message
-        message: comment
-
-        }, function (notif) {
-          dict = {};
-          dict[notif] = commentUrl;
-          chrome.storage.local.set(dict);
-        });
-      }
-
-      //update notification badges
-      chrome.storage.local.get(['notificationsJSON'], function(data) {
-        notificationsJSON = data['notificationsJSON'];
-        if (!(notificationsJSON[groupID])) {
-          notificationsJSON[groupID] = 1;
-        }
-        else {
-          notificationsJSON[groupID] += 1;
-          chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
-        }
-        //Update extension icon badge
-        updateBadge(notificationsJSON);
-      });
-    });
-
-  }
-
-}
-    
-  
+  });  
   
 });
 

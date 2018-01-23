@@ -105,11 +105,12 @@ chrome.gcm.onMessage.addListener(function(payload) {
       }
 
         if (type == "postGeneral") {
+          console.log("message postGeneral");
           $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
             var json = {};
             json["general"] = groupsHTML;
             chrome.storage.local.set(json);
-            console.log("updating newsfeed");
+            console.log("updating General newsfeed");
             // getUserData();
           });
 
@@ -173,6 +174,8 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
           if (type == "post") {
               
+              console.log("message post");
+
               var poster = payload.data.poster;
               var groupName = payload.data.currentGroupName;
               var groupID = payload.data.groupID;
@@ -181,6 +184,9 @@ chrome.gcm.onMessage.addListener(function(payload) {
               var commentUrl = payload.data.url;
               var pageTitle = payload.data.pageTitle;
               var tags = payload.data.tags;
+
+              console.log(groupID)
+              console.log(commentID)
 
               $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : groupID}, function (groupsHTML) {
                var json = {};
@@ -199,6 +205,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               });
 
               chrome.storage.local.get(['lastComment'], function(result) {
+                console.log(result['lastComment']);
                 //Account for multiple gcm messages
                 if(commentID != result['lastComment']) {
 
@@ -696,7 +703,9 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                   $("body").load("http://pickle-server-183401.appspot.com/loadnotifications/ #notifications", {"id" : userID.toString()}, function () {
                    notificationsHTML = $("#notifications").html();
                   chrome.storage.local.set({"notificationsHTML" : notificationsHTML});
-                  });
+
+            });
+
                 $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {
                     
                   chrome.storage.local.set({"groupInfo" : JSON.parse(data)});

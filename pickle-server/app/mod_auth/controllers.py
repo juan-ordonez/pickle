@@ -224,6 +224,7 @@ def comment():
     tags = ast.literal_eval(str(request.form['tags']))
     comment.mentions.append(user)
     posts = set([])
+    memberIDs = None
 
     if not comment.public:
         for tag in tags:
@@ -242,6 +243,7 @@ def comment():
         general = Group.query.filter_by(id=user.id).first()
         if group1:
             group1.comments.append(comment)
+            memberIDs = [member.id for member in group1.users]
         general.comments.append(comment)
         if feed:
             if group1 and feed not in group1.posts:
@@ -300,8 +302,6 @@ def comment():
     user.commentsTaggedIn.append(comment)
     db.session.commit()
 
-
-
     friends = set([])
     friendsOfFriendsSet = set([])
     for session in user.friendSession:
@@ -317,9 +317,15 @@ def comment():
 
         for friendsession in friendOfFriend.friendSession:
             if friendsession.authToken and friendsession.id not in friendsOfFriendsSet:
-                friendsOfFriendsSet.add(friendsession.authToken)
+                if memberIDs and friendsession.id not in memberIDs:
+                    friendsOfFriendsSet.add(friendsession.authToken)
+                elif not memberIDs:
+                    friendsOfFriendsSet.add(friendsession.authToken)
         if session.authToken:
-            friendsOfFriendsSet.add(session.authToken)
+            if memberIDs and session.id not in memberIDs:
+                friendsOfFriendsSet.add(session.authToken)
+            elif not memberIDs:
+                friendsOfFriendsSet.add(session.authToken)
     db.session.commit()
 
     if feed:

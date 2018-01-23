@@ -44,9 +44,9 @@ from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
 from oauth2client.client import GoogleCredentials
-from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
+# from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
 import ast
-from selenium import webdriver
+# from selenium import webdriver
 from helpers import canonical, getTimeLabel, getPostDescription, friendsOfFriendsHelper
 
 credentials = GoogleCredentials.get_application_default()
@@ -316,12 +316,12 @@ def comment():
                 friendGeneral.posts.append(feed)
 
         for friendsession in friendOfFriend.friendSession:
-            if friendsession.authToken and friendsession.id not in friendsOfFriendsSet:
+            if friendsession.authToken and friendsession.id not in friendsOfFriendsSet and friendsession.id != user.id and friendsession.id not in tags:
                 if memberIDs and friendsession.id not in memberIDs:
                     friendsOfFriendsSet.add(friendsession.authToken)
                 elif not memberIDs:
                     friendsOfFriendsSet.add(friendsession.authToken)
-        if session.authToken:
+        if session.authToken and session.id not in tags:
             if memberIDs and session.id not in memberIDs:
                 friendsOfFriendsSet.add(session.authToken)
             elif not memberIDs:

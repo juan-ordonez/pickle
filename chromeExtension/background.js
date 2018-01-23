@@ -117,14 +117,18 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
                 //update notification badges
                 chrome.storage.local.get(['notificationsJSON'], function(data) {
+                  
                   notificationsJSON = data['notificationsJSON'];
+                  console.log(notificationsJSON);
+                  console.log(notificationsJSON[groupID]);
+                  console.log(groupID);
                   if (!(notificationsJSON[groupID])) {
                     notificationsJSON[groupID] = 1;
                   }
                   else {
                     notificationsJSON[groupID] += 1;
-                    chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
                   }
+                  chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
                   //Update extension icon badge
                   updateBadge(notificationsJSON);
                 });

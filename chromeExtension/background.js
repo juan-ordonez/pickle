@@ -120,6 +120,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
                   notificationsJSON = data['notificationsJSON'];
                   if (!(notificationsJSON[groupID])) {
                     notificationsJSON[groupID] = 1;
+                    chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
                   }
                   else {
                     notificationsJSON[groupID] += 1;

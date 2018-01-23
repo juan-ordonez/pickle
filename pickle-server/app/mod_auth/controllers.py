@@ -316,12 +316,12 @@ def comment():
                 friendGeneral.posts.append(feed)
 
         for friendsession in friendOfFriend.friendSession:
-            if friendsession.authToken and friendsession.id not in friendsOfFriendsSet:
+            if friendsession.authToken and friendsession.id not in friendsOfFriendsSet and friendsession.id != user.id and friendsession.id not in tags:
                 if memberIDs and friendsession.id not in memberIDs:
                     friendsOfFriendsSet.add(friendsession.authToken)
                 elif not memberIDs:
                     friendsOfFriendsSet.add(friendsession.authToken)
-        if session.authToken:
+        if session.authToken and session.id not in tags:
             if memberIDs and session.id not in memberIDs:
                 friendsOfFriendsSet.add(session.authToken)
             elif not memberIDs:

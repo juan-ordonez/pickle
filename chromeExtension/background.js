@@ -692,6 +692,8 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                       });
 
                     });
+
+                    
                     
                     $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {   
                       chrome.storage.local.set({"general" : data});
@@ -718,7 +720,8 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                   });
 
                   var l1 = $.Deferred(),
-                      l2 = $.Deferred();
+                      l2 = $.Deferred(),
+                      l3 = $.Deferred();
 
                   $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
                     groupsHTML = $("#groups").html();
@@ -730,7 +733,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                       l2.resolve();
                   });
 
-                  $.when(l1, l2).done(function (){
+                  $.when(l1, l2, l3).done(function (){
                       // chrome.extension.sendMessage({handshake:"login"});
                   });
 
@@ -826,7 +829,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
       });
       chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
 
-      var comPost = $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+      var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : currentGroup}, function(data) {
           // var feeds = JSON.parse(JSON.parse(data)[0]);
           var groupID = JSON.parse(data)[2];

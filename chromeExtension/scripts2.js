@@ -444,9 +444,12 @@ $(document).on("click", "#loginButton", function(event){
   // $("#loginSpinner").show();
   // $(".btn-facebook").addClass("disableClick");
   // $(".btn-facebook").css("visibility", "hidden");
-  $("#loginCarousel").fadeOut();
-  $(".btn-facebook").fadeOut();
-  $("#loginSpinner").fadeIn();
+  $(".btn-facebook").addClass("animated fadeOut");
+  $("#loginCarousel").addClass("fadeOut");
+  $('#loginCarousel').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+    $("#loader").fadeIn();
+    $(".loadingText").fadeIn(4000);
+  });
 });
 
 $(document).on("click", ".deletePost", function(){

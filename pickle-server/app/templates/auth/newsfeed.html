@@ -1,36 +1,34 @@
+{% for i in posts %}
+<div class="card cardNewsfeed mb-3">
 
-    <div id="posts">
-    {% for i in posts %}
-    <div class="card cardNewsfeed mb-3">
-
-        {% if i[11] %}
-        <div class="dropdown show dropdownOptions">    
-          <a href="#" class="btn mb-0 optionsBtn" role="button" id="{{[i[10]]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></a>
-          <div class="dropdown-menu" aria-labelledby="i[10]">
-              <a class="dropdown-item deletePost" href="#"><small>Delete post from group</small></a>
-          </div>
-        </div>
-        {% endif %}
-
-        <p class="postDescription">{{i[1]}}</p>
-        <div class="message d-flex flex-nowrap align-items-start">
-          <div class="thumbnail">
-              <img src="{{i[9]}}">
-          </div>
-          <p class="chatBubble mb-0">{{i[6]}}</p>
-        </div>
-        {% if i[4] %}
-        <div class="pageImg d-flex align-items-center">
-          <a href={{i[7]}} class="notificationTab"><img src={{i[4]}}></a>
-        </div>
-        {% endif %}
-        <div class="pageInfo">
-          <a href={{i[7]}} class="notificationTab pageTitle"><h1>{{i[3]}}</h1></a>
-          <p class="pageDescription">{{i[5]}}</p>
-          <p class="pageDomain">{{i[8]}}</p>
-        </div>
-
+    {% if i[11] %}
+    <div class="dropdown show dropdownOptions">    
+      <a href="#" class="btn mb-0 optionsBtn" role="button" id="{{[i[10]]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></a>
+      <div class="dropdown-menu" aria-labelledby="i[10]">
+          <a class="dropdown-item deletePost" href="#"><small>Delete post from group</small></a>
       </div>
-    {% endfor %}
-</div>
+    </div>
+    {% endif %}
+
+    <p class="postDescription">{{i[1]}}</p>
+    <div class="message d-flex flex-nowrap align-items-start">
+      <div class="thumbnail">
+          <img src="{{i[9]}}">
+      </div>
+      <p class="chatBubble mb-0">{{i[6]}}</p>
+    </div>
+    {% if i[4] %}
+    <div class="pageImg d-flex align-items-center">
+      <a href={{i[7]}} class="notificationTab"><img src={{i[4]}}></a>
+    </div>
+    {% endif %}
+    <div class="pageInfo">
+      <a href={{i[7]}} class="notificationTab pageTitle"><h1>{{i[3]}}</h1></a>
+      <p class="pageDescription">{{i[5]}}</p>
+      <p class="pageDomain">{{i[8]}}</p>
+    </div>
+
+  </div>
+{% endfor %}
+
 

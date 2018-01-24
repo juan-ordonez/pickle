@@ -31,6 +31,11 @@ chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
     $(document).on("click", "#viewComments", function(){
       window.location.href = chrome.extension.getURL('popup.html');
     });
+    chrome.storage.local.get(['currentGroup'], function (result) {
+      if (result['currentGroup'] == 'general') {
+        $("#prepareYipp").text("SHARE TO GENERAL");
+      }
+    });
   }
 
 if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.location.href == chrome.extension.getURL("popup.html")) {
@@ -137,12 +142,6 @@ if (window.location.href == chrome.extension.getURL("newsfeed.html") || window.l
       likes = likes + 1;
       $(this).replaceWith('<div class="likeButton"><a href="#" class="active"><i class="fa fa-heart"></i> '+likes+'</a></div>');
       liked = "true";
-    
-      //Get the title of the user's current tab
-      // chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
-      //   var activeTab = arrayOfTabs[0];
-      //   pageTitle = activeTab.title;
-      // });
 
       chrome.extension.sendMessage({type : "like", userName : userName, userID : userID, id : id, liked : liked, picture : picture, pageTitle : pageTitle});
     }
@@ -176,17 +175,6 @@ $(document).on("click", ".drawerLink", function(){
     updateBadge(notifJSON);
   })
 });
-
-//Clicking on user names
-// $(document).on("click", ".userProfile", function(){
-//   var previousPage = $("#bottomNav .active").attr('id');
-//   chrome.storage.local.set({"previousPage" : previousPage, "previousUrl" : window.location.href});
-//   var profileID = $(this).attr("id");
-//   var profileName = $(this).text();
-//   // var profilePic = $(this).attr("id");
-//   chrome.extension.sendMessage({type : "loadUser", profileID : profileID, profileName : profileName});
-//   window.location.href = chrome.extension.getURL('userProfile.html');
-// });
 
 //Clicking on group details
 $(document).on("click", ".groupDetailsBtn", function(){
@@ -282,7 +270,6 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
   });
 }
 
-//Loading user profiles
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
@@ -385,13 +372,12 @@ if (window.location.href == chrome.extension.getURL('popup.html')) {
   connect("first");
 }
 
-// chrome.storage.local.remove(['outgoing-general', "outgoing-90281c92-b1de-4fd3-94bd-ab8b1de649eb"]);
-//Load newsfeed posts
 if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
   
   chrome.storage.local.set({"defaultPopup" : "newsfeed.html"});
   chrome.browserAction.setPopup({popup : "newsfeed.html"});
 
+  //Load newsfeed posts
   $("#posts").hide();
   chrome.storage.local.get(['currentGroup'], function(result) {
   var group = result['currentGroup'];
@@ -408,30 +394,29 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
             $(this).empty();
             $(this).html(htmlDescriptionNewsfeed);
           });
+          if (data[group].length < 3) {
+            if (group == 'general') {
+              $ (".emptyGeneralState").show();
+            }
+            else {
+              $ (".emptyGroupState").show();
+            }
+          }
         }
-
-        else {
+        if (!(data[group])) {
           $(".emptyGroupState").show();
         }
-        
         if (data[outgoingGroup]) {
           var outgoingPosts = data[outgoingGroup];
           for (var i = 0; i < outgoingPosts.length; i++ ) {
             $("#outgoingPosts").prepend(outgoingPosts[i]);
           }
         }
-
         $("#posts").show();
-        console.log("loaded");
-
       });
       } else {
         $("#posts").html(' ');
-        console.log("not loaded");
       }
-      // $("#notificationsContainer .loadingSpinner").hide();
-      // $("#notificationsContainer .cardList").show();
-
   });
 
   //Show hamburger badge if new notifications
@@ -449,56 +434,19 @@ if (window.location.href == chrome.extension.getURL('newsfeed.html')) {
   connect("first");
 }
 
-//Load profile posts
-if (window.location.href == chrome.extension.getURL('account.html')) {
-  
-  $("#postsProfile").hide();
-
-  //add any outgoing posts
-  // chrome.storage.local.get(['currentGroup'], function(result) {
-  //   var group = result['currentGroup'];
-  //   var outgoingGroup = "outgoing-" + group;
-  //   if (group != null) { 
-  //     chrome.storage.local.get([outgoingGroup], function(data) {
-  //       if (data[outgoingGroup]) {
-  //         var outgoingPosts = data[outgoingGroup];
-  //         for (var i = 0; i < outgoingPosts.length; i++ ) {
-  //           $("#outgoingPosts").prepend(outgoingPosts[i]);
-  //         }
-  //       }
-  //     });
-  //   }
-  // });
-
-  // chrome.storage.local.get(['profilePostsHTML'], function(result) {
-  // profilePostsHTML = result['profilePostsHTML'];
-  // if (profilePostsHTML != null) {
-  //       $("#postsProfile").html(profilePostsHTML);
-  //       $("#postsProfile .postDescription").each(function(){
-  //         var htmlDescriptionProfile = $(this).text();
-  //         $(this).empty();
-  //         $(this).html(htmlDescriptionProfile);
-  //       });
-  //       $("#postsProfile").show();
-  //     } else {
-  //       $("#postsProfile").html(' ');
-  //     }
-
-  // });
-
-  connect("first");
-}
-
 // login facebook authentication
 $(document).on("click", "#loginButton", function(event){ 
   url = "https://www.facebook.com/dialog/oauth?client_id=1430922756976623&response_type=token&scope=public_profile,email,user_friends&redirect_uri=http://www.facebook.com/connect/login_success.html";
   chrome.windows.create({'url': url, focused : false, width : 750, height : 750, type : "popup"}, function(tab) {
           // Tab opened.
   });
-  $("#loginCarousel").css("visibility", "hidden");
-  $("#loginSpinner").show();
-  $(".btn-facebook").addClass("disableClick");
-  $(".btn-facebook").css("visibility", "hidden");
+  // $("#loginCarousel").css("visibility", "hidden");
+  // $("#loginSpinner").show();
+  // $(".btn-facebook").addClass("disableClick");
+  // $(".btn-facebook").css("visibility", "hidden");
+  $("#loginCarousel").fadeOut();
+  $(".btn-facebook").fadeOut();
+  $("#loginSpinner").fadeIn();
 });
 
 $(document).on("click", ".deletePost", function(){
@@ -612,7 +560,10 @@ if (window.location.href == chrome.extension.getURL("addGroupMembers.html")) {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.handshake == "login") {
-      window.location.replace("newsfeed.html");
+      $(".containerLogin").addClass("animated bounceOut");
+      $('.containerLogin').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+        window.location.replace("newsfeed.html");
+      });
     } else if (request.handshake == "retry") {
       connect("first");
     }
@@ -713,6 +664,40 @@ $(document).on("click", "#confirmLeaveGroup", function(){
     });
 
   });
+});
+
+//Show tutorial alerts if user is new
+chrome.storage.local.get(['newUser'], function(result) {
+  if (result['newUser'] == "true") {
+    chrome.storage.local.get(['currentGroup', 'alertGeneral', 'alertGroupPrivacy', 'alertComments', 'alertCreateGroup', 'alertCreateDirect'], function(data) {   
+      
+      if (window.location.href == chrome.extension.getURL("newsfeed.html")) {
+        if (data['currentGroup'] == 'general') {
+          $("body").append(data['alertGeneral']);
+        }
+        else {
+          $("body").append(data['alertGroupPrivacy']);
+        }
+      }
+      else if (window.location.href == chrome.extension.getURL("popup.html")) {
+        $("body").append(data['alertComments']);
+      }
+      else if (window.location.href == chrome.extension.getURL("createGroup.html")) {
+        $("body").append(data['alertCreateGroup']);
+      }
+      else if (window.location.href == chrome.extension.getURL("createDirect.html")) {
+        $("body").append(data['alertCreateDirect']);
+      }
+
+    });
+  }
+
+//Dismiss tutorial alerts and clear from storage
+$(document).on("click", "#alertGeneral .close, #alertGroupPrivacy .close, #alertComments .close, #alertCreateGroup .close, #alertCreateDirect .close", function(){
+  var alert = $(this).parent().attr("id")
+  chrome.storage.local.set({[alert] : ""});
+});
+
 });
 
 function comment(e) {

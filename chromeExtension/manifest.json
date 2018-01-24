@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
 
-  "name": "Yipp Beta",
+  "name": "Yipp BETA",
 
-  "description": "Curate links from the Internet as a group",
-  "version": "1.48",
+  "description": "Create collections with others and curate links from the Internet",
+  "version": "1.50",
 
   "browser_action": {
     "default_icon": "iconActive128.png",

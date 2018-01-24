@@ -3,7 +3,7 @@
 
   "name": "Yipp BETA",
 
-  "description": "Create collections with others and curate links from the Internet",
+  "description": "Create and curate collections of web pages with others",
   "version": "1.50",
 
   "browser_action": {

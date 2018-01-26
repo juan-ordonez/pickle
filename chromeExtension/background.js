@@ -331,23 +331,13 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
             $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : payload.data.groupID}, function (groupsHTML) {
                var json = {};
-               json[groupID] = groupsHTML;
+               json[payload.data.groupID] = groupsHTML;
                chrome.storage.local.set(json);
                console.log("updating new group newsfeed");
                l4.resolve();
-               // getUserData();
             });
 
-            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
-              var json = {};
-              json["general"] = groupsHTML;
-              chrome.storage.local.set(json);
-              console.log("updating general feed");
-              l5.resolve();
-              // getUserData();
-            });
-
-            $.when(l1, l2, l3, l4, l5).done(function (){
+            $.when(l1, l2, l3, l4).done(function (){
               var poster = payload.data.poster;
               var groupName = payload.data.groupName;
 

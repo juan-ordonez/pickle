@@ -187,6 +187,7 @@ $(document).on("click", ".groupDetailsBtn", function(){
 $(document).on("click", "#createGroupBtn", function(event){ 
   
   $("#createGroupForm").hide();
+  $(".emptyFriendsState").hide();
   $(".loadingSpinner").show();
 
   var name = $('#groupNameInput').val()
@@ -206,6 +207,7 @@ $(document).on("click", "#createGroupBtn", function(event){
 $(document).on("click", "#addMembersBtn", function(event){ 
   
   $("#createGroupForm").hide();
+  $(".emptyFriendsState").hide();
   $(".loadingSpinner").show();
 
   var users = [];
@@ -229,6 +231,7 @@ if (window.location.href == chrome.extension.getURL("createDirect.html")) {
   $(document).on("change", ":radio", function(){
   
     $("#createDirectForm").hide();
+    $(".emptyFriendsState").hide();
     $(".loadingSpinner").show();
 
     var ids = [];

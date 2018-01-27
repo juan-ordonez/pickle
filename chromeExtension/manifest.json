@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
 
-  "name": "Yipp DEV",
+  "name": "Yipp BETA",
 
   "description": "Create and curate collections of web pages with others",
-  "version": "1.50",
+  "version": "1.51",
 
   "browser_action": {
     "default_icon": "iconActive128.png",

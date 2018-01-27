@@ -633,10 +633,11 @@ chrome.runtime.onMessage.addListener(
 
 function onFacebookLogin(){
 
-chrome.storage.local.get(['accessToken', 'userID'], function(result) {
+chrome.storage.local.get(['accessToken', 'userID', 'currentVersion'], function(result) {
   var token = result['accessToken'];
   var id = result['userID'];
   var popup = result['defaultPopup'];
+  var currentVersion = result['currentVersion'];
   // console.log(!token);
   if (!token) {
     console.log("LOGIN");
@@ -661,7 +662,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                   
                   console.log("callback1")
                   
-                  if (newUser == "true") {
+                  if (newUser == "true" || currentVersion == "1.51") {
                     console.log("new user");
                     chrome.storage.local.set({newUser : "true"});
                     chrome.storage.local.set({alertGeneral : '<div id="alertGeneral" class="alert alert-info alert-dismissible alertBottom fade show animated bounceInUp" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><i class="fas fa-info-circle mr-2"></i><strong>Oh hi there!</strong> The <strong>#general</strong> feed shows the pages your friends are sharing throughout all their collections.</div>'});
@@ -771,6 +772,16 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
   });
 }
 
+
+// Check whether new version is installed
+chrome.runtime.onInstalled.addListener(function(details){
+    if(details.reason == "install"){
+        chrome.tabs.update({url: 'http://joinyipp.com/get-started'});
+    }else if(details.reason == "update"){
+        var thisVersion = chrome.runtime.getManifest().version;
+        chrome.storage.local.set({currentVersion : thisVersion});
+    }
+});
 
 
 function comment(userID, url, value, tags, all, picture, pageTitle, checked, currentGroup, currentGroupName) {

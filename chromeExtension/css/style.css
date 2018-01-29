@@ -97,6 +97,10 @@ button:active {
 	color: #424242;
 }
 
+#activePageCard .mentions-input-box .mentions > div {
+	padding-top:6px;
+}
+
 #activePageTitle {
 	color: #E3F2FD;
 	font-weight: 500;

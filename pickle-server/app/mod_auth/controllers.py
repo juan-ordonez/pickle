@@ -604,6 +604,46 @@ def addMembersList():
 
 
 
+#Renders template for list of users for adding new members to an existing group
+@mod_auth.route('/addMembersListNew/', methods=['GET','POST'])
+@crossdomain(origin='*')
+# @flask_optimize.optimize()
+def addMembersListNew():
+    
+    user = User.query.filter_by(id=request.form['id']).first()
+    ids = ast.literal_eval(str(request.form['friends']))
+    group = Group.query.filter_by(id=request.form['groupID']).first() 
+    jsonData = {}
+
+    #For each group that the user is a member of
+    # for group in user.groups:
+    currentMembers = []
+    friends = []
+    #Fetch current members of group
+    for i in group.users:
+        if i != user:
+            currentMembers.append(i.id)
+    #Fetch all friends of users and mark them if they are members of the group
+    for friend in ids:
+        user = User.query.filter_by(id=friend).first()
+        if friend in currentMembers:
+            friends.append((friend, user.name, "added"))
+        else:
+            friends.append((friend, user.name))
+
+    templateData = {
+            
+        'friends' : friends
+            
+    }
+
+
+    jsonData = render_template('auth/addGroupMembers.html', **templateData)
+
+    return json.dumps(jsonData)
+
+
+
 
 @mod_auth.route('/friendstokens/', methods=['GET','POST'])
 @crossdomain(origin='*')

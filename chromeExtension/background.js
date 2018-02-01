@@ -574,7 +574,7 @@ chrome.runtime.onMessage.addListener(
 
           var friendIds = friendsArray.map(function(value,index) { return value[0]; });
           if (friendIds) {
-            $.post("http://localhost:5000/addMembersListNew/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "groupID" : groupID.toString()}, function (data) {
+            $.post("http://pickle-server-183401.appspot.com/addMembersListNew/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "groupID" : groupID.toString()}, function (data) {
               chrome.storage.local.get(['addMembersHTML'], function(result) {
                 var addMembersHTML = result['addMembersHTML'];
                 addMembersHTML[groupID] = JSON.parse(data);

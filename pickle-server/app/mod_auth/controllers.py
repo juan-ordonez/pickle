@@ -810,7 +810,7 @@ def createGroup():
         group.direct = True 
     else:
         group.direct = False
-    users = ast.literal_eval(str(request.form['users']))
+    users = ast.literal_eval(request.form['users'])
     if not name:
         group.name = ",".join(users)
     db.session.add(group)

@@ -100,12 +100,14 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
             var profilePic = payload.data.pic;
             var user = payload.data.first;
+            console.log(user);
             var comment = payload.data.comment;
             var commentID = payload.data.commentID;
             //Added a variable for the page title to create the notification
             var page = payload.data.pageTitle;
             var commentUrl = payload.data.url;
             var notification = payload.data.status;
+            console.log(notification);
             var groupName = payload.data.currentGroupName;
             var groupID = payload.data.groupID;
             var pageImage = payload.data.pageImage;
@@ -117,11 +119,34 @@ chrome.gcm.onMessage.addListener(function(payload) {
               if(commentID != result['lastComment']) {
                 console.log("DIFFERENT");
                 chrome.storage.local.set({"lastComment" : commentID});
+
+                //update notification badges
+                chrome.storage.local.get(['notificationsJSON'], function(data) {
+                  
+                  notificationsJSON = data['notificationsJSON'];
+                  console.log(notificationsJSON);
+                  console.log(notificationsJSON[groupID]);
+                  console.log(groupID);
+                  if (!(notificationsJSON[groupID])) {
+                    notificationsJSON[groupID] = 1;
+                    chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+                  }
+                  else {
+                    notificationsJSON[groupID] += 1;
+                  }
+                  chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+                  //Update extension icon badge
+                  updateBadge(notificationsJSON);
+                });
+
+                var notificationTitle = user+' '+notification
+                console.log(notificationTitle)
+
                 chrome.notifications.create({   
                 type: 'basic', 
                 iconUrl: 'iconBig.png',
                 //Added the page name to the notification (to be shown in the title of the notification) 
-                title: groupName+": "+user+' '+notification, 
+                title: notificationTitle, 
                 //Show the actual comment in the message
                 message: comment
 
@@ -130,6 +155,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
                   dict[notif] = commentUrl;
                   chrome.storage.local.set(dict);
                 });
+
 
                 chrome.storage.local.get(['notificationsJSON'], function(data) {
                 notificationsJSON = data['notificationsJSON'];
@@ -147,6 +173,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
               }
 
               //update notification badges
+
             });
           }
 
@@ -324,23 +351,13 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
             $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : payload.data.groupID}, function (groupsHTML) {
                var json = {};
-               json[groupID] = groupsHTML;
+               json[payload.data.groupID] = groupsHTML;
                chrome.storage.local.set(json);
                console.log("updating new group newsfeed");
                l4.resolve();
-               // getUserData();
             });
 
-            $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (groupsHTML) {
-              var json = {};
-              json["general"] = groupsHTML;
-              chrome.storage.local.set(json);
-              console.log("updating general feed");
-              l5.resolve();
-              // getUserData();
-            });
-
-            $.when(l1, l2, l3, l4, l5).done(function (){
+            $.when(l1, l2, l3, l4).done(function (){
               var poster = payload.data.poster;
               var groupName = payload.data.groupName;
 
@@ -438,7 +455,7 @@ function getUserData() {
                 d5 = $.Deferred(),
                 d6 = $.Deferred();
             
-            $.post("http://localhost:5000/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
+            $.post("http://pickle-server-183401.appspot.com/loadComment/", {"userID" : userID.toString(), "url" : url.toString()}, function(data) {
               var groupsComments = JSON.parse(data);
               commentsJSON = groupsComments;
               d1.resolve();
@@ -564,7 +581,7 @@ chrome.runtime.onMessage.addListener(
           var l1 = $.Deferred(),
               l2 = $.Deferred();
               l3 = $.Deferred();
-          
+
           $.post("http://pickle-server-183401.appspot.com/loadGroupData/", {"id" : userID.toString()}, function (data) {         
             chrome.storage.local.set({"groupInfo" : JSON.parse(data)});
             l1.resolve();              
@@ -574,12 +591,18 @@ chrome.runtime.onMessage.addListener(
             chrome.storage.local.set({groupsHTML : $("#groups").html()});
             l2.resolve();
           });
+
           var friendIds = friendsArray.map(function(value,index) { return value[0]; });
           if (friendIds) {
-            $.post("http://pickle-server-183401.appspot.com/addMembersList/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds)}, function (data) {
-              chrome.storage.local.set({"addMembersHTML" : JSON.parse(data)});
-              l3.resolve();
+            $.post("http://pickle-server-183401.appspot.com/addMembersListNew/", {"id" : userID.toString(), "friends" : JSON.stringify(friendIds), "groupID" : groupID.toString()}, function (data) {
+              chrome.storage.local.get(['addMembersHTML'], function(result) {
+                var addMembersHTML = result['addMembersHTML'];
+                addMembersHTML[groupID] = JSON.parse(data);
+                chrome.storage.local.set({"addMembersHTML" : addMembersHTML});
+                l3.resolve()
+              });
             });
+
           }
 
           $.when(l1, l2, l3).done(function (){
@@ -636,11 +659,11 @@ chrome.runtime.onMessage.addListener(
 
 function onFacebookLogin(){
 
-chrome.storage.local.get(['accessToken', 'userID'], function(result) {
-
+chrome.storage.local.get(['accessToken', 'userID', 'currentVersion'], function(result) {
   var token = result['accessToken'];
   var id = result['userID'];
   var popup = result['defaultPopup'];
+  var currentVersion = result['currentVersion'];
   // console.log(!token);
   if (!token) {
     console.log("LOGIN");
@@ -660,10 +683,27 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
                 userName = api.name;
                 userEmail = api.email;
                 picture = api.picture.data.url;
-                $.post('http://pickle-server-183401.appspot.com/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : api.friends.data, "picture" : picture, "authToken" : accessToken})}, function() {
+                chrome.browserAction.setPopup({popup : "loggingIn.html"});
+                $.post('http://pickle-server-183401.appspot.com/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : api.friends.data, "picture" : picture, "authToken" : accessToken})}, function(newUser) {
+                  
+                  console.log("callback1")
+                  
+                  if (newUser == "true" || currentVersion == "1.51") {
+                    console.log("new user");
+                    chrome.storage.local.set({newUser : "true"});
+                    chrome.storage.local.set({alertGeneral : '<div id="alertGeneral" class="alert alert-info alert-dismissible alertBottom fade show animated bounceInUp" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><i class="fas fa-info-circle mr-2"></i><strong>Oh hi there!</strong> The <strong>#general</strong> feed shows the pages your friends are sharing throughout all their collections.</div>'});
+                    chrome.storage.local.set({alertGroupPrivacy : '<div id="alertGroupPrivacy" class="alert alert-info alertBottom alert-dismissible fade show animated bounceInUp" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><i class="fas fa-info-circle mr-2"></i><strong>Heads up!</strong> The posts you share to this collection will also be visible to all your friends through their <strong>#general</strong> feeds. <br /> (☞ﾟヮﾟ)☞ ☜(ﾟヮﾟ☜)</div>'});
+                    chrome.storage.local.set({alertComments : '<div id="alertComments" class="alert alert-info alertTop alert-dismissible fade show animated bounceInDown" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><i class="fas fa-info-circle mr-2"></i>Comments shown here are tied to the web page you are currently browsing.</div>'});
+                    chrome.storage.local.set({alertCreateGroup : '<div id="alertCreateGroup" class="alert alert-info alert-dismissible alertBottom fade show animated bounceInUp" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><i class="fas fa-info-circle mr-2"></i><strong>Let\'s get schwifty!</strong> Create a new collection to start curating links from the Internet. Any participant you add will be able to contribute.</div>'});
+                    chrome.storage.local.set({alertCreateDirect : '<div id="alertCreateDirect" class="alert alert-info alert-dismissible alertBottom fade show animated bounceInUp" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><i class="fas fa-info-circle mr-2"></i> Start a direct collection with someone to easily share and track links with them. </div>'});
+                  }
+                  else {
+                    chrome.storage.local.set({newUser : "false"});
+                  }
 
                   $.post("http://pickle-server-183401.appspot.com/getGroups/", {"id" : userID.toString()}, function(array) {
                     var groupsIDs = JSON.parse(array);
+                    console.log("callback2");
                     groupsIDs.forEach(function(element) {
 
                       $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : element}, function (data) {
@@ -674,12 +714,48 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
 
                     });
 
-                    
-                    
+                    var l1 = $.Deferred(),
+                      l2 = $.Deferred(),
+                      l3 = $.Deferred();
+
+                  try {
+                    $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
+                      groupsHTML = $("#groups").html();
+                      chrome.storage.local.set({"groupsHTML" : groupsHTML});
+                      l1.resolve();
+                      console.log("callback3");
+                    });
+                  }
+                  catch(error){
+                    chrome.browserAction.setPopup({popup : "register.html"});
+                  }
+
+                  try {
+                    chrome.storage.local.set({"currentGroup" : "general"}, function () {
+                        l2.resolve();
+                        console.log("callback4");
+                    });
+                  }
+                  catch(error){
+                    chrome.browserAction.setPopup({popup : "register.html"});
+                  }
+
+                  try {
                     $.post("http://pickle-server-183401.appspot.com/loadPosts/", {"id" : userID.toString(), "groupID" : "general"}, function (data) {   
                       chrome.storage.local.set({"general" : data});
-                      chrome.extension.sendMessage({handshake:"login"});
+                      l3.resolve();
+                      console.log("callback6"); 
                     });
+                  }
+                  catch(error){
+                    chrome.browserAction.setPopup({popup : "register.html"});
+                  }
+
+                    $.when(l1, l2, l3).done(function (){
+                      chrome.browserAction.setPopup({popup : "newsfeed.html"});
+                      chrome.extension.sendMessage({handshake:"login"});
+                      console.log("callback7");
+                  });
 
                   });
               
@@ -700,25 +776,6 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
               
                   });
 
-                  var l1 = $.Deferred(),
-                      l2 = $.Deferred(),
-                      l3 = $.Deferred();
-
-                  $("body").load("http://pickle-server-183401.appspot.com/groupNames/ #groups", {"id" : userID.toString()}, function () {
-                    groupsHTML = $("#groups").html();
-                    l1.resolve();
-              
-                  })
-
-                  chrome.storage.local.set({"currentGroup" : "general"}, function () {
-                      l2.resolve();
-                  });
-
-                  $.when(l1, l2, l3).done(function (){
-                      // chrome.extension.sendMessage({handshake:"login"});
-                  });
-
-
                   var senderIds = ["511642730215"];
                   chrome.gcm.register(senderIds, function (registrationID) {
                   $.post("https://pickle-server-183401.appspot.com/token/", {"session" : accessToken, "token" : registrationID});
@@ -728,7 +785,7 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
               });     
           });
           chrome.tabs.remove(tabs[i].id);
-          chrome.browserAction.setPopup({popup : "newsfeed.html"});
+          chrome.browserAction.setPopup({popup : "loggingIn.html"});
         }
       }
     });
@@ -741,6 +798,16 @@ chrome.storage.local.get(['accessToken', 'userID'], function(result) {
   });
 }
 
+
+// Check whether new version is installed
+chrome.runtime.onInstalled.addListener(function(details){
+    if(details.reason == "install"){
+        chrome.tabs.update({url: 'http://joinyipp.com/get-started'});
+    }else if(details.reason == "update"){
+        var thisVersion = chrome.runtime.getManifest().version;
+        chrome.storage.local.set({currentVersion : thisVersion});
+    }
+});
 
 
 function comment(userID, url, value, tags, all, picture, pageTitle, checked, currentGroup, currentGroupName) {
@@ -810,7 +877,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
       });
       chrome.extension.sendMessage({type : "cardInfoReady", value : value, url : url, currentGroup : currentGroup});
 
-      var comPost = $.post('http://localhost:5000' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
+      var comPost = $.post('http://pickle-server-183401.appspot.com' + '/comment/', {"userId" : userID, "url" : url.toString(), "string" : value, "tags" : tags, "public" : all, "pageTitle" : store['pageTitle'], 
         "pageImage" : store['pageImage'], "pageDescription" : store['pageDescription'], "groupID" : currentGroup}, function(data) {
           // var feeds = JSON.parse(JSON.parse(data)[0]);
           var groupID = JSON.parse(data)[2];

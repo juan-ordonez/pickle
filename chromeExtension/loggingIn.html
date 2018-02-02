@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+
+  <head>
+
+    <title>Logging In</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Pacifico|Roboto" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://use.fontawesome.com/releases/v5.0.0/css/all.css" rel="stylesheet">
+    <!-- Waves CSS -->
+    <link href="css/waves.min.css" rel="stylesheet">
+    <!-- animate CSS -->
+    <link href="css/animate.css" rel="stylesheet">
+    <!-- Custome Styles CSS -->
+    <link href="css/style.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- dummy anchor to prevent autofocus-->
+    <a class="nav-link" href="#" style="position: fixed; left: -10000000px;"></a>
+
+    <div class="containerLogin" style="height:auto!important; overflow:hidden!important;">
+      
+      <div class="d-flex flex-column align-items-center animated fadeIn" style="text-align:center;">
+        <h1 class="ml-5 mr-5">Welcome to</h1>
+        <h1 class="navbar-brand yippLogoLogin pt-0">Yipp</h1>
+        
+        <div id="loginSpinner">
+          <div id="loader">
+            <div id="shadow"></div>
+            <div id="box"></div>
+          </div>
+          <p>Loading your account</p>
+        </div>
+      </div>  
+
+    </div>
+
+  </body>
+
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+  <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="js/popper.js"></script>
+  <script type="text/javascript" src="js/autosize.min.js"></script>
+  <script type="text/javascript" src="js/waves.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="scripts2.js"></script>
+  <!-- js for popup.html -->
+  <script src="js/popup.js"></script>
+
+</html>

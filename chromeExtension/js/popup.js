@@ -32,7 +32,7 @@ $(document).on("click", "#prepareYipp", function(){
 	$(".closeYippArea").show();
 	$(".closeYippArea").animate({opacity: 0.5});
 	$(".container").css({overflowY: 'hidden'});
-	$(".currentTabInfo small:first-child").html('<i class="fas fa-link mr-2"></i>Share page');
+	$(".currentTabInfo small:first-child").html('<i class="fas fa-link mr-2"></i>Add page');
 });
 
 $(document).on("click", ".closeYippArea", function(){

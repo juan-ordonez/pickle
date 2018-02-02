@@ -8,7 +8,7 @@
 
   <head>
 
-    <title>Yipp Home</title>
+    <title>Create Group</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -19,8 +19,12 @@
     <link href="https://use.fontawesome.com/releases/v5.0.0/css/all.css" rel="stylesheet">
     <!-- Waves CSS -->
     <link href="css/waves.min.css" rel="stylesheet">
+    <!-- animate CSS -->
+    <link href="css/animate.css" rel="stylesheet">
     <!-- Custome Styles CSS -->
     <link href="css/style.css" rel="stylesheet">
+    <!-- Google Analytics -->
+    <script src="js/googleAnalytics.js"></script>
 
   </head>
 
@@ -33,7 +37,7 @@
     <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center pr-3 pl-3">
       <div>
         <a href="newsfeed.html" class="backBtn"><i class="fas fa-chevron-left mr-2"></i></a>
-        <h1 class="navbar-brand">Create Group</h1>
+        <h1 class="navbar-brand">Create Collection</h1>
       </div>
     </nav>
 
@@ -44,20 +48,27 @@
         <form id="createGroupForm">
             <div class="form-group sticky-top">
                 <!-- <label for="exampleInputEmail1">Email address</label> -->
-                <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" placeholder="Enter group name">
+                <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" placeholder="Enter collection name">
             </div>
             <small class="ml-3">ADD PARTICIPANTS</small>
             <div class="friendList mt-2" style="margin-bottom: 10px;">
             </div>
             <div class="emptyFriendsState" style="margin-bottom: 80px; display:none;">
                 <h1>Feeling lonely?</h1>
-                <img src="https://i.imgur.com/kr5PTx1.png">
+                <img src="https://i.imgur.com/7FF9Wxk.png">
                 <p>Tell your Facebook friends to download Yipp!</p>
             </div>
             <button type="button" class="btn btn-primary btn-block" id="createGroupBtn">Create</button>
         </form>
 
     </div>
+
+    <!-- <div id="alertCreateGroup" class="alert alert-info alert-dismissible alertBottom fade show animated bounceInUp" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <i class="fas fa-info-circle mr-2"></i><strong>Let's get schwifty!</strong> Create a new collection to start curating links from the Internet. Any participant you add will be able to contribute. 
+    </div> -->
 
     <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 

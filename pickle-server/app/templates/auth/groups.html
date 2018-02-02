@@ -5,10 +5,10 @@
 
 <div id="groups">
 	<div class="groupsDrawer">
-	<div class="d-flex flex-row flex-nowrap justify-content-between align-items-center">
-                <small>GROUPS</small>
-                <a href="createGroup.html"><i class="far fa-plus-square"></i></a>
-            </div>
+	<div class="drawerHeader d-flex flex-row flex-nowrap justify-content-between align-items-center">
+        <small>COLLECTIONS</small>
+        <a href="createGroup.html"><i class="far fa-plus-square"></i></a>
+    </div>
 
     <a class="nav-link drawerLink" href="#" id="general"># General<span class="badge badge-primary ml-2"></span>
     </a>
@@ -21,16 +21,15 @@
 
 <div class="directDrawer mt-3">
 
-
-<div class="d-flex flex-row flex-nowrap justify-content-between align-items-center">
-                <small>DIRECT</small>
-                <a href="createDirect.html"><i class="far fa-plus-square"></i></a>
-            </div>
-            {% for i in direct %}
-  				<a class="nav-link drawerLink" href="#" id={{i[0]}}>@ {{i[1]}} <div>
-          <span class="badge badge-primary"></span>
-        </div></a>
-			{% endfor %}
+    <div class="drawerHeader d-flex flex-row flex-nowrap justify-content-between align-items-center">
+        <small>DIRECT</small>
+        <a href="createDirect.html"><i class="far fa-plus-square"></i></a>
+    </div>
+    {% for i in direct %}
+    <a class="nav-link drawerLink" href="#" id={{i[0]}}>@ {{i[1]}} <div>
+    <span class="badge badge-primary"></span>
+    </div></a>
+    {% endfor %}
 
 
 </div>

@@ -8,7 +8,7 @@
 
   <head>
 
-    <title>Yipp Home</title>
+    <title>Create Direct</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -19,8 +19,12 @@
     <link href="https://use.fontawesome.com/releases/v5.0.0/css/all.css" rel="stylesheet">
     <!-- Waves CSS -->
     <link href="css/waves.min.css" rel="stylesheet">
+    <!-- animate CSS -->
+    <link href="css/animate.css" rel="stylesheet">
     <!-- Custome Styles CSS -->
     <link href="css/style.css" rel="stylesheet">
+    <!-- Google Analytics -->
+    <script src="js/googleAnalytics.js"></script>
 
   </head>
 
@@ -33,20 +37,9 @@
     <nav id="topNav" class="navbar fixed-top navbar-light justify-content-between align-items-center pr-3 pl-3">
       <div>
         <a href="newsfeed.html" class="backBtn"><i class="fas fa-chevron-left mr-2"></i></a>
-        <h1 class="navbar-brand">Direct Messages</h1>
+        <h1 class="navbar-brand">Direct Collection</h1>
       </div>
     </nav>
-
-    <!-- Bottom navigation bar -->
-    <!-- <nav id="bottomNav" class="navbar fixed-bottom navbar-light flex-nowrap justify-content-start align-items-center">
-      <div class="d-flex justify-content-between" style="width: 375px;">
-        <a class="nav-link active" href="#" id="newsfeedNav"><i class="fa fa-home fa-lg"></i></a>
-        <a class="nav-link" href="notifications.html" id="notificationsNav"><i id="notificationsBell" class="fa fa-bell fa-lg"></i></a>
-        <div id="notificationBadge">
-          <span class="badge badge-primary" id="numNotifications"></span>
-        </div>
-      </div> 
-    </nav> -->
 
     <!-- <i class="loadingSpinner fa fa-2x fa-spinner fa-spin mb-5"></i> -->
 
@@ -56,18 +49,25 @@
 
         <form id="createDirectForm">
             
-            <p class="mt-2 mb-2 ml-3 mr-3"><small>START A DIRECT CHAT</small></p>
+            <p class="mt-2 mb-2 ml-3 mr-3"><small>SELECT A PARTICIPANT</small></p>
             <div class="friendList mt-1" style="margin-bottom: 16px;">
             </div>
             <!-- <button type="button" class="btn btn-primary btn-block" id="createDirectBtn" style="display:none;" disabled>Create</button> -->
         </form>
         <div class="emptyFriendsState" style="display:none;">
             <h1>Feeling lonely?</h1>
-            <img src="https://i.imgur.com/kr5PTx1.png">
+            <img src="https://i.imgur.com/7FF9Wxk.png">
             <p>Tell your Facebook friends to download Yipp!</p>
         </div>
 
     </div>
+
+    <!-- <div id="alertCreateDirect" class="alert alert-info alert-dismissible alertBottom fade show animated bounceInUp" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <i class="fas fa-info-circle mr-2"></i> Start a direct collection with someone to easily share and track links with them. 
+    </div> -->
 
     <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 

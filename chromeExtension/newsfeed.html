@@ -27,6 +27,8 @@
     <link href="css/style.css" rel="stylesheet">
     <!-- Mentions Input -->
     <link href="js/jquery-mentions-input/jquery.mentionsInput.css" rel="stylesheet">
+    <!-- Google Analytics -->
+    <script src="js/googleAnalytics.js"></script>
 
   </head>
 
@@ -51,11 +53,18 @@
         <a href="#" class="hamburger">
             <span class="fa-layers fa-fw">
                 <i class="fas fa-bars"></i>
-                <span class="fa-layers-counter fa-lg hamburgerBadge" style="background:#2196F3; display:none;"></span>
+                <span class="fa-layers-counter fa-lg hamburgerBadge" style="background:#E91E63; display:none;"></span>
             </span>
         </a>
         <h1 class="navbar-brand yippLogo pt-0">Yipp</h1>
-        <a href="settings.html"><i class="fa fa-user-circle fa-lg"></i></a>
+        <!-- <a href="settings.html"><i class="fa fa-user-circle fa-lg"></i></a> -->
+        <div class="dropdown show" id="accountDropdown">    
+          <a class="accountOptionsBtn" href="#" role="button" id="accountOptions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountOptions" style="right: -10px; left: auto;">
+              <a class="dropdown-item" href="notifications.html"><small>View tag history</small></a>
+              <a  id="logoutButton" class="dropdown-item" href="#"><small>Log out</small></a>
+          </div>
+        </div>
     </nav>
 
     <!-- Bottom navigation bar -->
@@ -68,6 +77,7 @@
         </div>
       </div> 
     </nav> -->
+    <i class="loadingSpinner logoutSpinner fa fa-2x fa-spinner fa-spin" style="display:none;"></i>
 
     <div class="container">
         <div class="groupTitleContainer d-flex justify-content-start align-items-center">
@@ -77,7 +87,7 @@
             <div class="dropdown show dropdownOptions ml-auto" id="directOptionsDropdown" style="display:none;">    
               <a class="optionsBtn" href="#" role="button" id="directOptions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></a>
               <div class="dropdown-menu" aria-labelledby="directOptions">
-                  <a id ="removeDirectBtn" class="dropdown-item" href="#" data-toggle="modal" data-target="#removeDirectModal"><small>Delete this thread</small></a>
+                  <a id ="removeDirectBtn" class="dropdown-item" href="#" data-toggle="modal" data-target="#removeDirectModal"><small>Remove this Collection</small></a>
               </div>
             </div>
         </div>
@@ -88,7 +98,7 @@
                 <small id="activePageUrl">Loading</small>
             </div>
             <div class="activePageBtns d-flex flex-row justify-content-start">
-                <button class="btn" id="prepareYipp">SHARE TO GROUP</button>
+                <button class="btn" id="prepareYipp">ADD TO COLLECTION</button>
                 <button id="viewComments" class="btn">VIEW COMMENTS</button>
             </div>
             <div class="activePageInput" style="display:none;">
@@ -105,9 +115,15 @@
         </div>
 
         <div class="emptyGroupState" style="display:none;">
-            <h1>This group is looking great!</h1>
+            <h1>This collection is looking great!</h1>
             <img src="https://i.imgur.com/CU908r7.png">
-            <p>Pages you share to this group will appear here</p>
+            <p>Pages added to this collection will appear here</p>
+        </div>
+
+        <div class="emptyGeneralState" style="display:none;">
+            <h1>You're the first one here!</h1>
+            <img src="https://i.imgur.com/CU908r7.png">
+            <p>Any page shared by you or your friends throughout Yipp will appear here</p>
         </div>
 
         <!-- Modal Leaving Direct Group -->
@@ -115,11 +131,11 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Delete this thread?</h5>
+              <h5 class="modal-title">Delete this collection?</h5>
               <i class="fa fa-spinner fa-spin" style="display:none;"></i>
             </div>
             <div class="modal-body">
-              <p>All posts and websites in this thread will be deleted.</p>
+              <p>All posts and pages in this collection will be deleted.</p>
               <a href="#" class="mr-3" data-dismiss="modal">CANCEL</a>
               <a href="#" id="confirmLeaveGroup">DELETE</a>
             </div>
@@ -129,18 +145,18 @@
 
     </div>
 
-    <div class="alert alert-info alert-dismissible alertBottom fade show animated bounceInUp" role="alert">
+    <!-- <div class="alert alert-info alert-dismissible alertBottom fade show animated bounceInUp" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
-        <strong>Oh hi there!</strong> The #general feed shows the pages your friends are sharing throughout all their groups.
-    </div>
+        <i class="fas fa-info-circle mr-2"></i><strong>Oh hi there!</strong> The <strong>#general</strong> feed shows the pages your friends are sharing throughout all their groups.
+    </div> -->
 
     <!-- <div class="alert alert-info alertBottom alert-dismissible fade show animated bounceInUp" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
-        <strong>Heads up!</strong> The posts you share to this group will be visible to all your friends through their #general feeds. <br /> (☞ﾟヮﾟ)☞ ☜(ﾟヮﾟ☜)
+        <i class="fas fa-info-circle mr-2"></i><strong>Heads up!</strong> The posts you share to this group will be visible to all your friends through their <strong>#general</strong> feeds. <br /> (☞ﾟヮﾟ)☞ ☜(ﾟヮﾟ☜)
     </div> -->
 
     <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>

@@ -44,9 +44,9 @@ from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
 from oauth2client.client import GoogleCredentials
-from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
+# from twilio.twiml.voice_response import Reject, VoiceResponse, Say, Dial, Number
 import ast
-from selenium import webdriver
+# from selenium import webdriver
 from helpers import canonical, getTimeLabel, getPostDescription, friendsOfFriendsHelper
 
 credentials = GoogleCredentials.get_application_default()
@@ -117,7 +117,10 @@ def register():
             email = data['email']
 
         if user:
+            new = False
             user.updated = True
+            if user.picture != data['picture']:
+                user.picture = data['picture']
             group = Group.query.filter_by(id=user.id).first()
             if not group:
                 group = Group("General", str(datetime.utcnow()))
@@ -129,6 +132,7 @@ def register():
 
 
         else:
+            new = True
             create = User(data['id'], data['name'], email, data['picture'])
             create.updated = True
             group = Group.query.filter_by(id=create.id).first()
@@ -172,8 +176,10 @@ def register():
 
     db.session.commit()
 
-
-    return json.dumps(request.json)
+    if new:
+        return "true"
+    else:
+        return "false"
 
 
 @mod_auth.route('/user/<cookie>', methods=['GET'])
@@ -316,12 +322,12 @@ def comment():
                 friendGeneral.posts.append(feed)
 
         for friendsession in friendOfFriend.friendSession:
-            if friendsession.authToken and friendsession.id not in friendsOfFriendsSet:
+            if friendsession.authToken and friendsession.id not in friendsOfFriendsSet and friendsession.id != user.id and friendsession.id not in tags:
                 if memberIDs and friendsession.id not in memberIDs:
                     friendsOfFriendsSet.add(friendsession.authToken)
                 elif not memberIDs:
                     friendsOfFriendsSet.add(friendsession.authToken)
-        if session.authToken:
+        if session.authToken and session.id not in tags:
             if memberIDs and session.id not in memberIDs:
                 friendsOfFriendsSet.add(session.authToken)
             elif not memberIDs:
@@ -600,6 +606,46 @@ def addMembersList():
 
 
 
+#Renders template for list of users for adding new members to an existing group
+@mod_auth.route('/addMembersListNew/', methods=['GET','POST'])
+@crossdomain(origin='*')
+# @flask_optimize.optimize()
+def addMembersListNew():
+    
+    user = User.query.filter_by(id=request.form['id']).first()
+    ids = ast.literal_eval(str(request.form['friends']))
+    group = Group.query.filter_by(id=request.form['groupID']).first() 
+    jsonData = {}
+
+    #For each group that the user is a member of
+    # for group in user.groups:
+    currentMembers = []
+    friends = []
+    #Fetch current members of group
+    for i in group.users:
+        if i != user:
+            currentMembers.append(i.id)
+    #Fetch all friends of users and mark them if they are members of the group
+    for friend in ids:
+        user = User.query.filter_by(id=friend).first()
+        if friend in currentMembers:
+            friends.append((friend, user.name, "added"))
+        else:
+            friends.append((friend, user.name))
+
+    templateData = {
+            
+        'friends' : friends
+            
+    }
+
+
+    jsonData = render_template('auth/addGroupMembers.html', **templateData)
+
+    return json.dumps(jsonData)
+
+
+
 
 @mod_auth.route('/friendstokens/', methods=['GET','POST'])
 @crossdomain(origin='*')
@@ -806,7 +852,7 @@ def createGroup():
         group.direct = True 
     else:
         group.direct = False
-    users = ast.literal_eval(str(request.form['users']))
+    users = ast.literal_eval(request.form['users'])
     if not name:
         group.name = ",".join(users)
     db.session.add(group)

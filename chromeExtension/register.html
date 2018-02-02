@@ -39,9 +39,6 @@
           <h1 class="ml-5 mr-5">Welcome to</h1>
           <h1 class="navbar-brand yippLogoLogin pt-0">Yipp</h1>
           
-
-
-
           <div id="loginCarousel" class="carousel slide animated fadeInUp" data-ride="carousel">
             <ol class="carousel-indicators">
               <i class="fas fa-circle fa-xs active" data-target="#loginCarousel" data-slide-to="0"></i>
@@ -50,11 +47,11 @@
             <div class="carousel-inner">
               <div class="carousel-item active">
                 <img class="d-block w-100" src="https://i.imgur.com/CU908r7.png" alt="First slide">
-                <p>Create groups of people and curate links from the internet together</p>
+                <p>Create and curate collections of web pages with others</p>
               </div>
               <div class="carousel-item">
                 <img class="d-block w-100" src="https://i.imgur.com/qwEuWP9.png" alt="Second slide">
-                <p>Share comments and notes on any web page that you visit </p>
+                <p>Share comments and notes on any page that you visit </p>
               </div>
             </div>
             <a class="carousel-control-prev" href="#loginCarousel" role="button" data-slide="prev">
@@ -71,9 +68,11 @@
             </div>
           </a>
           <div id="loginSpinner">
-            <i class="fa fa-spinner fa-2x fa-spin mb-3"></i>
-            <p>Loading your account. This might take a few seconds</p>
-            <p>♪~ ᕕ(ᐛ)ᕗ</p>
+            <div id="loader" style="display:none;"">
+              <div id="shadow"></div>
+              <div id="box"></div>
+            </div>
+            <p class="loadingText" style="display:none;">Loading your account</p>
           </div>
         </div>  
 

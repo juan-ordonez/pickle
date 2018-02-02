@@ -97,6 +97,10 @@ button:active {
 	color: #424242;
 }
 
+#activePageCard .mentions-input-box .mentions > div {
+	padding-top:6px;
+}
+
 #activePageTitle {
 	color: #E3F2FD;
 	font-weight: 500;
@@ -124,7 +128,7 @@ button:active {
 	color: #FFFFFF;
 }
 
-#bottomNav .active, #topNav .active, .drawer .active {
+#bottomNav .active, #topNav .active {
 	color: #E91E63 !important;
 	font-weight: 600;
 }
@@ -235,18 +239,22 @@ button:active {
 
 #loginSpinner {
 	color: #BDBDBD; 
-	display:none;
 	position: absolute;
 	top: 270px;
 }
 
-#logoutButton {
+#loginSpinner p {
+	position: relative;
+	top: 100px;
+}
+
+/*#logoutButton {
 	color: #424242 !important;
 }
 
 #logoutButton:hover {
 	color: #ffffff!important;
-}
+}*/
 
 #loginPicture .invisible {
 	visibility: hidden;
@@ -407,7 +415,7 @@ button:active {
 	margin: 8px;
 	color: #FFFFFF;
 	border:none;
-	padding-right: 25px;
+	padding-right: 32px;
 }
 
 .alertTop {
@@ -426,17 +434,22 @@ button:active {
 }
 
 .alert-info {
-	background-color: #2196F3;
+	background-color: #69F0AE;
+	color: #1B5E20;
 	opacity: 0.95;
 }
 
 .alert .close:hover {
 	cursor: pointer;
-	color: transparent;
+	color: #424242;
 }
 
 .alert .close {
 	box-shadow: none !important;
+}
+
+.badge {
+	background-color: #880E4F;
 }
 
 .btn {
@@ -573,7 +586,7 @@ button:active {
 	margin-top: 70px;
 }
 
-.emptyGroupState {
+.emptyGroupState, .emptyGeneralState {
 	text-align: center;
 	color: #9E9E9E;
 	margin-top: 30px;
@@ -585,11 +598,11 @@ button:active {
 	margin-top: 20px;
 }
 
-.emptyGroupState h1, .emptyCommentState h1, .emptyFriendsState h1 {
+.emptyGroupState h1, .emptyCommentState h1, .emptyFriendsState h1, .emptyGeneralState h1 {
 	font-size: 1.3em;
 }
 
-.emptyGroupState img, .emptyCommentState img, .emptyFriendsState img {
+.emptyGroupState img, .emptyCommentState img, .emptyFriendsState img, .emptyGeneralState img {
 	width: 225px;
 }
 
@@ -761,6 +774,12 @@ button:active {
 	overflow-x: hidden;
 }
 
+.drawer .active {
+	color: #FFFFFF !important;
+	background-color: #E91E63;
+	font-weight: 600;
+}
+
 .drawer .nav-link {
 	color: #424242;
 	width: 200px;
@@ -778,6 +797,16 @@ button:active {
 .drawer .nav-link:hover {
 	color: #424242;
 	background-color: #E0E0E0;
+}
+
+.drawer .nav-link.active:hover {
+	color: #FFFFFF;
+	background-color: #E91E63;
+}
+
+.drawerHeader {
+	padding-top: 8px;
+	padding-bottom: 8px;
 }
 
 .dropdownOptions .dropdown-menu {
@@ -1083,4 +1112,58 @@ button:active {
   border-radius: 50%;
   margin:0;
   padding: 20px;
+}
+
+#loader {
+  /* Uncomment this to make it run! */
+  animation: loader 10s linear infinite; 
+  
+  position: absolute;
+  top: calc(50% - 20px);
+  left: calc(50% - 20px);
+}
+@keyframes loader {
+  0% { left: -180px }
+  100% { left: 280px; }
+}
+#box {
+  width: 50px;
+  height: 50px;
+  background: #E91E63;
+  animation: animate .5s linear infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 3px;
+}
+@keyframes animate {
+  17% { border-bottom-right-radius: 3px; }
+  25% { transform: translateY(9px) rotate(22.5deg); }
+  50% {
+    transform: translateY(18px) scale(1,.9) rotate(45deg) ;
+    border-bottom-right-radius: 40px;
+  }
+  75% { transform: translateY(9px) rotate(67.5deg); }
+  100% { transform: translateY(0) rotate(90deg); }
+} 
+#shadow { 
+  width: 50px;
+  height: 5px;
+  background: #000;
+  opacity: 0.1;
+  position: absolute;
+  top: 59px;
+  left: 0;
+  border-radius: 50%;
+  animation: shadow .5s linear infinite;
+}
+@keyframes shadow {
+  50% {
+    transform: scale(1.2,1);
+  }
+}
+
+
+body {
+  overflow: hidden;
 }

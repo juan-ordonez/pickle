@@ -209,10 +209,11 @@ def user(cookie):
 @mod_auth.route('/logout/<cookie>', methods=['GET'])
 @crossdomain(origin='*')
 def logout(cookie):
-    session = Session.query.filter_by(cookie=cookie).first()
-    if session:
-        db.session.delete(session)
-        db.session.commit()
+    sessions = Session.query.filter_by(cookie=cookie).all()
+    for session in sessions:
+        if session:
+            db.session.delete(session)
+    db.session.commit()
     return json.dumps({"status" : True})
 
 

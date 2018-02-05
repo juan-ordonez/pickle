@@ -1033,6 +1033,7 @@ def friendsOfFriends():
     added = set()
     sessionsSet = set()
     for member in members:
+        print(member.name)
         if member != user:
             added.add(member)
             generalFriend = Group.query.filter_by(id=member.id).first()

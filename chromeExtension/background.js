@@ -114,7 +114,10 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
             chrome.storage.local.get(['lastComment'], function(result) {
               //Account for multiple gcm messages
+              console.log(commentID);
+              console.log(result['lastComment']);
               if(commentID != result['lastComment']) {
+                console.log("DIFFERENT");
                 chrome.storage.local.set({"lastComment" : commentID});
 
                 //update notification badges
@@ -141,7 +144,7 @@ chrome.gcm.onMessage.addListener(function(payload) {
 
                 chrome.notifications.create({   
                 type: 'basic', 
-                iconUrl: 'iconBig.png', 
+                iconUrl: 'iconBig.png',
                 //Added the page name to the notification (to be shown in the title of the notification) 
                 title: notificationTitle, 
                 //Show the actual comment in the message
@@ -152,7 +155,24 @@ chrome.gcm.onMessage.addListener(function(payload) {
                   dict[notif] = commentUrl;
                   chrome.storage.local.set(dict);
                 });
+
+
+                chrome.storage.local.get(['notificationsJSON'], function(data) {
+                notificationsJSON = data['notificationsJSON'];
+                if (!(notificationsJSON[groupID])) {
+                  notificationsJSON[groupID] = 1;
+                }
+                else {
+                  notificationsJSON[groupID] += 1;
+                  chrome.storage.local.set({"notificationsJSON" : notificationsJSON});
+                }
+                //Update extension icon badge
+                updateBadge(notificationsJSON);
+              });
+
               }
+
+              //update notification badges
 
             });
           }

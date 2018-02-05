@@ -119,6 +119,8 @@ def register():
         if user:
             new = False
             user.updated = True
+            if user.picture != data['picture']:
+                user.picture = data['picture']
             group = Group.query.filter_by(id=user.id).first()
             if not group:
                 group = Group("General", str(datetime.utcnow()))
@@ -207,10 +209,11 @@ def user(cookie):
 @mod_auth.route('/logout/<cookie>', methods=['GET'])
 @crossdomain(origin='*')
 def logout(cookie):
-    session = Session.query.filter_by(cookie=cookie).first()
-    if session:
-        db.session.delete(session)
-        db.session.commit()
+    sessions = Session.query.filter_by(cookie=cookie).all()
+    for session in sessions:
+        if session:
+            db.session.delete(session)
+    db.session.commit()
     return json.dumps({"status" : True})
 
 
@@ -1033,7 +1036,6 @@ def friendsOfFriends():
     added = set()
     sessionsSet = set()
     for member in members:
-        print(member.name)
         if member != user:
             added.add(member)
             generalFriend = Group.query.filter_by(id=member.id).first()

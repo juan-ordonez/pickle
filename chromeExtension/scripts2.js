@@ -845,7 +845,7 @@ function logout(e) {
       $.post("http://pickle-server-183401.appspot.com/postNotificationsDict/", {"id" : userID, "json" : JSON.stringify(notificationsJSON)});
 
       //Log user out
-      $.get("http://localhost:5000/logout/" + session, function(data){
+      $.get("http://pickle-server-183401.appspot.com/logout/" + session, function(data){
         chrome.browserAction.setPopup({popup : "register.html"});
         window.location.replace("register.html");
         });

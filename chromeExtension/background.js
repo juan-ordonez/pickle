@@ -684,7 +684,7 @@ chrome.storage.local.get(['accessToken', 'userID', 'currentVersion'], function(r
                 userEmail = api.email;
                 picture = api.picture.data.url;
                 chrome.browserAction.setPopup({popup : "loggingIn.html"});
-                $.post('http://pickle-server-183401.appspot.com/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : api.friends.data, "picture" : picture, "authToken" : accessToken})}, function(newUser) {
+                $.post('http://localhost:5000/register/', {"json" : JSON.stringify({"status" : true, "id" : userID, "name" : userName, "email" : userEmail, "friends" : api.friends.data, "picture" : picture, "authToken" : accessToken})}, function(newUser) {
                   
                   console.log("callback1")
                   
@@ -814,7 +814,7 @@ function comment(userID, url, value, tags, all, picture, pageTitle, checked, cur
   console.log(picture);
   var d1 = $.Deferred();
   var storage = chrome.storage.local.get(['accessToken'], function(data) {
-  var image = "", description = "", title = "";
+  var image = "", description = "", title = pageTitle;
 
   if (data['accessToken'] != null) { 
     

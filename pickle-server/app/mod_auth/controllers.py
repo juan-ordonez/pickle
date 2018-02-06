@@ -121,6 +121,7 @@ def register():
             user.updated = True
             if user.picture != data['picture']:
                 user.picture = data['picture']
+                db.session.commit()
             group = Group.query.filter_by(id=user.id).first()
             if not group:
                 group = Group("General", str(datetime.utcnow()))
